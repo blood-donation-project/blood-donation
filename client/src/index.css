@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
+body {
+    font-family: 'SF Pro Display', sans-serif;
+}
+
+.rdp-light {
+    /* Hoặc lớp CSS tương ứng */
+    background-color: #ffffff !important; /* Màu nền sáng */
+}
