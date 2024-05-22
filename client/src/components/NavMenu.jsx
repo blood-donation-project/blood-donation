@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
 import { TiHome } from 'react-icons/ti';
 import { MdEvent, MdLogout } from 'react-icons/md';
@@ -13,15 +15,11 @@ import logoWeb from '../assets/images/logo-web.jpg';
 const NavMenu = () => {
     const { pathname } = useLocation();
 
+    const [searchText, setSearchText] = useState('');
     const [isShowingSearchResults, setIsShowingSearchResults] = useState(false);
     const [isShowingNotify, setIsShowingNotify] = useState(false);
     const [isShowingAccountControl, setIsShowingAccountControl] = useState(false);
     const [activeId, setActiveId] = useState('1');
-
-    const handleDivClick = (e) => {
-        const dataId = e.currentTarget.getAttribute('data-id');
-        setActiveId(dataId);
-    };
 
     const navLinks = [
         {
@@ -41,6 +39,22 @@ const NavMenu = () => {
             icon: <FaRegNewspaper className="text-[28px] " />,
         },
     ];
+    const handleDivClick = (e) => {
+        const dataId = e.currentTarget.getAttribute('data-id');
+        setActiveId(dataId);
+    };
+
+    const searchInputChange = (e) => {
+        const value = e.target.value;
+        if (value.startsWith(' ')) return;
+        setSearchText(value);
+    };
+
+    const searchInputKeyDown = (e) => {
+        if ((e.key === 'Enter' || e.keyCode === 13) && searchText.length > 0) {
+            window.location.href = `/search/all?q=${searchText}`;
+        }
+    };
 
     const toggleVisibilityNotify = () => {
         setIsShowingNotify(!isShowingNotify);
@@ -67,6 +81,19 @@ const NavMenu = () => {
                             <div className="bg-white shadow-md w-[280px]  rounded-b-[12px]" tabIndex="-1" {...attrs}>
                                 {/* Map kết quả tìm kiếm từ api */}
                                 <div className="grid px-2 pb-2">
+                                    {searchText && (
+                                        <Link
+                                            className="flex p-1.5 hover:bg-[#ebedf0] items-center  rounded-md "
+                                            to={`/search/all?q=${searchText}`}
+                                        >
+                                            <div className="w-9 h-9 flex-center rounded-[50%] bg-[#ebedf0]">
+                                                <IoMdSearch className="text-[#65676B] text-[20px]" />
+                                            </div>
+                                            <div className="ml-2">
+                                                <p className="text-[14px] leading-[14px]">{searchText}</p>
+                                            </div>
+                                        </Link>
+                                    )}
                                     <Link className="flex p-1.5 hover:bg-[#ebedf0]  rounded-md " to={'/'}>
                                         <div>
                                             <img
@@ -77,19 +104,6 @@ const NavMenu = () => {
                                         </div>
                                         <div className="ml-2">
                                             <p className="text-[14px] leading-[14px]">Hoa Nguyen</p>
-                                            <span className="text-[12px]">Bạn bè</span>
-                                        </div>
-                                    </Link>
-                                    <Link className="flex p-1.5 hover:bg-[#ebedf0] rounded-md" to={'/'}>
-                                        <div>
-                                            <img
-                                                className="w-9 h-9 rounded-[50%]"
-                                                src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/352233372_249390297786130_379627290360823277_n.jpg?stp=c0.0.80.80a_cp0_dst-jpg_p80x80&_nc_cat=107&ccb=1-7&_nc_sid=5f2048&_nc_ohc=UWtlIROrC7sQ7kNvgGtHrGi&_nc_ht=scontent.fhan2-5.fna&oh=00_AYDKBNj3LRkI9xaP2L3vMHC1reXr86-McllwRY1kdLXk1Q&oe=664936D6"
-                                                alt="avatar"
-                                            />
-                                        </div>
-                                        <div className="ml-2">
-                                            <p className="text-[14px] leading-[14px]">Đào Văn Hoan</p>
                                             <span className="text-[12px]">Bạn bè</span>
                                         </div>
                                     </Link>
@@ -105,6 +119,9 @@ const NavMenu = () => {
                                 onFocus={() => {
                                     setIsShowingSearchResults(true);
                                 }}
+                                value={searchText}
+                                onChange={searchInputChange}
+                                onKeyDown={searchInputKeyDown}
                             />
                         </div>
                     </Tippy>
@@ -118,6 +135,7 @@ const NavMenu = () => {
                                         ? ' flex justify-center items-center border-b-[4px] border-b-red-500  '
                                         : ' flex justify-center items-center hover:bg-[#ebedf0] rounded-[8px]'
                                 }
+                                key={i}
                                 to={nav.path}
                             >
                                 <i className={pathname === nav.path ? 'text-red-500' : 'text-[#65676B]'}>{nav.icon}</i>
@@ -142,14 +160,14 @@ const NavMenu = () => {
                                     <h1 className="text-[20px] font-bold">Thông báo</h1>
                                     <div className="flex mt-2">
                                         <div
-                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#e4e6eb] ${activeId === '1' ? 'font-semibold text-red-500 bg-red-100' : ''}`}
+                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '1' ? 'font-semibold text-red-500 bg-red-100' : ''}`}
                                             data-id="1"
                                             onClick={handleDivClick}
                                         >
                                             <span>Tất cả</span>
                                         </div>
                                         <div
-                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#e4e6eb] ${activeId === '2' ? 'font-semibold text-red-500 bg-red-100' : ''}`}
+                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '2' ? 'font-semibold text-red-500 bg-red-100' : ''}`}
                                             data-id="2"
                                             onClick={handleDivClick}
                                         >
@@ -195,8 +213,8 @@ const NavMenu = () => {
                         render={(attrs) => (
                             <div className="bg-white shadow-md w-[300px] rounded-[10px]" tabIndex="-1" {...attrs}>
                                 <div className="p-1">
-                                    <div className="px-2 py-1 hover:bg-[#f0f2f5] rounded-[6px] ">
-                                        <Link className="flex py-1.5 items-center " to={'/'}>
+                                    <div className="px-2 py-1 hover:bg-[#ebedf0] rounded-[6px] ">
+                                        <Link className="flex py-1.5 items-center " to={`/user/${12312}`}>
                                             <div>
                                                 <img
                                                     className="w-9 h-9 rounded-[50%]"
@@ -210,7 +228,7 @@ const NavMenu = () => {
                                         </Link>
                                     </div>
                                     <div className="w-full h-[2px] my-1  bg-[#ccc]"></div>
-                                    <div className="px-2  hover:bg-[#f0f2f5] rounded-[6px] ">
+                                    <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
                                         <Link className="flex py-1.5 items-center " to={'/'}>
                                             <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
                                                 <MdLogout className="text-[20px]" />

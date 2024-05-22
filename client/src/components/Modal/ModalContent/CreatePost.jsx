@@ -119,7 +119,7 @@ const CreatePost = ({ hideModal }) => {
                             <span className="text-[14px] font-semibold">Thêm vào bài viết của bạn</span>
                             <div className="flex ml-4">
                                 <label
-                                    className="relative mr-2 cursor-pointer text-[18px] text-green-500 p-1 rounded-[50%] hover:bg-[#ebebeb]"
+                                    className="relative mr-2 cursor-pointer text-[18px] text-green-500 p-1 rounded-[50%] hover:bg-[#ebedf0]"
                                     htmlFor="image"
                                 >
                                     <IoMdImages />
@@ -132,7 +132,7 @@ const CreatePost = ({ hideModal }) => {
                                         onChange={handleImageChange}
                                     />
                                 </label>
-                                <div className="mr-2 cursor-pointer text-[18px] text-orange-500 p-1 rounded-[50%] hover:bg-[#ebebeb]">
+                                <div className="mr-2 cursor-pointer text-[18px] text-orange-500 p-1 rounded-[50%] hover:bg-[#ebedf0]">
                                     <MdInsertEmoticon />
                                 </div>
                             </div>

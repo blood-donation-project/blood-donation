@@ -7,6 +7,7 @@ import PostDetails from '../Modal/ModalContent/PostDetails';
 import { FaRegComment } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import UserPreview from '../User/UserPreview';
+import Avatar from '../Image/Avatar';
 
 // Data
 const Post = () => {
@@ -26,7 +27,6 @@ const Post = () => {
         <div className=" bg-white rounded-[8px] shadow mb-3  ">
             <div className="px-2 py-3 ">
                 {/* Thông tin người đăng */}
-
                 <div className="flex">
                     <div>
                         <Tippy
@@ -43,8 +43,8 @@ const Post = () => {
                                 </div>
                             )}
                         >
-                            <Link to={'/'}>
-                                <img
+                            <Link to={'/user/123'}>
+                                <Avatar
                                     className="w-9 h-9 rounded-[50%] border border-[#ccc]"
                                     src="https://scontent.fhan20-1.fna.fbcdn.net/v/t39.30808-1/441185472_859553369550576_4197182993968662181_n.png?stp=dst-png_p120x120&_nc_cat=1&ccb=1-7&_nc_sid=5f2048&_nc_ohc=4FR8PvJr70sQ7kNvgH0CKF-&_nc_ht=scontent.fhan20-1.fna&oh=00_AYC5XrkeyvJ_TzA89BxoTt2ENAlVvOu0ufQ7WRq8Uu9t_w&oe=664A21C6"
                                     alt="avatar"
@@ -52,16 +52,20 @@ const Post = () => {
                             </Link>
                         </Tippy>
                     </div>
-                    <div className="ml-2">
-                        <p className="text-[14px] font-semibold leading-[14px]">TOP Comments</p>
+                    <div className="ml-2 flex flex-col">
+                        <Link className="text-[14px] font-semibold leading-[14px] hover:underline" to={'/user/123'}>
+                            TOP Comments
+                        </Link>
                         <span className="text-[12px] text-[#65676B]">17 phút</span>
                     </div>
                 </div>
+
                 {/* Mô tả bài đăng */}
                 <div className="">
                     <span className="text-[14px]">35nam gửi 191 các con vợ ơi. Nhanhhhh</span>
                 </div>
             </div>
+
             {/* Hình ảnh/Video nếu có */}
             <div className="bg-[#b2aea6] flex-center cursor-pointer" onClick={showModal}>
                 <img
@@ -70,6 +74,7 @@ const Post = () => {
                     alt=""
                 />
             </div>
+
             {/* Bình luận/cảm xúc */}
             <div className="px-2 py-1">
                 <div className="flex py-1 justify-between border-b border-b-[#ccc]">
