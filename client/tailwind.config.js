@@ -1,4 +1,3 @@
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: 'class',
@@ -7,7 +6,11 @@ module.exports = {
         './node_modules/react-tailwindcss-datepicker/dist/index.esm.js',
     ],
     theme: {
-        extend: {},
+        extend: {
+            screens: {
+                ssm: '460px',
+            },
+        },
     },
     plugins: [],
 };

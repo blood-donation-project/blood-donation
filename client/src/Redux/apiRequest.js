@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import {
     forgotpassFailed,
     forgotpassStart,
@@ -10,18 +11,19 @@ import {
     registerStart,
     registerSuccess,
 } from './authSlice';
-
+axios.defaults.withCredentials = true;
 export const loginUser = async (user, dispatch, navigate) => {
-    dispatch(loginStart);
+    dispatch(loginStart());
     try {
         const res = await axios.post(
             'http://localhost:3001/v1/auth/login',
             user
         );
         dispatch(loginSuccess(res.data));
+        localStorage.setItem('accessToken', res.data.accessToken);
         navigate('/');
     } catch (error) {
-        dispatch(loginFailed(error?.response.data));
+        dispatch(loginFailed(error?.response?.data));
     }
 };
 export const registerUser = async (user, dispatch, navigate) => {

@@ -11,3 +11,27 @@ body {
     /* Hoặc lớp CSS tương ứng */
     background-color: #ffffff !important; /* Màu nền sáng */
 }
+.bg-event {
+    background-image: url('./assets/img/bg_event.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 16px 0 0 16px;
+}
+@media screen and (max-width: 1024px) {
+    .bg-event {
+        border-radius: 16px 16px 0 0;
+        height: 300px !important;
+    }
+}
+
+.bg-standard {
+    background-image: url('./assets/img/bg_standard.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: aqua;
+    height: 310px;
+}
+/* Animation NOTE in Interest-Event */
+.animationNote{
+    transition: max-height 2s ease-out;
+}

@@ -8,6 +8,8 @@ import { Slide, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ForgotPass from './pages/auth/ForgotPass';
 import PasswordReset from './pages/auth/PasswordReset';
+import Message from './pages/Message';
+import Event from './pages/Event';
 function App() {
     return (
         <div>
@@ -23,13 +25,19 @@ function App() {
                 draggable
                 pauseOnHover
                 theme="light"
-                
             />
             <Routes>
                 <Route
+                    path="/appointment"
+                    element={<Event />}
+                />
+                <Route
                     path="/"
-                    exact
                     element={<Home />}
+                />
+                <Route
+                    path="/message"
+                    element={<Message />}
                 />
                 <Route
                     path="/login"

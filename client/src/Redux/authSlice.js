@@ -1,9 +1,33 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+
+export const refreshToken = createAsyncThunk(
+    'auth/refreshToken',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await fetch(
+                'http://localhost:3001/v1/auth/refresh-token',
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                }
+            );
+            const data = await response.json();
+            return data.accessToken;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
 
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
+        accessToken: localStorage.getItem('accessToken') || null,
+        refreshToken: null,
+        status: 'idle',
+        error: null,
+
         login: {
             currentUser: null,
             isFetching: false,
@@ -28,7 +52,6 @@ const authSlice = createSlice({
             state.login.isFetching = false;
             state.login.currentUser = action.payload;
             state.login.error = false;
-            console.log(action);
             toast.success('Đăng nhập thành công');
         },
         loginFailed: (state, action) => {
@@ -83,6 +106,17 @@ const authSlice = createSlice({
             }
             state.forgotpass.success = false;
         },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(refreshToken.fulfilled, (state, action) => {
+                state.accessToken = action.payload; // Assume the payload is the new access token
+                state.status = 'succeeded';
+            })
+            .addCase(refreshToken.rejected, (state, action) => {
+                state.error = action.error.message;
+                state.status = 'failed';
+            })
     },
 });
 
