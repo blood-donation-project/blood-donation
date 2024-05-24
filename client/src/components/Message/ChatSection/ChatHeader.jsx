@@ -4,8 +4,8 @@ import React from 'react';
 const ChatHeader = () => {
     // Placeholder data - in a real app, this might come from props or state
     const userProfile = {
-      name: "Scarlett Johansson",
-      avatar: "https://randomuser.me/api/portraits/women/33.jpg",
+      name: "Jennie Nichols",
+      avatar: "https://randomuser.me/api/portraits/med/men/75.jpg",
       lastActive: "Active 1h ago"
     };
   
