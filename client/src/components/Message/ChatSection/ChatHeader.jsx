@@ -19,6 +19,7 @@ const ChatHeader = () => {
             <p className="font-bold text-xl">{userProfile.name}</p>
             <p>{userProfile.lastActive}</p>
           </div>
+          
         </div>
   
         <div className="flex">

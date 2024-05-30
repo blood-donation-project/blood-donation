@@ -10,6 +10,7 @@ import ForgotPass from './pages/auth/ForgotPass';
 import PasswordReset from './pages/auth/PasswordReset';
 import Message from './pages/Message';
 import Event from './pages/Event';
+import CreateNews from './pages/CreateNews';
 function App() {
     return (
         <div>
@@ -27,6 +28,10 @@ function App() {
                 theme="light"
             />
             <Routes>
+                <Route
+                    path="/postnews"
+                    element={<CreateNews />}
+                />
                 <Route
                     path="/appointment"
                     element={<Event />}

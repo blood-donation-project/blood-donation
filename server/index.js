@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const authRoute = require('./routes/auth');
 const homeRoute = require('./routes/home');
+const newsRoute = require('./routes/news');
 const errorMiddleware = require('./middleware/errorMiddleware');
 const middlewareController = require('./controllers/middlewareController');
 
@@ -23,10 +25,11 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
-
+app.use(bodyParser.json());
 // ROUTES
 app.use('/v1/auth', authRoute);
 app.use('/home', middlewareController.verifyToken, homeRoute);
+app.use('/news', newsRoute);
 
 app.use(errorMiddleware);
 

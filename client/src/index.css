@@ -35,3 +35,10 @@ body {
 .animationNote{
     transition: max-height 2s ease-out;
 }
+.ckeditor-container {
+    width: 100%;
+}
+
+.ck-editor__editable_inline {
+    min-height: 500px; /* Đặt chiều cao cho vùng soạn thảo của CKEditor */
+}

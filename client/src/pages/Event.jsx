@@ -9,8 +9,15 @@ import {
 } from '../services/locationServices';
 import { toast } from 'react-toastify';
 import SearchEvent from '../components/event/SearchEvent';
+import ManageEvent from '../components/event/ManageEvent';
 
 const Event = () => {
+    const [isHealthAuth, setHealthAuth] = useState(true);
+    const [isCheck, setCheck] = useState(true);
+    const [dateValue, setDateValue] = useState({
+        startDate: null,
+        endDate: null,
+    });
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -27,10 +34,6 @@ const Event = () => {
     const [selectedWards, setSelectedWards] = useState({
         id: '',
         name: '',
-    });
-    const [dateValue, setDateValue] = useState({
-        startDate: null,
-        endDate: null,
     });
 
     useEffect(() => {
@@ -100,8 +103,8 @@ const Event = () => {
     console.log(dateValue);
     const handleSubmit = (e) => {
         e.preventDefault();
-        if(dateValue.startDate === null && dateValue.endDate === null){
-            toast.error("Vui lòng nhập đầy đủ ngày tháng");
+        if (dateValue.startDate === null && dateValue.endDate === null) {
+            toast.error('Vui lòng nhập đầy đủ ngày tháng');
         }
     };
 
@@ -125,23 +128,44 @@ const Event = () => {
                             >
                                 <div className="py-2">
                                     <Datepicker
-                                        primaryColor="rose"
+                                        primaryColor="blue"
                                         displayFormat="DD/MM/YYYY"
                                         separator="-"
                                         showShortcuts={true}
                                         value={dateValue}
                                         inputClassName={
-                                            ' outline-none p-2 py-3 w-full border border-gray-300 focus:border-rose-500 focus:ring focus:ring-rose-200 rounded-lg'
+                                            ' outline-none p-2 py-3 w-full border border-gray-300 transition-all duration-300 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-lg'
                                         }
                                         onChange={handleDateValueChange}
                                         readOnly={true}
                                     />
                                 </div>
+                                {/* Filter Event */}
                                 <div>
                                     <h3 className="font-semibold text-xl">
                                         Bộ Lọc:
                                     </h3>
-                                    <div className="my-2 text-lg">
+                                    {isHealthAuth ? (
+                                        <div className="mt-1 mb-1">
+                                            <label
+                                                className="text-lg"
+                                                htmlFor=""
+                                            >
+                                                Tên sự kiện
+                                            </label>
+                                            <input
+                                                placeholder="Nhập tên sự kiện"
+                                                className="w-full outline-none border border-gray-300 focus:border-blue-500 focus:ring
+                                                focus:ring-blue-200 transition-all duration-300 rounded-lg p-2"
+                                                type="text"
+                                                name=""
+                                                id=""
+                                            />
+                                        </div>
+                                    ) : (
+                                        ''
+                                    )}
+                                    <div className="my-2 text-lg ">
                                         <label
                                             className="mr-2"
                                             htmlFor="provinces"
@@ -252,7 +276,13 @@ const Event = () => {
                     {/*  Content*/}
                     <div className="w-full lg:w-[calc(100%_-_360px)] ">
                         {/* When do not Search <Interest />  */}
-                        <SearchEvent />
+                        {isHealthAuth ? (
+                            <ManageEvent />
+                        ) : isCheck ? (
+                            <SearchEvent />
+                        ) : (
+                            <Interest />
+                        )}
                     </div>
                 </div>
             </div>

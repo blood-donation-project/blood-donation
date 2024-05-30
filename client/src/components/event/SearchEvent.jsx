@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import schedule from '../../assets/img/schedule.png';
 import imghienmauTPHCM from '../../assets/img/TTHMNDTPHCM.png';
 import { PiUsersThreeLight } from 'react-icons/pi';
+import '../event/style.css';
 const SearchEvent = () => {
     const [isResults, setResults] = useState(true);
     return (
@@ -21,9 +22,12 @@ const SearchEvent = () => {
                                     />
                                 </div>
                                 <div className="p-[1%] w-full md:w-1/2 bg-[#f4f4f4]  ">
+                                    <div className="flex flex-row m-1 items-start text-xl text-rose-400 font-semibold justify-start">
+                                        Chương trình hiến máu "Chung dòng máu
+                                        Việt" năm 2024
+                                    </div>
                                     <div className="flex flex-row m-1 items-start text-lg text-[#386fd6] font-semibold justify-start">
-                                        Hiến máu - Trung Tâm Hiến Máu Nhân Đạo
-                                        Tp.HCM
+                                        Trung Tâm Hiến Máu Nhân Đạo Tp.HCM
                                     </div>
                                     <div className="flex flex-row m-1 items-start justify-start">
                                         <span className="max-w-fit text-[#7a7a7a] flex-1 text-[16px] whitespace-nowrap">
