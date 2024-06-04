@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { MdOutlineEmojiEmotions } from 'react-icons/md';
 import { IoCameraOutline } from 'react-icons/io5';
 import { BsFillSendFill } from 'react-icons/bs';
+import { FaArrowLeftLong } from 'react-icons/fa6';
 
 import UserPreview from '../../User/UserPreview';
 import PostComment from '../../Comment/PostComment';
@@ -32,9 +33,10 @@ const PostDetails = ({ hideModal }) => {
     };
 
     return (
-        <div className=" z-[9] w-[700px] h-[calc(100vh_-_60px)] bg-white rounded-[10px] shadow shadow-black  relative">
-            <div className=" overflow-y-auto w-full h-full rounded-[10px]">
-                <div className=" rounded-t-[10px] h-[44px] text-center border-b boder-b-[#ccc] absolute bg-white left-0 right-0 top-0">
+        <div className=" xs:w-full xs:h-screen z-[9] md:w-[700px] md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow md:shadow-black  relative">
+            <div className=" overflow-y-auto w-full h-full md:rounded-[10px]">
+                {/* Header Tblet & PC */}
+                <div className=" xs:hidden md:block rounded-t-[10px] h-[44px] text-center border-b boder-b-[#ccc] absolute bg-white left-0 right-0 top-0">
                     <h3 className="font-bold text-[20px]">Bài viết của TOP Comments</h3>
                     <div
                         className="w-8 h-8 bg-[#e1e2e4] rounded-[50%] flex-center cursor-pointer absolute right-2 top-2"
@@ -43,6 +45,18 @@ const PostDetails = ({ hideModal }) => {
                         <IoMdClose />
                     </div>
                 </div>
+                {/* Header mobile */}
+
+                <div className=" md:hidden  rounded-t-[10px] h-[44px] flex-center border-b boder-b-[#ccc] absolute bg-white left-0 right-0 top-0">
+                    <h3 className="font-semibold text-[18px]">Bài viết của TOP Comments</h3>
+                    <div
+                        className="w-[44px] h-[44px] hover:bg-[#e1e2e4]  flex-center cursor-pointer absolute left-0 top-0"
+                        onClick={hideModal}
+                    >
+                        <FaArrowLeftLong />
+                    </div>
+                </div>
+
                 <div className="mt-11 mb-[120px]">
                     {/* Post detail */}
                     <div className=" border-b boder-b-[#ccc] ">

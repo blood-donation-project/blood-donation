@@ -8,6 +8,8 @@ import PhotosPage from './pages/account/Photos';
 import SearchAllPage from './pages/search/SearchAll';
 import SearchUsersPage from './pages/search/SearchUsers';
 import SearchPostsPage from './pages/search/SearchPosts';
+import Notification from './pages/notification/Notifications';
+import SurroundingUsers from './pages/surroundingUsers/SurroundingUsers';
 
 function App() {
     return (
@@ -23,6 +25,9 @@ function App() {
                 <Route path="/search/all" element={<SearchAllPage />} />
                 <Route path="/search/posts" element={<SearchPostsPage />} />
                 <Route path="/search/users" element={<SearchUsersPage />} />
+
+                <Route path="/surrounding-users" element={<SurroundingUsers />} />
+                <Route path="/notifications" element={<Notification />} />
             </Routes>
         </Router>
     );

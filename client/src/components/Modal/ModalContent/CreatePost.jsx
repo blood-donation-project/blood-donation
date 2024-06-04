@@ -3,6 +3,7 @@ import { IoMdClose } from 'react-icons/io';
 import { TiWorld } from 'react-icons/ti';
 import { IoMdImages } from 'react-icons/io';
 import { MdInsertEmoticon } from 'react-icons/md';
+import { FaArrowLeftLong } from 'react-icons/fa6';
 import TextareaAutosize from 'react-textarea-autosize';
 
 const CreatePost = ({ hideModal }) => {
@@ -60,9 +61,12 @@ const CreatePost = ({ hideModal }) => {
     };
 
     return (
-        <div className=" z-[9] w-[500px] h-fit  max-h-[calc(100vh_-_60px)] bg-white rounded-[10px] shadow shadow-black  relative">
+        <div className=" z-[9] xs:h-screen xs:w-full md:w-[500px]  md:max-h-[calc(100vh_-_60px)] h-fit  bg-white md:rounded-[10px] md:shadow md:shadow-black  relative">
             <div className=" w-full h-full rounded-[10px]">
-                <div className=" rounded-t-[10px] h-[44px] text-center  border-b boder-b-[#ccc]   bg-white ">
+                {/* Header */}
+
+                {/* Header PC & Tablet */}
+                <div className=" xs:hidden md:block rounded-t-[10px] h-[44px] text-center  border-b boder-b-[#ccc]   bg-white ">
                     <h3 className="font-bold text-[20px]">Tạo bài viết</h3>
                     <div
                         className="w-8 h-8 bg-[#e1e2e4] rounded-[50%] flex-center cursor-pointer absolute right-2 top-2"
@@ -71,7 +75,17 @@ const CreatePost = ({ hideModal }) => {
                         <IoMdClose />
                     </div>
                 </div>
-                <div className="flex items-center w-full bg-white    pl-2 py-1.5 rounded-md" to="/">
+
+                {/* Header mobile */}
+                <div className="md:hidden flex items-center rounded-t-[10px] h-[44px]  border-b boder-b-[#ccc]   bg-white ">
+                    <div className="w-[44px] h-full hover:bg-[#e1e2e4]  flex-center cursor-pointer" onClick={hideModal}>
+                        <FaArrowLeftLong />
+                    </div>
+                    <h3 className="font-semibold text-[18px]">Tạo bài viết</h3>
+                </div>
+
+                {/* Content */}
+                <div className="flex items-center w-full bg-white   pl-2 py-1.5 rounded-md" to="/">
                     <div>
                         <img
                             className="w-9 h-9 rounded-[50%] border border-[#ccc]"
@@ -87,7 +101,8 @@ const CreatePost = ({ hideModal }) => {
                         </div>
                     </div>
                 </div>
-                <div className=" py-1  max-h-[calc(100vh_-_272px)] overflow-y-auto ">
+
+                <div className=" py-1  max-h-[calc(100vh_-_212px)] overflow-y-auto ">
                     <div className="  ">
                         <TextareaAutosize
                             value={postContent.textContent}
@@ -113,7 +128,7 @@ const CreatePost = ({ hideModal }) => {
                         )}
                     </div>
                 </div>
-                <div className=" rounded-b-[10px] h-[120px] text-center border-t boder-t-[#ababab]  bg-white py-2 px-2">
+                <div className=" xs:absolute xs:bottom-0 xs:left-0 xs:right-0 rounded-b-[10px] h-[120px] text-center border-t boder-t-[#ababab]  bg-white py-2 px-2">
                     <div className="border border-[#ccc] rounded-[8px] px-2 py-3">
                         <div className="flex items-center">
                             <span className="text-[14px] font-semibold">Thêm vào bài viết của bạn</span>

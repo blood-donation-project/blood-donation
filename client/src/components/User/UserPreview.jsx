@@ -1,18 +1,21 @@
 import { Link } from 'react-router-dom';
 import { FaLocationDot, FaFacebookMessenger } from 'react-icons/fa6';
 import { IoMdPersonAdd } from 'react-icons/io';
+import { MdBloodtype } from 'react-icons/md';
+import { LuUserPlus } from 'react-icons/lu';
 
 import Avatar from '../Image/Avatar';
 /*
- -- Props data
+ -- Props data user
     {
         full_name : "Hoang Viet ....",
         avatar : "http://....",
         is_friend : false/true,
         address : "Hai Ba Trung, Ha Noi"
+        ...
     }
 */
-// Data truyền vào sẽ là thoogn tin của người dùng (Họ tên, Avatar, Đã kết bạn hay chưa, sống tại đâu )
+
 const UserPreview = ({ data }) => {
     return (
         <div className="p-4">
@@ -28,8 +31,22 @@ const UserPreview = ({ data }) => {
                     <Link className="text-[18px] font-bold " to={'/user/123'}>
                         TOP Comments
                     </Link>
+                    <div className="flex items-center text-[#65676B]">
+                        <div className="w-[20px]">
+                            <MdBloodtype />
+                        </div>
+                        <span className="ml-1">AB+</span>
+                    </div>
+                    <div className="flex items-center text-[#65676B]">
+                        <div className="w-[20px]">
+                            <LuUserPlus />
+                        </div>
+                        <span className="ml-1">Người hiến máu</span>
+                    </div>
                     <div className="flex items-center">
-                        <FaLocationDot className="text-[#65676B]" />
+                        <div className="w-[20px]">
+                            <FaLocationDot className="text-[#65676B]" />
+                        </div>
                         <span className="text-[#65676B] ml-2">Đến từ Hà Nội</span>
                     </div>
                 </div>

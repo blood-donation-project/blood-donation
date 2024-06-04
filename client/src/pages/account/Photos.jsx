@@ -21,13 +21,13 @@ const PhotosPage = () => {
         <>
             <NavMenu />
             <div className="mt-[56px]  ">
-                <div className="max-w-[1150px] mx-auto  px-4 ">
+                <div className="max-w-[1150px] mx-auto px-4 ">
                     <ProfileOverview />
                 </div>
                 {/* Body content */}
                 <div className="bg-gray-200 pt-4 pb-10  min-h-[calc(100vh_-_636px)]">
-                    <div className="max-w-[1150px] mx-auto px-4">
-                        <div className="bg-white p-4 rounded-lg overflow-hidden">
+                    <div className="max-w-[1150px] mx-auto  md:px-4">
+                        <div className="bg-white p-4 md:rounded-lg overflow-hidden">
                             {/*  */}
                             <div className="flex">
                                 <div>
@@ -37,7 +37,7 @@ const PhotosPage = () => {
 
                             {/*  */}
                             <div className="mt-4">
-                                <div className="rounded-[8px] overflow-hidden grid grid-cols-6  gap-1">
+                                <div className="xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-6 rounded-[8px] overflow-hidden grid   gap-1">
                                     {/* Map photos data here */}
                                     {new Array(9).fill(0).map((img, i) => {
                                         return (

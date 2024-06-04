@@ -10,11 +10,13 @@ const ViewPhoto = ({ srcImage, hideModal }) => {
             >
                 <IoClose />
             </div>
-            <Image
-                className={' object-cover h-full '}
-                src={'https://connectme-html.themeyn.com/images/cover/2.jpg'}
-                alt={'avatar'}
-            />
+            <div className="w-full h-full flex-center">
+                <Image
+                    className={' object-cover w-full  '}
+                    src={'https://connectme-html.themeyn.com/images/cover/2.jpg'}
+                    alt={'avatar'}
+                />
+            </div>
         </div>
     );
 };

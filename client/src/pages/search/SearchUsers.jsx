@@ -47,11 +47,11 @@ const SearchUsersPage = () => {
     return (
         <>
             <NavMenu />
-            <div className="mt-[56px]">
-                <div className="flex bg-[#ebedf0]">
+            <div className="xs:pt-[96px] md:pt-0 md:mt-[56px] bg-[#ebedf0]">
+                <div className="md:flex ">
                     {/* Sidebar left */}
-                    <div className="w-[360px]">
-                        <div className="fixed h-[calc(h-screen_-_56px)] left-0 top-[56px] bg-white shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
+                    <div className="xs:hidden md:block md:w-[240px] lg:w-[360px]">
+                        <div className="md:w-[240px] lg:w-[360px] xs:hidden md:block fixed h-[calc(h-screen_-_56px)] left-0 top-[56px] bg-white shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3">
                             <div className="py-2 border-b border-[#ccc]">
                                 <h2 className="text-[20px] font-bold">Kết quả tìm kiếm</h2>
                             </div>
@@ -81,16 +81,38 @@ const SearchUsersPage = () => {
                         </div>
                     </div>
 
+                    {/* Sencondary nav */}
+                    <div className="md:hidden w-full  bg-white mt-2 py-1 ">
+                        <div className="flex items-center ">
+                            {navSidebarLeftLinks.map((nav, i) => {
+                                return (
+                                    <NavLink
+                                        className={` ml-2 py-0.5 px-1.5 rounded-[8px] cursor-pointer  ${pathname === nav.mainPath ? 'bg-red-100 ' : 'bg-[#ebedf0]'}`}
+                                        to={nav.path}
+                                        key={i}
+                                    >
+                                        <span
+                                            className={`${pathname === nav.mainPath ? 'text-red-500  ' : 'text-[#212121]'} font-semibold `}
+                                        >
+                                            {nav.title}
+                                        </span>
+                                    </NavLink>
+                                );
+                            })}
+                        </div>
+                    </div>
+
                     {/* Content */}
-                    <div className=" w-[calc(100vw_-_360px)] min-h-screen">
-                        <div className="flex-center">
-                            <div>
+                    <div className=" xs:w-full md:w-[calc(100vw_-_240px)] lg:w-[calc(100vw_-_360px)] min-h-screen">
+                        <div className="flex-center ">
+                            <div className="md:px-2 xs:w-full md:w-full md:max-w-[680px]">
                                 {/*Users*/}
                                 <div className="my-2">
                                     {/* Loading demo */}
                                     <UserSuggestLoading className={'bg-white'} />
                                 </div>
-                                <div className="h-fit w-[680px] bg-white mt-3 rounded-lg">
+                                <div className="h-fit   bg-white mt-3 rounded-lg">
+                                    {/*  */}
                                     <div className="flex justify-between p-2 rounded-lg bg-white">
                                         <Tippy
                                             interactive={true}
@@ -137,6 +159,7 @@ const SearchUsersPage = () => {
                                             </button>
                                         </div>
                                     </div>
+                                    {/*  */}
                                 </div>
                             </div>
                         </div>

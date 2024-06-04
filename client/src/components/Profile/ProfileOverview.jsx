@@ -65,25 +65,27 @@ const ProfileOverview = () => {
                 />
             </div>
 
-            <div className=" bg-white flex justify-between p-[14px]">
+            <div className=" bg-white flex xs:flex-col md:flex-row justify-between p-[14px]">
                 {/* Avatar */}
-                <div className="flex">
-                    <div
-                        className=" rounded-[50%] overflow-hidden border-[3px] dark:border-darkBackground-300 mt-[-50px] cursor-pointer "
-                        onClick={showViewImageModal}
-                    >
-                        <Avatar
-                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
-                            className="w-[144px] h-[144px]"
-                            alt="avatar"
-                        />
+                <div className="xs:flex-col xs:items-center md:flex-row flex">
+                    <div>
+                        <div
+                            className=" w-[144px] h-[144px] rounded-[50%] overflow-hidden border-[3px] dark:border-darkBackground-300 mt-[-50px] cursor-pointer "
+                            onClick={showViewImageModal}
+                        >
+                            <Avatar
+                                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
+                                className="w-[144px] h-[144px]"
+                                alt="avatar"
+                            />
+                        </div>
                     </div>
-                    <div className="ml-[12px]">
+                    <div className="ml-[12px] xs:flex md:block xs:flex-col xs:items-center">
                         <div className="flex-center ">
                             <h3 className="text-[24px] font-semibold leading-[24px] ">Hoàng Xuân Việt</h3>
                         </div>
                         <div className="">
-                            <h3 className="text-[12px] font-semibold text-[#65676B] ">287 Bạn bè</h3>
+                            <h3 className="text-[12px] font-semibold text-[#65676B] mt-1 ">287 Bạn bè</h3>
                         </div>
                         <div className="flex tyn-media-multiple mt-1">
                             <div className="tyn-media-multiple w-[34px] h-[34px] rounded-[50%] overflow-hidden border-[2px] dark:border-darkBackground-300 ">
@@ -103,7 +105,7 @@ const ProfileOverview = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center">
+                <div className="xs:mt-3 xs:justify-center md:justify-start md:mt-0 flex items-center">
                     <button
                         className="bg-[#e4e6eb] hover:bg-[#d8d8d8] flex-center rounded-[6px] px-2 py-1"
                         onClick={showUpdateProfileModal}
@@ -124,6 +126,7 @@ const ProfileOverview = () => {
                     </div> */}
                 </div>
             </div>
+
             <div className="border-t border-[#ccc] px-5">
                 <div className="flex">
                     {navProfileLinks.map((nav, i) => {

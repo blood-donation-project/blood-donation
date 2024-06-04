@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { IoMdClose } from 'react-icons/io';
 import { FaPen, FaSpinner } from 'react-icons/fa';
 import Select from 'react-select';
+import { FaArrowLeftLong } from 'react-icons/fa6';
 
 import Image from '../../Image/Image';
 import Avatar from '../../Image/Avatar';
@@ -184,14 +185,22 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     };
 
     return (
-        <div className=" z-[9] w-[700px] h-[calc(100vh_-_60px)] bg-white rounded-[10px] shadow-lg shadow-[rgba(0,0,0,0.4)]   relative">
+        <div className=" z-[9] xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
             <div className={`box-zoom-in   h-[100%]  `}>
-                <div className="py-3  flex-center   h-[50px] border-b border-b-[#ccc]">
-                    <div className="">
-                        <h3 className="text-[22px] font-semibold">Chỉnh sửa trang cá nhân</h3>
+                <div className="  md:flex-center xs:flex   h-[50px] border-b border-b-[#ccc]">
+                    <span
+                        className="w-[50px] h-[50px] md:hidden flex-center text-[18px]     hover:bg-[#f1f5f9] cursor-pointer"
+                        onClick={hideModal}
+                    >
+                        <i>
+                            <FaArrowLeftLong />
+                        </i>
+                    </span>
+                    <div className="flex items-center md:justify-center md:w-full">
+                        <h3 className="text-[18px] font-semibold">Chỉnh sửa trang cá nhân</h3>
                     </div>
                     <span
-                        className="w-[36px] text-[18px] h-[36px] flex-center absolute right-4 top-2 rounded-[50%] bg-[#f1f5f9] cursor-pointer"
+                        className="w-[36px] xs:hidden md:flex text-[18px] h-[36px] flex-center absolute right-4 top-2 rounded-[50%] bg-[#f1f5f9] cursor-pointer"
                         onClick={hideModal}
                     >
                         <i>
@@ -258,8 +267,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                         </div>
 
                         {/* Full name */}
-                        <div className="w-full flex justify-between mb-3">
-                            <div className="w-[45%]">
+                        <div className="md:flex-row xs:flex-col w-full flex justify-between mb-3">
+                            <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <label htmlFor="">Họ </label>
                                 <input
                                     className={`block outline-none border-b ${
@@ -275,7 +284,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <span className="text-red-500 text-[14px]">Họ không được để trống</span>
                                 )}
                             </div>
-                            <div className="w-[45%]">
+                            <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <label htmlFor="">Tên </label>
                                 <input
                                     className={`block outline-none border-b ${
@@ -294,8 +303,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                         </div>
 
                         {/* Phone */}
-                        <div className="w-full flex justify-between mb-3">
-                            <div className="w-[45%]">
+                        <div className="md:flex-row xs:flex-col w-full flex justify-between mb-3">
+                            <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0 ">
                                 <label htmlFor="">Số điện thoại </label>
                                 <input
                                     className={`block outline-none border-b ${
@@ -311,7 +320,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <span className="text-red-500 text-[14px]">Số điện thoại không hợp lệ !</span>
                                 )}
                             </div>
-                            <div className="w-[45%]">
+                            <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <div className="">
                                     <span className="text-[17px]">Địa chỉ</span>
                                     <div className="w-full border-b border-b-[#ccc] ">
@@ -333,7 +342,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
 
                         {/* Address */}
                         <div className="w-full ">
-                            <div className="flex justify-between">
+                            <div className="xs:flex-col md:flex-row flex justify-between">
                                 <div className="mb-3">
                                     <span>Tỉnh/Thành phố</span>
                                     <Select
@@ -368,8 +377,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                         </div>
 
                         {/*Blood type*/}
-                        <div className="w-full flex justify-between mb-3">
-                            <div className="w-[45%]">
+                        <div className="md:flex-row xs:flex-col  w-full flex justify-between mb-3">
+                            <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <label htmlFor="">Vai trò </label>
                                 <select
                                     className="block w-full outline-none border border-[#ccc] py-[2px] mt-[2px]"
@@ -383,7 +392,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <option value="R3">Người nhận máu</option>
                                 </select>
                             </div>
-                            <div className="w-[45%]">
+                            <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <label htmlFor="">Nhóm máu </label>
                                 <select
                                     className="block w-full outline-none border border-[#ccc] py-[2px] mt-[2px]"
@@ -391,6 +400,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     defaultValue={profileData.bloodType}
                                     onInput={clearSubmitError}
                                 >
+                                    <option value="Null">Không xác định</option>
                                     <option defaultChecked={true} value="A+">
                                         A+
                                     </option>

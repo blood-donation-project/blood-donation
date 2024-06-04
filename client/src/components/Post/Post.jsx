@@ -24,7 +24,7 @@ const Post = () => {
     };
 
     return (
-        <div className=" bg-white rounded-[8px] shadow mb-3  ">
+        <div className=" bg-white md:rounded-[8px] shadow mb-3  ">
             <div className="px-2 py-3 ">
                 {/* Thông tin người đăng */}
                 <div className="flex">
@@ -70,7 +70,7 @@ const Post = () => {
             <div className="bg-[#b2aea6] flex-center cursor-pointer" onClick={showModal}>
                 <img
                     className=" max-w-full max-h-[660px]"
-                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-6/441503496_980602770314399_3482545290015741587_n.jpg?stp=cp6_dst-jpg&_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=IQXpsNoV9sEQ7kNvgHbyUXS&_nc_ht=scontent.fhan2-3.fna&oh=00_AYBg5ffK9JAA6sq1WhdFBP2kY1qQXlDI509igk48FMBtxQ&oe=664A0C13 "
+                    src="https://scontent.fhan2-4.fna.fbcdn.net/v/t39.30808-6/441692178_464427932795990_6673407051662384881_n.jpg?stp=dst-jpg_p526x296&_nc_cat=1&ccb=1-7&_nc_sid=5f2048&_nc_ohc=hPZ9xzsD_JUQ7kNvgHIEuPc&_nc_ht=scontent.fhan2-4.fna&oh=00_AYCGxP_nXYxzf364eQc5_dbZgIysvVGb1qpUWesAMGSbGg&oe=665D562F "
                     alt=""
                 />
             </div>
