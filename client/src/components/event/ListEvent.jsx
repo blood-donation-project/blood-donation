@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 const ListEvent = ({
     index,
     image,
+    avatar,
     eventName,
     centerName,
     street,
@@ -11,7 +12,8 @@ const ListEvent = ({
     district,
     province,
     donationTime,
-    operationTime,
+    startTime,
+    endTime,
     eventId,
     buttonName,
 }) => {
@@ -25,7 +27,7 @@ const ListEvent = ({
             <div className="w-full md:w-1/4  flex-1 min-h-36 flex justify-center items-center bg-white">
                 <img
                     className="rounded-full w-36 h-36"
-                    src={image}
+                    src={avatar}
                     alt=""
                 />
             </div>
@@ -54,7 +56,7 @@ const ListEvent = ({
                     <span className="max-w-fit text-[#7a7a7a] flex-1 text-[16px] whitespace-nowrap">
                         Thời gian hiến máu:
                     </span>
-                    <p className="ml-1">{operationTime}</p>
+                    <p className="ml-1">Từ {startTime} - {endTime}</p>
                 </div>
             </div>
             <div className="w-full md:w-1/4 p-[1%] bg-[#f4f4f4] md:flex items-center justify-end">

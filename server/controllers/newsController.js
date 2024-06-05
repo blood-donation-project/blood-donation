@@ -16,6 +16,7 @@ const newsController = {
         if (!file) {
             return res.status(400).json({ error: 'No file provided' });
         }
+
         const bufferStream = new Readable();
         bufferStream.push(file.buffer);
         console.log(bufferStream);

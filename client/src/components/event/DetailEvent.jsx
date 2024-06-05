@@ -7,6 +7,7 @@ import {
     HiUsers,
     HiOutlineXMark,
 } from 'react-icons/hi2';
+import dayjs from 'dayjs';
 import { FaUser } from 'react-icons/fa';
 import { FaLocationDot, FaRegMessage } from 'react-icons/fa6';
 import { IoTimeSharp } from 'react-icons/io5';
@@ -18,7 +19,7 @@ const DetailEvent = () => {
     const params = useParams();
     const { data } = useGetEventByIdEventQuery(params.id);
 
-    const day = new Date(data?.donationTime).getDate();
+    const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
     console.log(data);
     return (
         <div className="">
@@ -30,7 +31,7 @@ const DetailEvent = () => {
                         <div className="relative image-container">
                             <BlurBackgroundImage
                                 className="max-w-3xl h-auto"
-                                src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717512306/news_images/a1rn1dslnhulqziocds3.jpg"
+                                src={data?.image}
                                 alt=""
                             />
                         </div>
@@ -45,7 +46,7 @@ const DetailEvent = () => {
                     </div>
                     <div className="py-4 mt-4 ml-4 flex flex-col border-b">
                         <div className="text-red-600 text-lg font-semibold">
-                            NGÀY {data?.donationTime} LÚC 21:00
+                            NGÀY {data?.donationTime} LÚC {data?.startTime}
                         </div>
                         <div className="text-2xl font-bold">
                             <h1>{data?.eventName}</h1>
@@ -134,8 +135,9 @@ const DetailEvent = () => {
                                                 <IoTimeSharp className="w-5 h-5 text-gray-500" />
                                                 <div>
                                                     <p>
-                                                        Khoảng thời gian: 7h -
-                                                        11h30
+                                                        Khoảng thời gian:{' '}
+                                                        {data?.startTime} -{' '}
+                                                        {data?.endTime}
                                                     </p>
                                                 </div>
                                             </div>
@@ -143,26 +145,10 @@ const DetailEvent = () => {
                                                 <div
                                                     className={`${
                                                         !showMore &&
-                                                        'line-clamp-2'
+                                                        'line-clamp-1'
                                                     } `}
                                                 >
-                                                    <p>
-                                                        💙 CHƯƠNG TRÌNH HIẾN MÁU
-                                                        MÙA HÈ NHÂN ÁI 2024 💙 🪻
-                                                        Cùng đi hiến máu, làm
-                                                        việc tốt, xua tan cái oi
-                                                        bức của mùa hạ bằng
-                                                        những điều thiện lành.
-                                                        ------------------------------------------------------
-                                                        💙 SỰ KIỆN HIẾN MÁU MÙA
-                                                        HÈ NHÂN ÁI 2024 💙 🗓
-                                                        Thời gian: 7h30 - 16h30
-                                                        | Từ 03/6 - 9/6/2024
-                                                        📍Địa điểm: Viện Huyết
-                                                        học - Truyền máu TW
-                                                        (Phạm Văn Bạch, Cầu
-                                                        Giấy, Hà Nội)
-                                                    </p>
+                                                    <p>{data?.description}</p>
                                                 </div>
                                                 <button
                                                     onClick={() =>
@@ -286,32 +272,21 @@ const DetailEvent = () => {
                                                                 <div className="flex justify-center items-center ">
                                                                     <img
                                                                         className="w-40 h-40 rounded-full"
-                                                                        src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717266368/news_images/gh9z05vmpjwh0yrskfcp.jpg"
+                                                                        src={data?.avatar}
                                                                         alt=""
                                                                     />
                                                                 </div>
                                                                 <div className="text-center p-1 font-bold">
                                                                     <h1 className="text-xl">
-                                                                        Viện
-                                                                        Huyết
-                                                                        học -
-                                                                        Truyền
-                                                                        máu
-                                                                        Trung
-                                                                        ương
+                                                                        {
+                                                                            data?.username
+                                                                        }
                                                                     </h1>
                                                                 </div>
                                                                 <div className="border-b my-2"></div>
                                                                 <div className="text-center pb-2">
                                                                     <h1 className="text-[16px] h-11">
-                                                                        Viện
-                                                                        chuyên
-                                                                        khoa đầu
-                                                                        ngành về
-                                                                        Huyết
-                                                                        học và
-                                                                        Truyền
-                                                                        máu.
+                                                                        {data?.introduce}
                                                                     </h1>
                                                                 </div>
                                                                 <button className="w-full py-2 bg-gray-300 flex items-center justify-center gap-3 hover:bg-gray-400 rounded-lg">

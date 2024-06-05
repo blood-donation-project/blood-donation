@@ -7,7 +7,6 @@ const eventSchema = new mongoose.Schema({
         required: true,
         ref: 'User', // Tên model User
     },
-    medicalName: { type: String, require: true },
     image: { type: String },
     address: {
         province: {
@@ -32,11 +31,11 @@ const eventSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    timeStart: {
+    startTime: {
         type: String,
         require: true,
     },
-    timeEnd: {
+    endTime: {
         type: String,
         require: true,
     },

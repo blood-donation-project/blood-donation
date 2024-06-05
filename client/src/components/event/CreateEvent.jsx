@@ -3,23 +3,36 @@ import { CSSTransition } from 'react-transition-group';
 import './style.css';
 import { toast } from 'react-toastify';
 import Datepicker from 'react-tailwindcss-datepicker';
+
+import { TimePicker } from 'antd';
+import moment from 'moment';
+import dayjs from 'dayjs';
+
 import {
     getDistrictsByProvinceId,
     getProvinces,
     getWardsByDistrictId,
 } from '../../services/locationServices';
 import { useCreateEventMutation } from '../../Redux/features/events/eventAPI';
+import axios from 'axios';
 const CreateEvent = ({ isOpen, onClose }) => {
     const [createEvent] = useCreateEventMutation();
     const [eventName, setEventName] = useState('');
-    const [timeStart, setTimeStart] = useState();
-    const [timeEnd, setTimeEnd] = useState();
-    const [imageEvent, setImageEvent] = useState('');
+    const { RangePicker } = TimePicker;
+    const [selectedTime, setSelectedTime] = useState([
+        dayjs('07:00', 'HH:mm'),
+        dayjs('16:00', 'HH:mm'),
+    ]);
+    const [imageEvent, setImageEvent] = useState(null);
     const [street, setStreet] = useState('');
     const [dateValue, setDateValue] = useState({
         startDate: null,
         endDate: null,
     });
+    const onChange = (time) => {
+        setSelectedTime(time);
+    };
+
     const [description, setDescription] = useState('');
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -30,6 +43,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
             name: '',
         },
     ]);
+
     const [selectedDistrict, setSelectedDistrict] = useState({
         id: '',
         name: '',
@@ -108,30 +122,52 @@ const CreateEvent = ({ isOpen, onClose }) => {
 
     // Handle Form
     const handleSubmit = async (e) => {
-        const newEvent = {
-            eventName: eventName,
-            address: {
-                province: selectedProvince.name,
-                district: selectedDistrict.name,
-                ward: selectedWards.name,
-                street: street,
-            },
-            donationTime: dateValue.startDate,
-            timeStart: timeStart,
-            timeEnd: timeEnd,
-            image: imageEvent,
-            description: description,
-        };
-        if (dateValue.startDate === null && dateValue.endDate === null) {
-            toast.error('Vui lòng nhập đầy đủ ngày tháng');
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('image', imageEvent);
+        let imageUrl;
+        try {
+            const response = await axios.post(
+                'http://localhost:3001/news/upload-image',
+                formData
+            );
+            imageUrl = response.data.url;
+            const newEvent = {
+                eventName: eventName,
+                image: imageUrl,
+                address: {
+                    province: selectedProvince.name,
+                    district: selectedDistrict.name,
+                    ward: selectedWards.name,
+                    street: street,
+                },
+                description: description,
+                donationTime: dateValue.startDate,
+                startTime: selectedTime[0].format('HH:mm'),
+                endTime: selectedTime[1].format('HH:mm'),
+            };
+            if (dateValue.startDate === null && dateValue.endDate === null) {
+                toast.error('Vui lòng nhập đầy đủ ngày tháng');
+            }
+            createEvent(newEvent)
+                .unwrap()
+                .then(() => {
+                    setDateValue('');
+                    setEventName('');
+                    setSelectedProvince('');
+                    setSelectedDistrict('');
+                    setSelectedWards('');
+                    setStreet('');
+                    setImageEvent('');
+                    setDescription('');
+                    onClose();
+                })
+                .catch((error) => {
+                    console.log(' Error: ', error);
+                });
+        } catch (error) {
+            console.log(' Error: ', error);
         }
-        await createEvent(newEvent).unwrap();
-        setDateValue('');
-        setEventName('');
-        setSelectedProvince('');
-        setSelectedDistrict('');
-        setSelectedWards('');
-        setStreet('');
     };
     if (!isOpen) return null;
 
@@ -295,7 +331,12 @@ const CreateEvent = ({ isOpen, onClose }) => {
                             <label className="block text-sm font-medium text-gray-700">
                                 Thời gian hiến máu
                             </label>
-                            <div className="relative mt-1"> -</div>
+                            <RangePicker
+                                className="mt-1 w-2/3 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                value={selectedTime}
+                                onChange={onChange}
+                                format={'HH:mm'}
+                            />
                         </div>
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700">
@@ -304,9 +345,11 @@ const CreateEvent = ({ isOpen, onClose }) => {
                             {/* Input */}
                             <input
                                 type="file"
+                                name="image"
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={imageEvent}
-                                onChange={(e) => setImageEvent(e.target.value)}
+                                onChange={(event) =>
+                                    setImageEvent(event.target.files[0])
+                                }
                             />
                         </div>
                         <div className="mb-6">
@@ -317,6 +360,8 @@ const CreateEvent = ({ isOpen, onClose }) => {
                             <textarea
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 cols={70}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                             ></textarea>
                         </div>
                         <div className="flex justify-end">

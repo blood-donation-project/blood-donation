@@ -38,14 +38,16 @@ const OrganizeEvent = ({ tab }) => {
                                     <ListEvent
                                         key={item?._id}
                                         image={item?.image}
+                                        avatar={item?.userId?.avatar}
                                         eventName={item?.eventName}
-                                        centerName={item?.centerName}
+                                        centerName={item?.userId?.username}
                                         street={item?.address?.street}
                                         ward={item?.address?.ward}
                                         district={item?.address?.district}
                                         province={item?.address?.province}
                                         donationTime={item?.donationTime}
-                                        operationTime={item?.operationTime}
+                                        startTime={item?.startTime}
+                                        endTime={item?.endTime}
                                         eventId={item?._id}
                                         buttonName={'Xem Chi Tiết'}
                                     />
@@ -81,14 +83,16 @@ const OrganizeEvent = ({ tab }) => {
                                 <ListEvent
                                     key={item?._id}
                                     image={item?.image}
+                                    avatar={item?.userId?.avatar}
                                     eventName={item?.eventName}
-                                    centerName={item?.centerName}
+                                    centerName={item?.userId?.username}
                                     street={item?.address?.street}
                                     ward={item?.address?.ward}
                                     district={item?.address?.district}
                                     province={item?.address?.province}
                                     donationTime={item?.donationTime}
-                                    operationTime={item?.operationTime}
+                                    startTime={item?.startTime}
+                                    endTime={item?.endTime}
                                     eventId={item?._id}
                                     buttonName={'Xem Chi Tiết'}
                                 />

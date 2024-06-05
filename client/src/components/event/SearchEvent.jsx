@@ -5,7 +5,7 @@ import '../event/style.css';
 import { Link } from 'react-router-dom';
 import ManageEvent from './ManageEvent';
 import ListEvent from './ListEvent';
-const SearchEvent = ({ eventData }) => {
+const SearchEvent = ({ eventData, userData }) => {
     return (
         <div>
             <div className="max-w-7xl h-full m-auto py-4">
@@ -31,18 +31,24 @@ const SearchEvent = ({ eventData }) => {
                             {/* Map */}
                             {eventData?.events?.map((item, index) => (
                                 <ListEvent
-                                    key={index}
+                                    key={item?._id}
                                     image={item?.image}
+                                    avatar={item?.userId?.avatar}
                                     eventName={item?.eventName}
-                                    centerName={item?.centerName}
+                                    centerName={item?.userId?.username}
                                     street={item?.address?.street}
                                     ward={item?.address?.ward}
                                     district={item?.address?.district}
                                     province={item?.address?.province}
                                     donationTime={item?.donationTime}
-                                    operationTime={item?.operationTime}
+                                    startTime={item?.startTime}
+                                    endTime={item?.endTime}
                                     eventId={item?._id}
-                                    buttonName={'Tham Gia'}
+                                    buttonName={`${
+                                        userData?.role === 'Medical facility'
+                                            ? 'Xem thêm'
+                                            : 'Tham Gia'
+                                    }`}
                                 />
                             ))}
                         </div>

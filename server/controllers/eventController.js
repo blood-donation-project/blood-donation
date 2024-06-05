@@ -6,8 +6,17 @@ const User = require('../models/user');
 const eventController = {
     createEvent: async (req, res) => {
         try {
-            const { eventName, address, donationTime, operationTime } =
-                req.body;
+            const {
+                eventName,
+                address,
+                donationTime,
+                operationTime,
+                startTime,
+                endTime,
+                image,
+                description,
+            } = req.body;
+            console.log(req.body);
             const authHeader = req.headers.authorization;
             if (!authHeader) {
                 res.status(401).json({
@@ -25,14 +34,15 @@ const eventController = {
             const newEvent = new Event({
                 eventName,
                 userId: dataUser._id,
-                centerName: dataUser.username,
-                image: dataUser.avatar,
+                image,
                 address,
                 donationTime: formattedDay,
-                operationTime,
+                description,
+                startTime,
+                endTime,
             });
             const event = await newEvent.save();
-            res.status(200).json(user);
+            res.status(200).json(event);
         } catch (error) {
             console.log(error);
         }
@@ -74,10 +84,13 @@ const eventController = {
         }
 
         try {
-            const [events, count] = await Promise.all([
-                Event.find(query),
-                Event.countDocuments(query),
-            ]);
+            const events = await Event.find(query)
+                .populate({
+                    path: 'userId',
+                    select: 'username avatar introduce',
+                })
+                .lean();
+            const count = events.length;
             res.json({ count, events });
         } catch (error) {
             res.status(500).json({ error: 'Failed to fetch events' });
@@ -119,10 +132,13 @@ const eventController = {
         }
 
         try {
-            const [events, count] = await Promise.all([
-                Event.find(query).lean(),
-                Event.countDocuments(query),
-            ]);
+            const events = await Event.find(query)
+                .populate({
+                    path: 'userId',
+                    select: 'username avatar introduce',
+                })
+                .lean();
+            const count = events.length;
             res.json({ count, events });
         } catch (error) {
             res.status(500).json({ error: 'Failed to fetch events' });
@@ -130,12 +146,32 @@ const eventController = {
     },
     getEventByIdEven: async (req, res) => {
         try {
-            const event = await Event.findById(req.params.id);
+            const event = await Event.findById(req.params.id)
+                .populate({
+                    path: 'userId', // Trường liên kết đến collection User
+                    select: 'username avatar introduce',
+                })
+                .exec(); // Thực thi populate
+
             if (!event) {
                 return res.status(400).send({ message: 'Invalid link ID' });
             }
-            return res.status(200).json(event);
-        } catch (error) {}
+
+            // Customize the returned data if needed:
+            const customizedEvent = {
+                ...event._doc,
+                username: event.userId.username,
+                avatar: event.userId.avatar,
+                introduce: event.userId.introduce,
+            };
+            delete customizedEvent.userId;
+
+            return res.status(200).json(customizedEvent);
+        } catch (error) {
+            // Xử lý lỗi
+            console.error(error);
+            res.status(500).send({ message: 'Internal server error' });
+        }
     },
 };
 
