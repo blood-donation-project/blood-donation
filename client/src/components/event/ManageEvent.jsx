@@ -75,7 +75,7 @@ const ManageEvent = () => {
         <>
             <NavMenu />
             <div className="mt-[65px]">
-                <div className="flex">
+                <div className="md:flex">
                     {/* SideBar */}
                     <div className="hidden lg:block lg:w-[360px] ">
                         <div className="fixed h-[calc(h-screen_-_56px)] left-0 top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">

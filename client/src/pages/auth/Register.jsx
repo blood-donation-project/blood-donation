@@ -103,7 +103,7 @@ const Register = () => {
         setPhoneNumber(numbersOnly);
     };
     // Submit Form
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const formatDate = moment(valueDate?.startDate).format('DD/MM/YYYY');
         const newUser = {
@@ -122,7 +122,7 @@ const Register = () => {
             role: role,
         };
         if (password === rePassword) {
-            register(newUser).unwrap();
+            await register(newUser).unwrap();
             navigate('/login');
         } else {
             toast.error('Mật khẩu nhập lại không khớp');

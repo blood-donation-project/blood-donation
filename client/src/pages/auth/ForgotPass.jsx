@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import bg_hienmau from '../../assets/img/bg_hienmau3.jpg';
 import { useDispatch } from 'react-redux';
-import {useForgotPasswordMutation } from '../../Redux/features/auth/authAPI';
+import { useForgotPasswordMutation } from '../../Redux/features/auth/authAPI';
 
 const ForgotPass = () => {
-    const [forgotPass] = useForgotPasswordMutation()
+    const [forgotPass] = useForgotPasswordMutation();
     const [email, setEmail] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        // Handle the form data here
-        const forgotPassword = {
-            email: email,
-        };
-        await forgotPass(email);
+        try {
+            event.preventDefault();
+            // Handle the form data here
+            await forgotPass(email).unwrap();
+        } catch (error) {
+            console.log(error);
+        }
     };
     return (
         <div>

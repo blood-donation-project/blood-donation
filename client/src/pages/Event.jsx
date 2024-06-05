@@ -109,10 +109,6 @@ const Event = () => {
         setSelectedWards([]);
     };
 
-    console.log(selectedDistrict);
-    console.log(selectedProvince);
-    console.log(selectedWards);
-
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
         const district = districts?.find((d) => d?.idDistrict === districtId);
@@ -159,7 +155,7 @@ const Event = () => {
             {/* Menu */}
             <NavMenu userData={userData} />
             <div className="mt-[56px]">
-                <div className="flex">
+                <div className="md:flex">
                     {/* Sidebar left */}
                     <div className="hidden lg:block lg:w-[360px] ">
                         <div className="fixed h-[calc(h-screen_-_56px)] left-0 top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">

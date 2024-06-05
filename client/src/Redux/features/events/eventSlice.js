@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import eventAPI from './eventAPI';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const eventSlice = createSlice({
     name: 'event',
@@ -59,6 +60,7 @@ const eventSlice = createSlice({
                 eventAPI.endpoints.getEventByIdEvent.matchRejected,
                 (state, action) => {
                     state.error = action.error.message;
+                    
                 }
             );
     },

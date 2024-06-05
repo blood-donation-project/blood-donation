@@ -63,10 +63,13 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        block:{
+        block: {
             type: Boolean,
             default: false,
-        }
+        },
+        introduce: {
+            type: String,
+        },
     },
     { timestamps: true }
 );

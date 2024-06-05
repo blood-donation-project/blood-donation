@@ -152,7 +152,7 @@ const eventController = {
                     select: 'username avatar introduce',
                 })
                 .exec(); // Thực thi populate
-
+                
             if (!event) {
                 return res.status(400).send({ message: 'Invalid link ID' });
             }

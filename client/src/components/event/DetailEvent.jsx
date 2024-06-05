@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavMenu from '../NavMenu';
 import BlurBackgroundImage from '../BlurBackgroundImage';
 import { IoIosCheckmarkCircleOutline, IoMdMail } from 'react-icons/io';
@@ -11,16 +11,24 @@ import dayjs from 'dayjs';
 import { FaUser } from 'react-icons/fa';
 import { FaLocationDot, FaRegMessage } from 'react-icons/fa6';
 import { IoTimeSharp } from 'react-icons/io5';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useGetEventByIdEventQuery } from '../../Redux/features/events/eventAPI';
 
 const DetailEvent = () => {
     const [showMore, setShowMore] = useState(false);
     const params = useParams();
-    const { data } = useGetEventByIdEventQuery(params.id);
-
+    const navigate = useNavigate();
+    const { data, error } = useGetEventByIdEventQuery(params.id);
+    console.log(error);
     const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
     console.log(data);
+
+    useEffect(() => {
+        if (error?.status === 400) {
+            navigate(-1);
+        }
+    });
+
     return (
         <div className="">
             <NavMenu />
@@ -109,7 +117,7 @@ const DetailEvent = () => {
                                                     <p>
                                                         Sự kiện của{' '}
                                                         <span className="font-bold">
-                                                            {data?.centerName}{' '}
+                                                            {data?.username}{' '}
                                                         </span>
                                                     </p>
                                                 </div>
@@ -272,7 +280,9 @@ const DetailEvent = () => {
                                                                 <div className="flex justify-center items-center ">
                                                                     <img
                                                                         className="w-40 h-40 rounded-full"
-                                                                        src={data?.avatar}
+                                                                        src={
+                                                                            data?.avatar
+                                                                        }
                                                                         alt=""
                                                                     />
                                                                 </div>
@@ -286,7 +296,9 @@ const DetailEvent = () => {
                                                                 <div className="border-b my-2"></div>
                                                                 <div className="text-center pb-2">
                                                                     <h1 className="text-[16px] h-11">
-                                                                        {data?.introduce}
+                                                                        {
+                                                                            data?.introduce
+                                                                        }
                                                                     </h1>
                                                                 </div>
                                                                 <button className="w-full py-2 bg-gray-300 flex items-center justify-center gap-3 hover:bg-gray-400 rounded-lg">
