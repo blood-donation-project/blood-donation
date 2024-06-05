@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        block:{
+            type: Boolean,
+            default: false,
+        }
     },
     { timestamps: true }
 );

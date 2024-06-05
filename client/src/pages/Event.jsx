@@ -7,13 +7,19 @@ import {
     getProvinces,
     getWardsByDistrictId,
 } from '../services/locationServices';
-import { toast } from 'react-toastify';
 import SearchEvent from '../components/event/SearchEvent';
 import ManageEvent from '../components/event/ManageEvent';
+import { useVerifyToken } from '../hooks/useAutoRefreshToken';
+import { useGetUserMutation } from '../Redux/features/user/userAPI';
+import { useGetEventMutation } from '../Redux/features/events/eventAPI';
 
 const Event = () => {
-    const [isHealthAuth, setHealthAuth] = useState(true);
+    // Redux
+    useVerifyToken('/events/');
+    const [getUser, { data: userData }] = useGetUserMutation();
+    const [getEvent, { data: eventData }] = useGetEventMutation();
     const [isCheck, setCheck] = useState(true);
+    const [eventName, setEventName] = useState('');
     const [dateValue, setDateValue] = useState({
         startDate: null,
         endDate: null,
@@ -21,12 +27,10 @@ const Event = () => {
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
-    const [selectedProvince, setSelectedProvince] = useState([
-        {
-            id: '',
-            name: '',
-        },
-    ]);
+    const [selectedProvince, setSelectedProvince] = useState({
+        id: '',
+        name: '',
+    });
     const [selectedDistrict, setSelectedDistrict] = useState({
         id: '',
         name: '',
@@ -36,6 +40,35 @@ const Event = () => {
         name: '',
     });
 
+    //* Handle Data From Child
+    const handleDataFromChild = (data) => {
+        setCheck(data);
+    };
+
+    // GET USER
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getUser().unwrap();
+            } catch (error) {}
+        };
+        fetchData();
+    }, [getUser]);
+
+    // GET EVENTS
+    useEffect(() => {
+        const fetchData = async (e) => {
+            try {
+                const result = await getEvent().unwrap();
+                if (result) {
+                    setCheck(true);
+                }
+            } catch (error) {}
+        };
+        fetchData();
+    }, [getEvent]);
+
+    // GET LOCATION
     useEffect(() => {
         getProvinces().then(setProvinces);
     }, []);
@@ -59,67 +92,80 @@ const Event = () => {
     }, [selectedDistrict?.id]);
 
     // Handle Change
-
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
 
-        const province = provinces?.results?.find(
-            (p) => p?.province_id === provinceId
-        );
+        const province = provinces?.find((p) => p?.idProvince === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.province_name || '',
+            name: province?.name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
         // Fetch districts for the new province
         getDistrictsByProvinceId(provinceId).then(setDistricts);
+        setDistricts([]);
+        setSelectedDistrict([]);
+        setSelectedWards([]);
     };
+
+    console.log(selectedDistrict);
+    console.log(selectedProvince);
+    console.log(selectedWards);
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.results?.find(
-            (d) => d?.district_id === districtId
-        );
+        const district = districts?.find((d) => d?.idDistrict === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.district_name : '',
+            name: district ? district?.name : '',
         });
         // Reset wards when district changes
+        setSelectedWards([]);
         setWards([]);
     };
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.results?.find((w) => w.ward_id === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.ward_name : '' });
+        const ward = wards?.find((w) => w.idCommune === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
     };
-
     const handleDateValueChange = (newValue) => {
-        console.log(newValue);
         setDateValue(newValue);
     };
     // Handle Form
-    console.log(dateValue);
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (dateValue.startDate === null && dateValue.endDate === null) {
-            toast.error('Vui lòng nhập đầy đủ ngày tháng');
+
+        const searchParams = {
+            eventName,
+            startDate: dateValue.startDate,
+            endDate: dateValue.endDate,
+            province: selectedProvince.name,
+            district: selectedDistrict.name,
+            ward: selectedWards.name,
+        };
+        const result = await getEvent(searchParams).unwrap();
+        if (result) {
+            setCheck(true);
         }
     };
+
+    // Handle Search
+    const handleSearch = async (e) => {};
 
     return (
         <>
             {/* Menu */}
-            <NavMenu />
+            <NavMenu userData={userData} />
             <div className="mt-[56px]">
                 <div className="flex">
                     {/* Sidebar left */}
                     <div className="hidden lg:block lg:w-[360px] ">
                         <div className="fixed h-[calc(h-screen_-_56px)] left-0 top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
                             <div className="py-2 border-b border-[#ccc]">
-                                <h2 className="text-[20px] font-bold">
-                                    Bạn cần tìm kiếm trong khoảng thời gian nào?
+                                <h2 className="text-2xl font-semibold">
+                                    Sự kiện
                                 </h2>
                             </div>
                             <form
@@ -145,26 +191,26 @@ const Event = () => {
                                     <h3 className="font-semibold text-xl">
                                         Bộ Lọc:
                                     </h3>
-                                    {isHealthAuth ? (
-                                        <div className="mt-1 mb-1">
-                                            <label
-                                                className="text-lg"
-                                                htmlFor=""
-                                            >
-                                                Tên sự kiện
-                                            </label>
-                                            <input
-                                                placeholder="Nhập tên sự kiện"
-                                                className="w-full outline-none border border-gray-300 focus:border-blue-500 focus:ring
+                                    <div className="mt-1 mb-1">
+                                        <label
+                                            className="text-lg"
+                                            htmlFor=""
+                                        >
+                                            Tên sự kiện
+                                        </label>
+                                        <input
+                                            value={eventName}
+                                            onChange={(e) =>
+                                                setEventName(e.target.value)
+                                            }
+                                            placeholder="Nhập tên sự kiện"
+                                            className="w-full outline-none border border-gray-300 focus:border-blue-500 focus:ring
                                                 focus:ring-blue-200 transition-all duration-300 rounded-lg p-2"
-                                                type="text"
-                                                name=""
-                                                id=""
-                                            />
-                                        </div>
-                                    ) : (
-                                        ''
-                                    )}
+                                            type="text"
+                                            name=""
+                                            id=""
+                                        />
+                                    </div>
                                     <div className="my-2 text-lg ">
                                         <label
                                             className="mr-2"
@@ -182,20 +228,14 @@ const Event = () => {
                                             <option value="">
                                                 Chọn Tỉnh/Thành Phố
                                             </option>
-                                            {provinces?.results?.map(
-                                                (province) => (
-                                                    <option
-                                                        key={
-                                                            province.province_id
-                                                        }
-                                                        value={
-                                                            province.province_id
-                                                        }
-                                                    >
-                                                        {province.province_name}
-                                                    </option>
-                                                )
-                                            )}
+                                            {provinces?.map((province) => (
+                                                <option
+                                                    key={province.idProvince}
+                                                    value={province.idProvince}
+                                                >
+                                                    {province.name}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                     <div className="my-2 text-lg">
@@ -208,29 +248,21 @@ const Event = () => {
                                         <select
                                             name="district"
                                             id="district"
-                                            value={
-                                                selectedDistrict.district_name
-                                            }
+                                            value={selectedDistrict.id}
                                             onChange={handleDistrictChange}
                                             className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                         >
                                             <option value="">
                                                 Chọn Quận/Huyện
                                             </option>
-                                            {districts?.results?.map(
-                                                (district) => (
-                                                    <option
-                                                        key={
-                                                            district.district_id
-                                                        }
-                                                        value={
-                                                            district.district_id
-                                                        }
-                                                    >
-                                                        {district.district_name}
-                                                    </option>
-                                                )
-                                            )}
+                                            {districts?.map((district) => (
+                                                <option
+                                                    key={district.idDistrict}
+                                                    value={district.idDistrict}
+                                                >
+                                                    {district.name}
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
                                     <div className="my-2 text-lg">
@@ -244,18 +276,18 @@ const Event = () => {
                                             name="wards"
                                             id="wards"
                                             onChange={handleWardChange}
-                                            value={selectedWards?.district_name}
+                                            value={selectedWards?.id}
                                             className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                         >
                                             <option value="">
                                                 Chọn Xã/Phường
                                             </option>
-                                            {wards?.results?.map((ward) => (
+                                            {wards?.map((ward) => (
                                                 <option
-                                                    key={ward.ward_id}
-                                                    value={ward.ward_id}
+                                                    key={ward.idCommune}
+                                                    value={ward.idCommune}
                                                 >
-                                                    {ward.ward_name}
+                                                    {ward.name}
                                                 </option>
                                             ))}
                                         </select>
@@ -263,6 +295,7 @@ const Event = () => {
                                 </div>
                                 <div className="flex items-center justify-center">
                                     <button
+                                        onClick={handleSearch}
                                         className="my-5 outline-none hover:bg-[#1c5291] bg-[#386fd6] text-white py-4 px-10 text-lg rounded-lg"
                                         type="submit"
                                     >
@@ -270,18 +303,28 @@ const Event = () => {
                                     </button>
                                 </div>
                             </form>
+                            <button
+                                type="button"
+                                className="gradient-text text-[16px] outline-none hover:underline "
+                                onClick={() =>
+                                    isCheck ? setCheck(!isCheck) : ''
+                                }
+                            >
+                                Những điều cần biết khi đi hiến máu?
+                            </button>
                         </div>
                     </div>
 
                     {/*  Content*/}
-                    <div className="w-full lg:w-[calc(100%_-_360px)] ">
+                    <div className=" lg:w-[calc(100%_-_360px)] ">
                         {/* When do not Search <Interest />  */}
-                        {isHealthAuth ? (
-                            <ManageEvent />
-                        ) : isCheck ? (
-                            <SearchEvent />
+                        {isCheck ? (
+                            <SearchEvent
+                                eventData={eventData}
+                                userData={userData}
+                            />
                         ) : (
-                            <Interest />
+                            <Interest onSendData={handleDataFromChild} />
                         )}
                     </div>
                 </div>

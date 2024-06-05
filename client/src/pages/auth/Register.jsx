@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import imgBloodDonation from '../../assets/img/hienmau.jpg';
 import { Link, useNavigate } from 'react-router-dom';
 import Datepicker from 'react-tailwindcss-datepicker';
-import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import {
@@ -11,9 +10,10 @@ import {
     getWardsByDistrictId,
 } from '../../services/locationServices';
 
-import { registerUser } from '../../Redux/apiRequest';
+import { useRegisterMutation } from '../../Redux/features/auth/authAPI';
 
 const Register = () => {
+    const [register] = useRegisterMutation();
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -40,7 +40,6 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [rePassword, setRepassword] = useState('');
     const [role, setRole] = useState('Người hiến máu');
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -65,16 +64,15 @@ const Register = () => {
         }
     }, [selectedDistrict?.id]);
 
-    // OnChange
+    // Handle Change
+
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
 
-        const province = provinces?.results?.find(
-            (p) => p?.province_id === provinceId
-        );
+        const province = provinces?.find((p) => p?.idProvince === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.province_name || '',
+            name: province?.name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
@@ -84,12 +82,10 @@ const Register = () => {
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.results?.find(
-            (d) => d?.district_id === districtId
-        );
+        const district = districts?.find((d) => d?.idDistrict === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.district_name : '',
+            name: district ? district?.name : '',
         });
         // Reset wards when district changes
         setWards([]);
@@ -97,10 +93,9 @@ const Register = () => {
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.results?.find((w) => w.ward_id === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.ward_name : '' });
+        const ward = wards?.find((w) => w.idCommune === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
     };
-
     const handlePhoneNumberChange = (e) => {
         const input = e.target.value;
 
@@ -127,7 +122,8 @@ const Register = () => {
             role: role,
         };
         if (password === rePassword) {
-            registerUser(newUser, dispatch, navigate);
+            register(newUser).unwrap();
+            navigate('/login');
         } else {
             toast.error('Mật khẩu nhập lại không khớp');
         }
@@ -271,28 +267,28 @@ const Register = () => {
                                     onChange={handleProvinceChange}
                                 >
                                     <option value="0">Chọn tỉnh</option>
-                                    {provinces?.results?.map((province) => (
+                                    {provinces?.map((province) => (
                                         <option
-                                            key={province.province_id}
-                                            value={province.province_id}
+                                            key={province.idProvince}
+                                            value={province.idProvince}
                                         >
-                                            {province.province_name}
+                                            {province.name}
                                         </option>
                                     ))}
                                 </select>
                                 <select
                                     required
                                     className=" mt-1 p-2 w-1/3 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                                    value={selectedDistrict.district_name}
+                                    value={selectedDistrict.id}
                                     onChange={handleDistrictChange}
                                 >
                                     <option value="">Chọn quận/huyện</option>
-                                    {districts?.results?.map((district) => (
+                                    {districts?.map((district) => (
                                         <option
-                                            key={district.district_id}
-                                            value={district.district_id}
+                                            key={district.idDistrict}
+                                            value={district.idDistrict}
                                         >
-                                            {district.district_name}
+                                            {district.name}
                                         </option>
                                     ))}
                                 </select>
@@ -300,15 +296,15 @@ const Register = () => {
                                     required
                                     className=" mt-1 p-2 w-1/3 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                     onChange={handleWardChange}
-                                    value={selectedWards?.district_name}
+                                    value={selectedWards?.id}
                                 >
                                     <option value="">Chọn xã</option>
-                                    {wards?.results?.map((ward) => (
+                                    {wards?.map((ward) => (
                                         <option
-                                            key={ward.ward_id}
-                                            value={ward.ward_id}
+                                            key={ward.idCommune}
+                                            value={ward.idCommune}
                                         >
-                                            {ward.ward_name}
+                                            {ward.name}
                                         </option>
                                     ))}
                                 </select>
@@ -374,19 +370,19 @@ const Register = () => {
                                 className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                             >
                                 <option
-                                    value={'Người hiến máu'}
+                                    value={'donor'}
                                     className=""
                                 >
                                     Người hiến máu
                                 </option>
                                 <option
-                                    value={'Người cần hiến máu'}
+                                    value={'blood recipient'}
                                     className="p-2 mt-1"
                                 >
                                     Người cần hiến máu
                                 </option>
                                 <option
-                                    value={'Cơ sở y tế'}
+                                    value={'Medical facility'}
                                     className="p-2"
                                 >
                                     Cơ sở y tế

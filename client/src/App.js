@@ -11,12 +11,14 @@ import PasswordReset from './pages/auth/PasswordReset';
 import Message from './pages/Message';
 import Event from './pages/Event';
 import CreateNews from './pages/CreateNews';
+import ManageEvent from './components/event/ManageEvent';
+import DetailEvent from './components/event/DetailEvent';
 function App() {
     return (
         <div>
             <ToastContainer
                 position="top-right"
-                autoClose={5000}
+                autoClose={3000}
                 transition={Slide}
                 hideProgressBar={false}
                 newestOnTop={false}
@@ -33,8 +35,13 @@ function App() {
                     element={<CreateNews />}
                 />
                 <Route
-                    path="/appointment"
+                    path="/events"
+                    exact
                     element={<Event />}
+                />
+                <Route
+                    path="/events/detail-event/:id"
+                    element={<DetailEvent />}
                 />
                 <Route
                     path="/"
@@ -42,6 +49,7 @@ function App() {
                 />
                 <Route
                     path="/message"
+                    exact
                     element={<Message />}
                 />
                 <Route
@@ -65,6 +73,10 @@ function App() {
                 <Route
                     path="users/:id/forgotpass/:token"
                     element={<PasswordReset />}
+                />
+                <Route
+                    path="/events/manage-events"
+                    element={<ManageEvent />}
                 />
                 <Route
                     path="*"

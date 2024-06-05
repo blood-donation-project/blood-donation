@@ -13,6 +13,7 @@
         "@tippyjs/react": "^4.2.6",
         "axios": "^1.6.8",
         "ckeditor5-custom-build": "file:ckeditor5",
+        "date-fns": "^3.6.0",
         "emoji-picker-react": "^4.9.3",
         "js-cookie": "^3.0.5",
         "moment": "^2.30.1",

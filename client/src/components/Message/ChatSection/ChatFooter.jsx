@@ -67,7 +67,7 @@ const ChatFooter = ({ onSendMessage }) => {
                         />
                     </button>
                     <input
-                        className=" flex-1 p-4 bg-gray-200 text-lg rounded-3xl mr-2 outline-none"
+                        className=" flex-1 p-4 bg-gray-200 text-lg rounded-3xl mr-2 outline-none transition-all duration-300 focus:border border-blue-500"
                         type="text"
                         placeholder="Aa"
                         value={message}

@@ -6,6 +6,31 @@
 body {
     font-family: 'SF Pro Display', sans-serif;
 }
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.gradient-text {
+    background: linear-gradient(
+        to right,
+        #4285f4 11.63%,
+        #9b72cb 40.43%,
+        #d96570 68.07%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 1.5s linear infinite;
+    background-size: 200% 200%;
+}
+
+.gradient-text:hover {
+    text-decoration: underline;
+}
 
 .rdp-light {
     /* Hoặc lớp CSS tương ứng */
@@ -32,7 +57,7 @@ body {
     height: 310px;
 }
 /* Animation NOTE in Interest-Event */
-.animationNote{
+.animationNote {
     transition: max-height 2s ease-out;
 }
 .ckeditor-container {

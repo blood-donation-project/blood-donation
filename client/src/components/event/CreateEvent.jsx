@@ -8,13 +8,19 @@ import {
     getProvinces,
     getWardsByDistrictId,
 } from '../../services/locationServices';
+import { useCreateEventMutation } from '../../Redux/features/events/eventAPI';
 const CreateEvent = ({ isOpen, onClose }) => {
+    const [createEvent] = useCreateEventMutation();
     const [eventName, setEventName] = useState('');
-    const [centerName, setCenterName] = useState('');
-    const [address, setAddress] = useState('');
-    const [operationTime, setOperationTime] = useState('');
-    const [donationTime, setDonationTime] = useState('');
-    const [dateValue, setDateValue] = useState();
+    const [timeStart, setTimeStart] = useState();
+    const [timeEnd, setTimeEnd] = useState();
+    const [imageEvent, setImageEvent] = useState('');
+    const [street, setStreet] = useState('');
+    const [dateValue, setDateValue] = useState({
+        startDate: null,
+        endDate: null,
+    });
+    const [description, setDescription] = useState('');
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -59,13 +65,10 @@ const CreateEvent = ({ isOpen, onClose }) => {
 
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
-
-        const province = provinces?.results?.find(
-            (p) => p?.province_id === provinceId
-        );
+        const province = provinces?.find((p) => p?.idProvince === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.province_name || '',
+            name: province?.name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
@@ -75,12 +78,10 @@ const CreateEvent = ({ isOpen, onClose }) => {
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.results?.find(
-            (d) => d?.district_id === districtId
-        );
+        const district = districts?.find((d) => d?.idDistrict === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.district_name : '',
+            name: district ? district?.name : '',
         });
         // Reset wards when district changes
         setWards([]);
@@ -88,23 +89,50 @@ const CreateEvent = ({ isOpen, onClose }) => {
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.results?.find((w) => w.ward_id === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.ward_name : '' });
+        const ward = wards?.find((w) => w.idCommune === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
     };
-
     const handleDateValueChange = (newValue) => {
-        console.log(newValue);
         setDateValue(newValue);
     };
+
+    // Handle Close
+    const handleClose = () => {
+        setDateValue('');
+        setEventName('');
+        setSelectedProvince('');
+        setSelectedDistrict('');
+        setSelectedWards('');
+        onClose();
+    };
+
     // Handle Form
-    console.log(dateValue);
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = async (e) => {
+        const newEvent = {
+            eventName: eventName,
+            address: {
+                province: selectedProvince.name,
+                district: selectedDistrict.name,
+                ward: selectedWards.name,
+                street: street,
+            },
+            donationTime: dateValue.startDate,
+            timeStart: timeStart,
+            timeEnd: timeEnd,
+            image: imageEvent,
+            description: description,
+        };
         if (dateValue.startDate === null && dateValue.endDate === null) {
             toast.error('Vui lòng nhập đầy đủ ngày tháng');
         }
+        await createEvent(newEvent).unwrap();
+        setDateValue('');
+        setEventName('');
+        setSelectedProvince('');
+        setSelectedDistrict('');
+        setSelectedWards('');
+        setStreet('');
     };
-
     if (!isOpen) return null;
 
     return (
@@ -114,11 +142,11 @@ const CreateEvent = ({ isOpen, onClose }) => {
             classNames={'popup'}
             unmountOnExit
         >
-            <div className="fixed inset-0 flex overflow-auto items-center justify-center bg-gray-800 bg-opacity-75 z-50 transition-opacity duration-700">
-                <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg relative">
+            <div className="fixed  inset-0 flex overflow-auto items-center justify-center bg-gray-800 bg-opacity-75 z-50 transition-opacity duration-700">
+                <div className="bg-white h-[90%] top-6 overflow-y-scroll p-8  shadow-lg w-full max-w-lg relative">
                     <button
                         className="absolute outline-none top-2 right-2 text-gray-400 hover:text-gray-600"
-                        onClick={onClose}
+                        onClick={handleClose}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -145,82 +173,90 @@ const CreateEvent = ({ isOpen, onClose }) => {
                             </label>
                             <input
                                 type="text"
+                                required
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 value={eventName}
                                 onChange={(e) => setEventName(e.target.value)}
                             />
                         </div>
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Tên trung tâm y tế
-                            </label>
-                            <input
-                                type="text"
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={centerName}
-                                onChange={(e) => setCenterName(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-4">
                             <div className="flex flex-col overflow-hidden">
                                 <label htmlFor="">Địa chỉ</label>
-                                <div className="mt-1">
+                                <div className="my-2">
+                                    <label
+                                        className="mr-2"
+                                        htmlFor="provinces"
+                                    >
+                                        Tỉnh/ Thành Phố:
+                                    </label>
                                     <select
                                         name="provinces"
                                         id="provices"
                                         value={selectedProvince.id}
                                         onChange={handleProvinceChange}
-                                        className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                                        className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                     >
                                         <option value="">
                                             Chọn Tỉnh/Thành Phố
                                         </option>
-                                        {provinces?.results?.map((province) => (
+                                        {provinces?.map((province) => (
                                             <option
-                                                key={province.province_id}
-                                                value={province.province_id}
+                                                key={province.idProvince}
+                                                value={province.idProvince}
                                             >
-                                                {province.province_name}
+                                                {province.name}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
-                                <div className="mt-1">
+                                <div className="my-2">
+                                    <label
+                                        htmlFor="district"
+                                        className="mr-9"
+                                    >
+                                        Quận/Huyện:
+                                    </label>
                                     <select
                                         name="district"
                                         id="district"
-                                        value={selectedDistrict.district_name}
+                                        value={selectedDistrict.id}
                                         onChange={handleDistrictChange}
-                                        className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                                        className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                     >
                                         <option value="">
                                             Chọn Quận/Huyện
                                         </option>
-                                        {districts?.results?.map((district) => (
+                                        {districts?.map((district) => (
                                             <option
-                                                key={district.district_id}
-                                                value={district.district_id}
+                                                key={district.idDistrict}
+                                                value={district.idDistrict}
                                             >
-                                                {district.district_name}
+                                                {district.name}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
-                                <div className="mt-1 mb-1">
+                                <div className="my-2 ">
+                                    <label
+                                        htmlFor="wards"
+                                        className="mr-12"
+                                    >
+                                        Xã/Phường:
+                                    </label>
                                     <select
                                         name="wards"
                                         id="wards"
                                         onChange={handleWardChange}
-                                        value={selectedWards?.district_name}
-                                        className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                                        value={selectedWards?.id}
+                                        className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                     >
                                         <option value="">Chọn Xã/Phường</option>
-                                        {wards?.results?.map((ward) => (
+                                        {wards?.map((ward) => (
                                             <option
-                                                key={ward.ward_id}
-                                                value={ward.ward_id}
+                                                key={ward.idCommune}
+                                                value={ward.idCommune}
                                             >
-                                                {ward.ward_name}
+                                                {ward.name}
                                             </option>
                                         ))}
                                     </select>
@@ -228,10 +264,11 @@ const CreateEvent = ({ isOpen, onClose }) => {
                             </div>
                             <input
                                 type="text"
+                                required
                                 placeholder="Tên đường, Số nhà"
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
+                                value={street}
+                                onChange={(e) => setStreet(e.target.value)}
                             />
                         </div>
                         <div className="mb-4">
@@ -258,21 +295,35 @@ const CreateEvent = ({ isOpen, onClose }) => {
                             <label className="block text-sm font-medium text-gray-700">
                                 Thời gian hiến máu
                             </label>
+                            <div className="relative mt-1"> -</div>
+                        </div>
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700">
+                                Thêm ảnh
+                            </label>
+                            {/* Input */}
                             <input
-                                type="text"
-                                placeholder=""
+                                type="file"
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={address}
-                                onChange={(e) =>
-                                    setOperationTime(e.target.value)
-                                }
+                                value={imageEvent}
+                                onChange={(e) => setImageEvent(e.target.value)}
                             />
+                        </div>
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700">
+                                Giới thiệu
+                            </label>
+                            {/* Input */}
+                            <textarea
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                cols={70}
+                            ></textarea>
                         </div>
                         <div className="flex justify-end">
                             <button
                                 type="button"
                                 className="mr-3 outline-none px-4 py-2 bg-gray-300 text-gray-700 hover:text-gray-200 rounded-lg hover:bg-gray-400 transition duration-150"
-                                onClick={onClose}
+                                onClick={handleClose}
                             >
                                 Hủy
                             </button>

@@ -9,7 +9,6 @@ const {
     sendEmailForgotPassword,
 } = require('../utils/sendEmail');
 const crypto = require('crypto');
-const { log } = require('console');
 
 dotenv.config();
 let refreshTokens = [];
@@ -174,6 +173,7 @@ const authController = {
                 userId: user._id,
                 type: 'forgotPassword',
             });
+
             if (!token) {
                 token = new Token({
                     userId: user._id,
@@ -181,7 +181,6 @@ const authController = {
                     type: 'forgotPassword',
                 });
                 await token.save();
-
                 const url = `${process.env.BASE_URL}users/${user._id}/forgotpass/${token.token}`;
                 await sendEmailForgotPassword(user.email, user.username, url);
             }
@@ -204,9 +203,10 @@ const authController = {
                 process.env.JWT_REFRESH_KEY,
                 async (err, user) => {
                     if (err) {
-                        return res
-                            .status(403)
-                            .json('Refresh token is not valid');
+                        return res.status(403).json({
+                            code: 403,
+                            message: 'RefreshToken is not valid',
+                        });
                     }
 
                     const dbUser = await User.findById(user.id);
@@ -290,6 +290,29 @@ const authController = {
             res.status(200).send({ message: 'Password changed successfully' });
         } catch (error) {
             next(error);
+        }
+    },
+    checkChangePassToken: async (req, res, next) => {
+        const { id, token } = req.params;
+        try {
+            const checkUser = await Token.findOne({
+                userId: id,
+                type: 'forgotPassword',
+            });
+            if (!checkUser) {
+                return res.status(400).json({
+                    message: 'Đường dẫn không hợp lệ hoặc đã hết hạn',
+                });
+            }
+            const checkToken = (await token) === checkUser.token;
+            if (!checkToken) {
+                return res.status(400).json({
+                    message: ' đã hết hạn',
+                });
+            }
+            return res.status(200).json('Token hợp lệ');
+        } catch (error) {
+            res.status(500).json({ message: 'Lỗi server' });
         }
     },
 };

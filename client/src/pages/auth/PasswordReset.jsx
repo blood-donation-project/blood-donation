@@ -12,7 +12,19 @@ const PasswordReset = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setValidURL(true);
+        const checkValidUrl = async () => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:3001/v1/auth/${param.id}/checkChangePassToken/${param.token}`
+                );
+                console.log(response.data);
+                setValidURL(true);
+            } catch (error) {
+                console.log(error.response?.data?.message);
+                setValidURL(false);
+            }
+        };
+        checkValidUrl();
     }, [param]);
 
     const handleSubmit = async (e) => {

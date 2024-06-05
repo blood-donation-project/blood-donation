@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
 import imgBloodDonation from '../../assets/img/hienmau.jpg';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { loginUser } from '../../Redux/apiRequest';
+import { useLoginMutation } from '../../Redux/features/auth/authAPI';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const dispatch = useDispatch();
+    const [login] = useLoginMutation();
     const navigate = useNavigate();
 
     // Example function to handle form submission
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         // Handle the form data here
-        const login = {
-            email: email,
-            password: password,
-        };
-        loginUser(login, dispatch, navigate);
+        try {
+            await login({ email, password }).unwrap();
+            navigate('/');
+        } catch (error) {}
     };
 
     return (
@@ -92,8 +90,11 @@ const Login = () => {
 
                     <div className="flex justify-between mt-4 text-sm text-gray-600 text-center">
                         <Link
-                        to={'/forgotpassword'}
-                        className="cursor-pointer hover:underline">Quên mật khẩu?</Link>
+                            to={'/forgotpassword'}
+                            className="cursor-pointer hover:underline"
+                        >
+                            Quên mật khẩu?
+                        </Link>
                         <p>
                             Bạn chưa có tài khoản?{' '}
                             <Link

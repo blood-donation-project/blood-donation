@@ -5,6 +5,7 @@ import { PiBeerBottle, PiVirusFill } from 'react-icons/pi';
 import { GiWeightScale, GiDrippingTube } from 'react-icons/gi';
 import { BsClipboardHeartFill } from 'react-icons/bs';
 import { RiCalendarScheduleLine } from 'react-icons/ri';
+import { IoArrowBackSharp } from 'react-icons/io5';
 import {
     MdOutlineKeyboardArrowDown,
     MdOutlineKeyboardArrowUp,
@@ -19,7 +20,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
-const Interest = () => {
+const Interest = ({ onSendData }) => {
     const [openNotes, setOpenNote] = useState({});
     const notes = [
         {
@@ -54,9 +55,19 @@ const Interest = () => {
             [index]: !prev[index],
         }));
     };
+
+    const handleSendData = () =>{
+        onSendData(true)
+    }
+
     console.log(openNotes);
     return (
         <>
+            <button 
+            onClick={handleSendData}
+            className="float-left flex items-center outline-none hover:bg-slate-400 justify-center ml-4 mt-2 w-10 h-10 rounded-full bg-gray-300">
+                <IoArrowBackSharp className="w-6 h-6" />
+            </button>
             <section className="mt-3  ssm:pb-14 pb-24">
                 <div className="max-w-5xl h-[450px] flex flex-col lg:flex-row  my-0 mx-auto ">
                     <div className="bg-event py-4 px-16 lg:-mr-[.5%] text-center lg:text-left w-[100%]">
@@ -411,12 +422,15 @@ const Interest = () => {
                             </div>
                             <ul className="text-xl">
                                 <li className="mb-2">
-                                - Nếu phát hiện chảy máu tại chỗ chích: <br />
+                                    - Nếu phát hiện chảy máu tại chỗ chích:{' '}
+                                    <br />
                                 </li>
                                 <li>
-                                Giơ tay cao. <br />
-                                Lấy tay kia ấn nhẹ vào miếng bông hoặc băng dính. <br />
-                                Liên hệ nhân viên y tế để được hỗ trợ khi cần thiết.
+                                    Giơ tay cao. <br />
+                                    Lấy tay kia ấn nhẹ vào miếng bông hoặc băng
+                                    dính. <br />
+                                    Liên hệ nhân viên y tế để được hỗ trợ khi
+                                    cần thiết.
                                 </li>
                             </ul>
                         </div>
