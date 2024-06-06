@@ -210,7 +210,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
                     fullscreen={loading}
                     size="large"
                 >
-                    <div className="bg-white h-[90%] top-6 overflow-y-scroll p-8  shadow-lg w-full max-w-lg relative">
+                    <div className="bg-white h-[90%] top-6 xs:top-32 overflow-auto p-8  shadow-lg w-full max-w-lg relative">
                         <button
                             className="absolute outline-none top-2 right-2 text-gray-400 hover:text-gray-600"
                             onClick={handleClose}

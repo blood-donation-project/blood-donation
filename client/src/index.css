@@ -6,6 +6,59 @@
 body {
     font-family: 'SF Pro Display', sans-serif;
 }
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal CSS */
+.modal-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+}
+
+.modal-bgr {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+
+.modal-show {
+    animation: modalShow 0.2s ease-in;
+}
+
+.modal-hide {
+    animation: modalHide 0.2s ease-out;
+}
+
+/* Scroll bar */
+html *::-webkit-scrollbar {
+    border-radius: 0;
+    width: 8px;
+}
+
+html *::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(22, 24, 35, 0.1);
+}
+
+html *::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+/*  */
+.tyn-media-multiple > *:not(:first-child) {
+    margin-left: -12px;
+}
+
+.word-wrap {
+    word-wrap: break-word;
+}
+
 @keyframes gradientMove {
     0% {
         background-position: 0% 50%;
