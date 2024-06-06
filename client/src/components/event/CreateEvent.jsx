@@ -125,6 +125,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
     // Handle change input file
     const handleImageChange = (event) => {
         const file = event.target.files[0];
+        setImageEvent(file);
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
