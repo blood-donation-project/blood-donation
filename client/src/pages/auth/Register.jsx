@@ -209,53 +209,94 @@ const Register = () => {
                                 className="mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                             />
                         </div>
-                        {/* Date of birthday */}
-                        <div>
-                            <label htmlFor="">Ngày Sinh</label>
-                            <div
-                                aria-required
-                                className="bg-white"
+
+                        <div className=" ">
+                            <label
+                                htmlFor="role"
+                                className="block text-[16px] font-medium text-gray-700"
                             >
-                                <Datepicker
-                                    primaryColor="purple"
-                                    asSingle={true}
-                                    useRange={false}
-                                    value={valueDate}
-                                    maxDate={Date.now()}
-                                    displayFormat="DD/MM/YYYY"
-                                    onChange={(e) => setValueDate(e)}
-                                    readOnly={true}
-                                />
-                            </div>
-                        </div>
-                        {/* Gender */}
-                        <div>
-                            <label htmlFor="">Giới tính</label>
-                            <div className="flex  gap-4 my-4">
-                                <button
-                                    type="button"
-                                    className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
-                                        gender === 'Nam'
-                                            ? 'bg-blue-500 ring-2 ring-blue-300 border border-blue-500'
-                                            : 'bg-gray-300 hover:bg-blue-500'
-                                    }`}
-                                    onClick={() => setGender('Nam')}
+                                Bạn là:
+                            </label>
+                            <select
+                                id="role"
+                                name="role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                            >
+                                <option
+                                    value={'donor'}
+                                    className=""
                                 >
-                                    Nam
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
-                                        gender === 'Nữ'
-                                            ? 'bg-pink-500 ring-2 ring-pink-300 border border-pink-500'
-                                            : 'bg-gray-300 hover:bg-pink-500'
-                                    }`}
-                                    onClick={() => setGender('Nữ')}
+                                    Người hiến máu
+                                </option>
+                                <option
+                                    value={'blood recipient'}
+                                    className="p-2 mt-1"
                                 >
-                                    Nữ
-                                </button>
-                            </div>
+                                    Người cần hiến máu
+                                </option>
+                                <option
+                                    value={'Medical facility'}
+                                    className="p-2"
+                                >
+                                    Cơ sở y tế
+                                </option>
+                            </select>
                         </div>
+
+                        {/* Date of birthday */}
+                        {role !== 'Medical facility' ? (
+                            <div>
+                                <div>
+                                    <label htmlFor="">Ngày Sinh</label>
+                                    <div
+                                        aria-required
+                                        className="bg-white"
+                                    >
+                                        <Datepicker
+                                            primaryColor="purple"
+                                            asSingle={true}
+                                            useRange={false}
+                                            value={valueDate}
+                                            maxDate={Date.now()}
+                                            displayFormat="DD/MM/YYYY"
+                                            onChange={(e) => setValueDate(e)}
+                                            readOnly={true}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label htmlFor="">Giới tính</label>
+                                    <div className="flex  gap-4 my-4">
+                                        <button
+                                            type="button"
+                                            className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
+                                                gender === 'Nam'
+                                                    ? 'bg-blue-500 ring-2 ring-blue-300 border border-blue-500'
+                                                    : 'bg-gray-300 hover:bg-blue-500'
+                                            }`}
+                                            onClick={() => setGender('Nam')}
+                                        >
+                                            Nam
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
+                                                gender === 'Nữ'
+                                                    ? 'bg-pink-500 ring-2 ring-pink-300 border border-pink-500'
+                                                    : 'bg-gray-300 hover:bg-pink-500'
+                                            }`}
+                                            onClick={() => setGender('Nữ')}
+                                        >
+                                            Nữ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            ''
+                        )}
                         {/* Address */}
                         <div>
                             <label htmlFor="">Địa Chỉ</label>
@@ -355,40 +396,6 @@ const Register = () => {
                             />
                         </div>
 
-                        <div className=" ">
-                            <label
-                                htmlFor="role"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
-                                Bạn là:
-                            </label>
-                            <select
-                                id="role"
-                                name="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                            >
-                                <option
-                                    value={'donor'}
-                                    className=""
-                                >
-                                    Người hiến máu
-                                </option>
-                                <option
-                                    value={'blood recipient'}
-                                    className="p-2 mt-1"
-                                >
-                                    Người cần hiến máu
-                                </option>
-                                <option
-                                    value={'Medical facility'}
-                                    className="p-2"
-                                >
-                                    Cơ sở y tế
-                                </option>
-                            </select>
-                        </div>
                         <button
                             type="submit"
                             className="w-full cursor-pointer bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"
