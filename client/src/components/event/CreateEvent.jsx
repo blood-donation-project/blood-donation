@@ -368,6 +368,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
                             <img
                                 src={previewImage}
                                 alt=""
+                                className="max-w-full"
                             />
                         </div>
                         <div className="mb-6">
