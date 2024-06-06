@@ -24,6 +24,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
         dayjs('16:00', 'HH:mm'),
     ]);
     const [imageEvent, setImageEvent] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
     const [street, setStreet] = useState('');
     const [dateValue, setDateValue] = useState({
         startDate: null,
@@ -117,9 +118,23 @@ const CreateEvent = ({ isOpen, onClose }) => {
         setSelectedProvince('');
         setSelectedDistrict('');
         setSelectedWards('');
+        setPreviewImage('');
         onClose();
     };
 
+    // Handle change input file
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setPreviewImage(null);
+        }
+    };
     // Handle Form
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -347,9 +362,11 @@ const CreateEvent = ({ isOpen, onClose }) => {
                                 type="file"
                                 name="image"
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                onChange={(event) =>
-                                    setImageEvent(event.target.files[0])
-                                }
+                                onChange={handleImageChange}
+                            />
+                            <img
+                                src={previewImage}
+                                alt=""
                             />
                         </div>
                         <div className="mb-6">
