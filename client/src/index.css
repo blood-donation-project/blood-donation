@@ -1,12 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
 
 /* :root {
    --text-black-gray:#65676B;
    --primary-color:text-red-500;
    -- background-gray:#ebedf0;
+   -- background-gray-hover:#d2d2d2;
    -- background-hover-red:text-red-600;
+   -- background-blue: #386fd6;
+   -- background-light-blue: #d3e1fb;
+   -- background-blue-hover:#1c5291;
+   --shadow-black : rgba(0,0,0,0.5);
 } */
 
 /* CUSTOM CSS */
@@ -61,4 +67,64 @@ html *::-webkit-scrollbar-track {
 
 .word-wrap {
     word-wrap: break-word;
+}
+
+body {
+    font-family: 'SF Pro Display', sans-serif;
+}
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.gradient-text {
+    background: linear-gradient(to right, #4285f4 11.63%, #9b72cb 40.43%, #d96570 68.07%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 1.5s linear infinite;
+    background-size: 200% 200%;
+}
+
+.gradient-text:hover {
+    text-decoration: underline;
+}
+
+.rdp-light {
+    /* Hoặc lớp CSS tương ứng */
+    background-color: #ffffff !important; /* Màu nền sáng */
+}
+.bg-event {
+    background-image: url('./assets/img/bg_event.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 16px 0 0 16px;
+}
+@media screen and (max-width: 1024px) {
+    .bg-event {
+        border-radius: 16px 16px 0 0;
+        height: 300px !important;
+    }
+}
+
+.bg-standard {
+    background-image: url('./assets/img/bg_standard.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: aqua;
+    height: 310px;
+}
+/* Animation NOTE in Interest-Event */
+.animationNote {
+    transition: max-height 2s ease-out;
+}
+.ckeditor-container {
+    width: 100%;
+}
+
+.ck-editor__editable_inline {
+    min-height: 500px; /* Đặt chiều cao cho vùng soạn thảo của CKEditor */
 }

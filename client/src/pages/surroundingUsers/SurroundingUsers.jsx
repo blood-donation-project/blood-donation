@@ -45,7 +45,7 @@ const SurroundingUsers = () => {
                         {/* Select */}
                         <div className="pt-3 ">
                             {/* Tablet & PC */}
-                            <div className="xs:hidden md:grid pt-2 px-2  grid-cols-4 gap-8  bg-white  py-4">
+                            <div className="xs:hidden md:grid pt-2 px-2  grid-cols-3 gap-8  bg-white  py-4">
                                 <div>
                                     {' '}
                                     <div>
@@ -56,16 +56,7 @@ const SurroundingUsers = () => {
                                         <option>Hồ Chí Minh</option>
                                     </select>
                                 </div>
-                                <div>
-                                    {' '}
-                                    <div>
-                                        <h3>Vai trò</h3>
-                                    </div>
-                                    <select className="bg-[#ebedf0] w-full rounded outline-none cursor-pointer mt-1">
-                                        <option>Người hiến máu</option>
-                                        <option>Người nhận máu</option>
-                                    </select>
-                                </div>
+
                                 <div>
                                     {' '}
                                     <div>
@@ -79,7 +70,7 @@ const SurroundingUsers = () => {
                                 <div className="flex-center">
                                     {' '}
                                     <button
-                                        className="px-3 py-1 bg-red-500 rounded-md hover:bg-red-600 text-white"
+                                        className="px-3 py-1 bg-[#386fd6] rounded-md hover:bg-[#1c5291] text-white"
                                         type="button"
                                     >
                                         Tìm kiếm

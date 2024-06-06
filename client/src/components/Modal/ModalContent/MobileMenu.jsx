@@ -11,17 +11,6 @@ import Avatar from '../../Image/Avatar';
 
 const MobileMenu = ({ hideModal }) => {
     const [searchText, setSearchText] = useState('');
-    const searchInputChange = (e) => {
-        const value = e.target.value;
-        if (value.startsWith(' ')) return;
-        setSearchText(value);
-    };
-
-    const searchInputKeyDown = (e) => {
-        if ((e.key === 'Enter' || e.keyCode === 13) && searchText.length > 0) {
-            window.location.href = `/search/all?q=${searchText}`;
-        }
-    };
 
     return (
         <div className=" z-[9] w-full h-full bg-[#ebedf0] relative">
@@ -57,7 +46,7 @@ const MobileMenu = ({ hideModal }) => {
                     <div className=" bg-white rounded-lg shadow">
                         <Link
                             className="flex flex-col  py-2.5 px-2  justify-center hover:bg-[#ebedf0] pl-2  rounded-md"
-                            to="/"
+                            to="/message"
                         >
                             <div className="text-[20px]">
                                 <BsMessenger />
@@ -70,7 +59,7 @@ const MobileMenu = ({ hideModal }) => {
                     <div className=" bg-white rounded-lg shadow  ">
                         <Link
                             className="flex flex-col justify-center hover:bg-[#ebedf0] py-2.5 px-2 pl-2  rounded-md"
-                            to="/"
+                            to="/friends"
                         >
                             <div className="text-[20px]">
                                 <HiMiniUsers />
@@ -96,7 +85,7 @@ const MobileMenu = ({ hideModal }) => {
                     <div className=" bg-white rounded-lg shadow  ">
                         <Link
                             className="flex flex-col justify-center py-2.5 px-2 hover:bg-[#ebedf0] pl-2  rounded-md"
-                            to="/"
+                            to="/events"
                         >
                             <div className="text-[20px]">
                                 <MdEvent />

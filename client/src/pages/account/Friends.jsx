@@ -5,7 +5,7 @@ import ProfileOverview from '../../components/Profile/ProfileOverview';
 import { IoMdSearch } from 'react-icons/io';
 import UserProfileFriend from '../../components/User/UserFriendProfile';
 
-const FriendsPage = () => {
+const ProfileFriendsPage = () => {
     const [searchText, setSearchText] = useState('');
 
     const onSearchChange = (e) => {
@@ -59,4 +59,4 @@ const FriendsPage = () => {
     );
 };
 
-export default FriendsPage;
+export default ProfileFriendsPage;

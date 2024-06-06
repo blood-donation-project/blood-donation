@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
 import { TiHome } from 'react-icons/ti';
 import { MdEvent, MdLogout } from 'react-icons/md';
@@ -13,10 +13,14 @@ import ModalWrapper from './Modal/ModalWrapper';
 import MobileSearch from './Modal/ModalContent/MobileSearch';
 import logoWeb from '../assets/images/logo-web.jpg';
 import MobileMenu from './Modal/ModalContent/MobileMenu';
+import { useLogoutMutation } from '../Redux/features/auth/authAPI';
+import { useGetUserMutation } from '../Redux/features/user/userAPI';
 
 const NavMenu = () => {
+    const [logOut] = useLogoutMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
+    const navigate = useNavigate();
 
     const [searchText, setSearchText] = useState('');
     const [isShowingSearchResults, setIsShowingSearchResults] = useState(false);
@@ -38,9 +42,9 @@ const NavMenu = () => {
             mainPath: 'surrounding-users',
         },
         {
-            path: '/event',
+            path: '/events',
             icon: <MdEvent className="text-[28px] " />,
-            mainPath: 'event',
+            mainPath: 'events',
         },
         {
             path: '/news',
@@ -48,6 +52,7 @@ const NavMenu = () => {
             mainPath: 'news',
         },
     ];
+
     const handleDivClick = (e) => {
         const dataId = e.currentTarget.getAttribute('data-id');
         setActiveId(dataId);
@@ -87,6 +92,11 @@ const NavMenu = () => {
 
     const toggleVisibilityAccountControl = () => {
         setIsShowingAccountControl(!isShowingAccountControl);
+    };
+
+    const handleLogout = async () => {
+        await logOut().unwrap();
+        navigate('/login');
     };
 
     return (
@@ -195,13 +205,13 @@ const NavMenu = () => {
                             <NavLink
                                 className={
                                     pathname === nav.mainPath
-                                        ? ' flex justify-center items-center border-b-[4px] border-b-red-500  '
+                                        ? ' flex justify-center items-center border-b-[4px] border-b-[#386fd6]  '
                                         : ' flex justify-center items-center hover:bg-[#ebedf0] rounded-[8px] '
                                 }
                                 key={i}
                                 to={nav.path}
                             >
-                                <i className={pathname === nav.mainPath ? 'text-red-500' : 'text-[#65676B]'}>
+                                <i className={pathname === nav.mainPath ? 'text-[#386fd6]' : 'text-[#65676B]'}>
                                     {nav.icon}
                                 </i>
                             </NavLink>
@@ -210,15 +220,20 @@ const NavMenu = () => {
                 </div>
                 {/* Control Pc & Tablet */}
                 <div className=" xs:hidden md:h-[56px]  md:flex items-center  fixed top-0 right-0  pr-3">
+                    {/* Mobile menu icon */}
                     <div
                         className=" md:flex lg:hidden xs:hidden w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2"
                         onClick={showMobileMenu}
                     >
                         <FiMenu />
                     </div>
-                    <div className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 ">
+                    {/* Message */}
+                    <Link
+                        className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 "
+                        to="/message"
+                    >
                         <FaFacebookMessenger className="text-[20px]" />
-                    </div>
+                    </Link>
                     {/* Notifications*/}
                     <Tippy
                         interactive={true}
@@ -232,14 +247,14 @@ const NavMenu = () => {
                                     <h1 className="text-[20px] font-bold">Thông báo</h1>
                                     <div className="flex mt-2">
                                         <div
-                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '1' ? 'font-semibold text-red-500 bg-red-100' : ''}`}
+                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '1' ? 'font-semibold text-[#386fd6] bg-[#d3e1fb]' : ''}`}
                                             data-id="1"
                                             onClick={handleDivClick}
                                         >
                                             <span>Tất cả</span>
                                         </div>
                                         <div
-                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '2' ? 'font-semibold text-red-500 bg-red-100' : ''}`}
+                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '2' ? 'font-semibold text-[#386fd6] bg-[#d3e1fb]' : ''}`}
                                             data-id="2"
                                             onClick={handleDivClick}
                                         >
@@ -269,7 +284,7 @@ const NavMenu = () => {
                         )}
                     >
                         <div
-                            className={`w-10 h-10  cursor-pointer rounded-[50%] bg-[#e4e6eb] flex-center mr-2 transition ${isShowingNotify && 'text-red-500'}`}
+                            className={`w-10 h-10  cursor-pointer rounded-[50%] bg-[#e4e6eb] flex-center mr-2 transition ${isShowingNotify && 'text-[#386fd6]'}`}
                             onClick={toggleVisibilityNotify}
                         >
                             <IoMdNotifications className="text-[20px]" />
@@ -301,7 +316,11 @@ const NavMenu = () => {
                                     </div>
                                     <div className="w-full h-[2px] my-1  bg-[#ccc]"></div>
                                     <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
-                                        <Link className="flex py-1.5 items-center " to={'/'}>
+                                        <Link
+                                            className="flex py-1.5 items-center "
+                                            to={'/logout'}
+                                            onClick={handleLogout}
+                                        >
                                             <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
                                                 <MdLogout className="text-[20px]" />
                                             </div>
@@ -354,7 +373,9 @@ const NavMenu = () => {
                             key={i}
                             to={nav.path}
                         >
-                            <i className={pathname === nav.mainPath ? 'text-red-500' : 'text-[#65676B]'}>{nav.icon}</i>
+                            <i className={pathname === nav.mainPath ? 'text-[#386fd6]' : 'text-[#65676B]'}>
+                                {nav.icon}
+                            </i>
                         </NavLink>
                     );
                 })}

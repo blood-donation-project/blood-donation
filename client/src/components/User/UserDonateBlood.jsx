@@ -44,11 +44,6 @@ const UserDonateBlood = ({ className, data }) => {
                             <span className="ml-1">AB+</span>
                         </div>
                         {/* User donate blood  */}
-
-                        <div className="text-[12px] text-[#65676B] flex items-center">
-                            <LuUserPlus />
-                            <span className="ml-1">Người hiến máu</span>
-                        </div>
                     </div>
                 </div>
             </Tippy>

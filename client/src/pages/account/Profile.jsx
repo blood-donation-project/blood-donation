@@ -76,7 +76,7 @@ const ProfilePage = () => {
                                     <div className="flex justify-between py-1.5">
                                         <h3 className="font-bold">Ảnh</h3>
                                         <Link
-                                            className="text-red-500 hover:bg-[#ebedf0] px-1 rounded-[4px]"
+                                            className="text-[#386fd6] hover:bg-[#ebedf0] px-1 rounded-[4px]"
                                             to={`/user/${123}/photos`}
                                         >
                                             Xem tất cả ảnh
@@ -113,7 +113,7 @@ const ProfilePage = () => {
                                     <div className="flex justify-between py-1.5">
                                         <h3 className="font-bold">Bạn bè</h3>
                                         <Link
-                                            className="text-red-500 hover:bg-[#ebedf0] px-1 rounded-[4px]"
+                                            className="text-[#386fd6] hover:bg-[#ebedf0] px-1 rounded-[4px]"
                                             to={`/user/${123}/friends`}
                                         >
                                             Xem tất cả bạn bè

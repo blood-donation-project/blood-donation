@@ -8,6 +8,7 @@ import UserSuggestLoading from '../../components/LoadingSkeleton/User/UserSugges
 import NavMenu from '../../components/NavMenu';
 import { NavLink } from 'react-router-dom';
 import Post from '../../components/Post/Post';
+import PostLoading from '../../components/LoadingSkeleton/Post/PostLoading';
 
 const SearchPostsPage = () => {
     const [searchParams] = useSearchParams();
@@ -60,12 +61,12 @@ const SearchPostsPage = () => {
                                     {navSidebarLeftLinks.map((nav, i) => {
                                         return (
                                             <NavLink
-                                                className={`flex items-center py-1.5 rounded-[6px] cursor-pointer  ${pathname === nav.mainPath ? 'bg-[#ebedf0]' : 'hover:bg-[#ebedf0]'}`}
+                                                className={`flex items-center py-1.5 rounded-[6px] cursor-pointer  ${pathname === nav.mainPath ? 'bg-[#ebedf0]' : 'hover:bg-[#d2d2d2]'}`}
                                                 to={nav.path}
                                                 key={i}
                                             >
                                                 <div
-                                                    className={`p-2 bg-[#ebedf0] rounded-[50%]  ${pathname === nav.mainPath ? 'text-red-500' : 'text-[#212121]'}  `}
+                                                    className={`p-2  rounded-[50%]  ${pathname === nav.mainPath ? 'text-white bg-[#386fd6]' : 'text-[#212121] bg-[#ebedf0]'}   `}
                                                 >
                                                     {nav.icon}
                                                 </div>
@@ -78,7 +79,7 @@ const SearchPostsPage = () => {
                         </div>
                     </div>
 
-                    {/* Sencondary nav */}
+                    {/*  Sencondary Mobile nav */}
                     <div className="md:hidden w-full  bg-white mt-2 py-1 ">
                         <div className="flex items-center ">
                             {navSidebarLeftLinks.map((nav, i) => {
@@ -104,11 +105,11 @@ const SearchPostsPage = () => {
                         <div className="flex-center md:px-2">
                             {/*Posts*/}
                             <div className="h-fit xs:w-full md:w-full md:max-w-[680px]  mt-3">
+                                <Post />
                                 <div className="mb-2">
                                     {/* Loading demo */}
-                                    <UserSuggestLoading className={'bg-white'} />
+                                    <PostLoading className={'bg-white'} />
                                 </div>
-                                <Post />
                             </div>
                         </div>
                     </div>

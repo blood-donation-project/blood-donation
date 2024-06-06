@@ -8,11 +8,7 @@ import { FaArrowLeftLong } from 'react-icons/fa6';
 
 import Image from '../../Image/Image';
 import Avatar from '../../Image/Avatar';
-import {
-    getDistrictsByProvinceId,
-    getProvinces,
-    getWardsByDistrictId,
-} from '../../../services/province/locationServices';
+import { getDistrictsByProvinceId, getProvinces, getWardsByDistrictId } from '../../../services/locationServices';
 
 const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     const {
@@ -56,13 +52,14 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     useEffect(() => {
         getProvinces()
             .then((res) => {
-                const formatOptions = res.results.map((el) => {
+                const formatOptions = res.map((el) => {
                     return {
                         ...el,
-                        value: el.province_name,
-                        label: el.province_name,
+                        value: el.name,
+                        label: el.name,
                     };
                 });
+
                 setOptions((prev) => {
                     return {
                         ...prev,
@@ -77,13 +74,13 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
 
     useEffect(() => {
         if (selectedValue.province) {
-            getDistrictsByProvinceId(selectedValue.province.province_id)
+            getDistrictsByProvinceId(selectedValue.province.idProvince)
                 .then((res) => {
-                    const formatOptions = res.results.map((el) => {
+                    const formatOptions = res.map((el) => {
                         return {
                             ...el,
-                            value: el.district_name,
-                            label: el.district_name,
+                            value: el.name,
+                            label: el.name,
                         };
                     });
                     setOptions((prev) => {
@@ -101,13 +98,13 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
 
     useEffect(() => {
         if (selectedValue.district) {
-            getWardsByDistrictId(selectedValue.district.district_id)
+            getWardsByDistrictId(selectedValue.district.idDistrict)
                 .then((res) => {
-                    const formatOptions = res.results.map((el) => {
+                    const formatOptions = res.map((el) => {
                         return {
                             ...el,
-                            value: el.ward_name,
-                            label: el.ward_name,
+                            value: el.name,
+                            label: el.name,
                         };
                     });
                     setOptions((prev) => {
@@ -419,7 +416,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                         <div className="w-full ">
                             <div className="w-full flex justify-end px-4 py-5">
                                 <button
-                                    className=" px-7 py-1 border border-[#ccc] rounded bgr-hover-color"
+                                    className=" px-7 py-1 border border-[#ccc] hover:bg-[#d2d2d2] rounded bgr-hover-color"
                                     type="button"
                                     onClick={clearForm}
                                 >
@@ -427,7 +424,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 </button>
                                 {loading ? (
                                     <button
-                                        className="ml-4 w-[117px] py-1  rounded text-white bg-red-500 flex-center"
+                                        className="ml-4 w-[117px] py-1  rounded text-white bg-[#386fd6] flex-center"
                                         type="submit"
                                         disabled
                                         onClick={(e) => e.preventDefault()}
@@ -438,7 +435,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     </button>
                                 ) : (
                                     <button
-                                        className="ml-4 w-[117px] py-1 bg-red-500 rounded text-white"
+                                        className="ml-4 w-[117px] py-1 bg-[#386fd6] hover:bg-[#1c5291] rounded text-white"
                                         type="submit"
                                         disabled={submitError.status}
                                     >

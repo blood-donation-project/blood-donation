@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavMenu from '../components/NavMenu';
 import { Link } from 'react-router-dom';
 import { IoMdImages } from 'react-icons/io';
 import { MdInsertEmoticon } from 'react-icons/md';
+import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
+import { useGetUserMutation } from '../Redux/features/user/userAPI';
 
 import PostLoading from '../components/LoadingSkeleton/Post/PostLoading';
 import Post from '../components/Post/Post';
@@ -22,6 +24,18 @@ const HomePage = () => {
     const hideModal = () => {
         setIsShowingModal(false);
     };
+
+    useAutoRefreshToken('/home/');
+    const [getUser, { data: userData }] = useGetUserMutation();
+    //  GET USER HERE!
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const result = await getUser().unwrap();
+            } catch (error) {}
+        };
+        fetchUser();
+    }, [getUser]);
 
     return (
         <>

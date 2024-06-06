@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import Tippy from '@tippyjs/react/headless';
 import { AiOutlineLike } from 'react-icons/ai';
@@ -20,8 +20,9 @@ const PostDetails = ({ hideModal }) => {
     const onChangeComment = (e) => {
         const value = e.target.value;
         if (value.startsWith(' ')) return;
-        setCommentLength(value.length);
+
         setComment(value);
+        setCommentLength(value.length);
     };
 
     const onKeyDownPostComments = (e) => {
@@ -57,8 +58,8 @@ const PostDetails = ({ hideModal }) => {
                     </div>
                 </div>
 
+                {/* Post detail */}
                 <div className="mt-11 mb-[120px]">
-                    {/* Post detail */}
                     <div className=" border-b boder-b-[#ccc] ">
                         <div className=" bg-white rounded-[8px] shadow mb-3  ">
                             <div className="px-2 py-3 ">
@@ -136,6 +137,8 @@ const PostDetails = ({ hideModal }) => {
                         <PostComment />
                     </div>
                 </div>
+
+                {/* My comment */}
                 <div className=" rounded-b-[10px] h-[120px] text-center border-t flex boder-t-[#ababab] absolute bg-white left-0 right-0 bottom-0 py-2">
                     <div className="w-[10%] flex justify-center">
                         <img
@@ -144,16 +147,17 @@ const PostDetails = ({ hideModal }) => {
                             alt=""
                         />
                     </div>
-                    <div className=" overflow-hidden  h-fit  pr-3 w-[90%] ">
-                        <div className="py-3  bg-[#f0f2f5] rounded-[10px]">
-                            <TextareaAutosize
-                                value={comment}
-                                className="w-full bg-transparent px-3 py-1 outline-none resize-none text-[14px]"
-                                maxRows={5}
-                                placeholder="Bình luận vơi vai trò Hoàng Xuân Việt"
-                                onChange={onChangeComment}
-                                onKeyDown={onKeyDownPostComments}
-                            />
+                    <div className="  h-full  pr-3 w-[90%] ">
+                        <div className="py-3 max-h-full  bg-[#f0f2f5] rounded-[10px]">
+                            <div className="h-[60px] overflow-y-scroll">
+                                <TextareaAutosize
+                                    value={comment}
+                                    className="w-full bg-transparent px-3 py-1 outline-none resize-none text-[14px]"
+                                    placeholder="Bình luận vơi vai trò Hoàng Xuân Việt"
+                                    onChange={onChangeComment}
+                                    onKeyDown={onKeyDownPostComments}
+                                />
+                            </div>
                             <div className="flex items-center justify-between px-3">
                                 <div className="flex ">
                                     <i className=" cursor-pointer text-[#65676B] text-[18px] mr-2">
@@ -165,7 +169,9 @@ const PostDetails = ({ hideModal }) => {
                                 </div>
                                 <div className="flex">
                                     <div className="mr-2">{commentLength}/500</div>
-                                    <div className="flex-center cursor-pointer w-7 h-7 rounded-[50%] hover:bg-[#ddddde] hover:text-red-500">
+                                    <div
+                                        className={`flex-center  w-7 h-7 rounded-[50%]  ${commentLength > 0 && commentLength <= 500 ? 'text-[#386fd6] hover:bg-[#ddddde] cursor-pointer' : 'text-[#65676B] cursor-default'}`}
+                                    >
                                         <BsFillSendFill />
                                     </div>
                                 </div>

@@ -61,15 +61,15 @@ const CreatePost = ({ hideModal }) => {
     };
 
     return (
-        <div className=" z-[9] xs:h-screen xs:w-full md:w-[500px]  md:max-h-[calc(100vh_-_60px)] h-fit  bg-white md:rounded-[10px] md:shadow md:shadow-black  relative">
+        <div className=" z-[9] xs:h-screen xs:w-full md:w-[500px]  md:max-h-[calc(100vh_-_60px)] h-fit  bg-white md:rounded-[10px] md:shadow-md md:shadow-[rgba(0,0,0,0.5)] relative">
             <div className=" w-full h-full rounded-[10px]">
                 {/* Header */}
 
                 {/* Header PC & Tablet */}
-                <div className=" xs:hidden md:block rounded-t-[10px] h-[44px] text-center  border-b boder-b-[#ccc]   bg-white ">
+                <div className=" xs:hidden md:flex justify-center items-center rounded-t-[10px] h-[44px] text-center  border-b boder-b-[#ccc]   bg-white ">
                     <h3 className="font-bold text-[20px]">Tạo bài viết</h3>
                     <div
-                        className="w-8 h-8 bg-[#e1e2e4] rounded-[50%] flex-center cursor-pointer absolute right-2 top-2"
+                        className="w-8 h-8 bg-[#e1e2e4] rounded-[50%] flex-center cursor-pointer absolute right-2 top-2 hover:bg-[#d2d2d2]"
                         onClick={hideModal}
                     >
                         <IoMdClose />
@@ -95,9 +95,9 @@ const CreatePost = ({ hideModal }) => {
                     </div>
                     <div className="ml-2">
                         <p className="text-[14px] font-semibold leading-[14px]">Hoàng Xuân Việt</p>
-                        <div className="bg-[#e4e6eb] px-2 rounded-md mt-1 flex items-center">
+                        <div className="bg-[#e4e6eb] px-1 rounded-md mt-1 flex items-center text-[#65676B]">
                             <TiWorld />
-                            <span className="text-[12px] font-semibold">Bài viết của bạn sẽ đăng công khai</span>
+                            <span className="text-[12px] font-semibold ml-1 ">Bài viết của bạn sẽ đăng công khai</span>
                         </div>
                     </div>
                 </div>
@@ -128,7 +128,8 @@ const CreatePost = ({ hideModal }) => {
                         )}
                     </div>
                 </div>
-                <div className=" xs:absolute xs:bottom-0 xs:left-0 xs:right-0 rounded-b-[10px] h-[120px] text-center border-t boder-t-[#ababab]  bg-white py-2 px-2">
+
+                <div className=" xs:absolute xs:bottom-0 xs:left-0 xs:right-0 rounded-b-[10px] h-[120px] border-t boder-t-[#ababab]  bg-white py-2 px-2">
                     <div className="border border-[#ccc] rounded-[8px] px-2 py-3">
                         <div className="flex items-center">
                             <span className="text-[14px] font-semibold">Thêm vào bài viết của bạn</span>
@@ -155,7 +156,7 @@ const CreatePost = ({ hideModal }) => {
                     </div>
                     <div className="w-full mt-2">
                         <button
-                            className="w-full py-2 rounded-[10px] flex-center bg-red-500 hover:bg-red-600  text-white font-semibold text-[17px]"
+                            className="w-full py-2 rounded-[10px] flex-center bg-[#386fd6] hover:bg-[#1c5291]  text-white font-semibold text-[17px]"
                             type="submit"
                             onClick={handleSubmit}
                         >

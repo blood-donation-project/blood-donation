@@ -63,12 +63,12 @@ const SearchAllPage = () => {
                                     {navSidebarLeftLinks.map((nav, i) => {
                                         return (
                                             <NavLink
-                                                className={`flex items-center py-1.5 rounded-[6px] cursor-pointer  ${pathname === nav.mainPath ? 'bg-[#ebedf0]' : 'hover:bg-[#ebedf0]'}`}
+                                                className={`flex items-center py-1.5 rounded-[6px] cursor-pointer  ${pathname === nav.mainPath ? 'bg-[#ebedf0]' : 'hover:bg-[#d2d2d2]'}`}
                                                 to={nav.path}
                                                 key={i}
                                             >
                                                 <div
-                                                    className={`p-2 bg-[#ebedf0] rounded-[50%]  ${pathname === nav.mainPath ? 'text-red-500' : 'text-[#212121]'}  `}
+                                                    className={`p-2  rounded-[50%]  ${pathname === nav.mainPath ? 'text-white bg-[#386fd6]' : 'text-[#212121] bg-[#ebedf0]'}   `}
                                                 >
                                                     {nav.icon}
                                                 </div>

@@ -134,8 +134,8 @@ const ProfileOverview = () => {
                             <NavLink
                                 className={
                                     pathName === nav.lastPath
-                                        ? ' flex justify-center items-center border-b-[4px] border-b-red-500 py-2.5 px-3 '
-                                        : ' flex justify-center items-center hover:bg-[#ebedf0] rounded-[8px] py-2.5 px-3'
+                                        ? ' flex justify-center items-center border-b-[4px] border-b-[#386fd6] py-2.5 px-3 '
+                                        : ' flex justify-center items-center  hover:bg-[#d2d2d2] rounded-[8px] py-2.5 px-3'
                                 }
                                 key={i}
                                 to={nav.path}
@@ -143,7 +143,7 @@ const ProfileOverview = () => {
                                 <span
                                     className={
                                         pathName === nav.lastPath
-                                            ? 'text-red-500 font-semibold'
+                                            ? 'text-[#386fd6] font-semibold'
                                             : 'text-[#65676B] font-semibold'
                                     }
                                 >

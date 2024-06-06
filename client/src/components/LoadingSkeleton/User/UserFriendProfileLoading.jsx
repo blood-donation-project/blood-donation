@@ -1,13 +1,17 @@
 import Skeleton from 'react-loading-skeleton';
 
-const UserFriendLoading = ({ className }) => {
+const UserFriendProfileLoading = ({ className }) => {
     return (
-        <div className={className}>
-            <div>
-                <Skeleton containerClassName="object-cover w-full h-full aspect-square rounded-[8px]" />
+        <div className="bg-white rounded-[8px] overflow-hidden ">
+            <Skeleton className="h-[210px] !leading-[1.75rem]" />
+
+            <div className="flex flex-col justify-center px-2 py-1">
+                <div>
+                    <Skeleton />
+                </div>
             </div>
         </div>
     );
 };
 
-export default UserFriendLoading;
+export default UserFriendProfileLoading;

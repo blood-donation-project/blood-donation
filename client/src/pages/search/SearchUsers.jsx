@@ -63,12 +63,12 @@ const SearchUsersPage = () => {
                                     {navSidebarLeftLinks.map((nav, i) => {
                                         return (
                                             <NavLink
-                                                className={`flex items-center py-1.5 rounded-[6px] cursor-pointer  ${pathname === nav.mainPath ? 'bg-[#ebedf0]' : 'hover:bg-[#ebedf0]'}`}
+                                                className={`flex items-center py-1.5 rounded-[6px] cursor-pointer  ${pathname === nav.mainPath ? 'bg-[#ebedf0]' : 'hover:bg-[#d2d2d2]'}`}
                                                 to={nav.path}
                                                 key={i}
                                             >
                                                 <div
-                                                    className={`p-2 bg-[#ebedf0] rounded-[50%]  ${pathname === nav.mainPath ? 'text-red-500' : 'text-[#212121]'}  `}
+                                                    className={`p-2  rounded-[50%]  ${pathname === nav.mainPath ? 'text-white bg-[#386fd6]' : 'text-[#212121] bg-[#ebedf0]'}   `}
                                                 >
                                                     {nav.icon}
                                                 </div>
@@ -107,10 +107,7 @@ const SearchUsersPage = () => {
                         <div className="flex-center ">
                             <div className="md:px-2 xs:w-full md:w-full md:max-w-[680px]">
                                 {/*Users*/}
-                                <div className="my-2">
-                                    {/* Loading demo */}
-                                    <UserSuggestLoading className={'bg-white'} />
-                                </div>
+
                                 <div className="h-fit   bg-white mt-3 rounded-lg">
                                     {/*  */}
                                     <div className="flex justify-between p-2 rounded-lg bg-white">
@@ -160,6 +157,10 @@ const SearchUsersPage = () => {
                                         </div>
                                     </div>
                                     {/*  */}
+                                </div>
+                                <div className="my-2">
+                                    {/* Loading demo */}
+                                    <UserSuggestLoading className={'bg-white'} />
                                 </div>
                             </div>
                         </div>

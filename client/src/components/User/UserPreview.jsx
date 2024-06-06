@@ -31,13 +31,13 @@ const UserPreview = ({ data }) => {
                     <Link className="text-[18px] font-bold " to={'/user/123'}>
                         TOP Comments
                     </Link>
-                    <div className="flex items-center text-[#65676B]">
+                    <div className="flex items-center text-[#65676B] text-[15px]">
                         <div className="w-[20px]">
                             <MdBloodtype />
                         </div>
                         <span className="ml-1">AB+</span>
                     </div>
-                    <div className="flex items-center text-[#65676B]">
+                    <div className="flex items-center text-[#65676B] text-[15px]">
                         <div className="w-[20px]">
                             <LuUserPlus />
                         </div>
@@ -45,18 +45,18 @@ const UserPreview = ({ data }) => {
                     </div>
                     <div className="flex items-center">
                         <div className="w-[20px]">
-                            <FaLocationDot className="text-[#65676B]" />
+                            <FaLocationDot className="text-[#65676B] text-[15px]" />
                         </div>
                         <span className="text-[#65676B] ml-2">Đến từ Hà Nội</span>
                     </div>
                 </div>
             </div>
             <div className="flex justify-between mt-2">
-                <button className="flex-center w-[49%] py-1 bg-[#f0f2f5] rounded-[4px] hover:bg-[#d6d8db] ">
+                <button className="flex-center w-[49%] py-1 bg-[#f0f2f5] rounded-[4px] hover:bg-[#d2d2d2] ">
                     <IoMdPersonAdd />
                     <span className="ml-2">Thêm bạn bè</span>
                 </button>
-                <button className="flex-center w-[49%] py-1 bg-red-500 rounded-[4px] text-white hover:bg-red-600">
+                <button className="flex-center w-[49%] py-1 bg-[#386fd6] rounded-[4px] text-white hover:bg-[#1c5291]">
                     <FaFacebookMessenger />
                     <span className="ml-2">Nhắn tin</span>
                 </button>
