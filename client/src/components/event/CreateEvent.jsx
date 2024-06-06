@@ -15,8 +15,10 @@ import {
 } from '../../services/locationServices';
 import { useCreateEventMutation } from '../../Redux/features/events/eventAPI';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 const CreateEvent = ({ isOpen, onClose }) => {
     const [createEvent] = useCreateEventMutation();
+    const navigate = useNavigate();
     const [eventName, setEventName] = useState('');
     const { RangePicker } = TimePicker;
     const [selectedTime, setSelectedTime] = useState([
@@ -177,6 +179,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
                     setImageEvent('');
                     setDescription('');
                     onClose();
+                    navigate(0);
                 })
                 .catch((error) => {
                     console.log(' Error: ', error);
