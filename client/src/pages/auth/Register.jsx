@@ -9,11 +9,12 @@ import {
     getProvinces,
     getWardsByDistrictId,
 } from '../../services/locationServices';
-
+import { Spin } from 'antd';
 import { useRegisterMutation } from '../../Redux/features/auth/authAPI';
 
 const Register = () => {
     const [register] = useRegisterMutation();
+    const [isLoading, setIsLoading] = useState(false);
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -104,28 +105,36 @@ const Register = () => {
     };
     // Submit Form
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        const formatDate = moment(valueDate?.startDate).format('DD/MM/YYYY');
-        const newUser = {
-            name: name,
-            email: email,
-            phoneNumber: phoneNumber,
-            birthday: formatDate,
-            gender: gender,
-            address: {
-                province: selectedProvince.name,
-                district: selectedDistrict.name,
-                ward: selectedWards.name,
-                street: street,
-            },
-            password: password,
-            role: role,
-        };
-        if (password === rePassword) {
-            await register(newUser).unwrap();
-            navigate('/login');
-        } else {
-            toast.error('Mật khẩu nhập lại không khớp');
+        try {
+            event.preventDefault();
+            setIsLoading(true);
+            const formatDate = moment(valueDate?.startDate).format(
+                'DD/MM/YYYY'
+            );
+            const newUser = {
+                name: name,
+                email: email,
+                phoneNumber: phoneNumber,
+                birthday: formatDate,
+                gender: gender,
+                address: {
+                    province: selectedProvince.name,
+                    district: selectedDistrict.name,
+                    ward: selectedWards.name,
+                    street: street,
+                },
+                password: password,
+                role: role,
+            };
+            if (password === rePassword) {
+                await register(newUser).unwrap();
+                setIsLoading(false);
+                navigate('/login');
+            } else {
+                toast.error('Mật khẩu nhập lại không khớp');
+            }
+        } catch (error) {
+            setIsLoading(false);
         }
     };
 
@@ -396,12 +405,17 @@ const Register = () => {
                             />
                         </div>
 
-                        <button
-                            type="submit"
-                            className="w-full cursor-pointer bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"
+                        <Spin
+                            spinning={isLoading}
+                            size="default"
                         >
-                            Đăng Ký
-                        </button>
+                            <button
+                                type="submit"
+                                className="w-full cursor-pointer bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"
+                            >
+                                Đăng Ký
+                            </button>
+                        </Spin>
                     </form>
 
                     <div className="mt-4 text-sm text-gray-600 text-center ">

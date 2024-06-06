@@ -1,9 +1,7 @@
 import React from 'react';
 import schedule from '../../assets/img/schedule.png';
-import { PiUsersThreeLight } from 'react-icons/pi';
 import '../event/style.css';
 import { Link } from 'react-router-dom';
-import ManageEvent from './ManageEvent';
 import ListEvent from './ListEvent';
 const SearchEvent = ({ eventData, userData }) => {
     return (

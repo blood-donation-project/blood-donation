@@ -92,6 +92,13 @@ const NavMenu = ({ userData }) => {
         setIsShowingAccountControl(!isShowingAccountControl);
     };
 
+    const handleLogout = async () => {
+        try {
+            await logOut().unwrap();
+            navigate('/login');
+        } catch (error) {}
+    };
+
     return (
         <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-[999]">
             {/* Nav */}
@@ -340,7 +347,7 @@ const NavMenu = ({ userData }) => {
                                             <div>
                                                 <img
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
+                                                    src={userData?.avatar}
                                                     alt="avatar"
                                                 />
                                             </div>
@@ -354,6 +361,7 @@ const NavMenu = ({ userData }) => {
                                     <div className="w-full h-[2px] my-1  bg-[#ccc]"></div>
                                     <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
                                         <Link
+                                            onClick={handleLogout}
                                             className="flex py-1.5 items-center "
                                             to={'/'}
                                         >
@@ -374,7 +382,7 @@ const NavMenu = ({ userData }) => {
                         <div onClick={toggleVisibilityAccountControl}>
                             <img
                                 className="w-10 h-10 rounded-[50%] cursor-pointer"
-                                src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/361256160_1420481928775878_514483897564070731_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=JnEgyCSJGO0Q7kNvgGkTvWu&_nc_ht=scontent.fhan2-5.fna&oh=00_AYBkfNMc23WtT5ya7AaKej7YpsHqnqvNuxDYHg7CIe0NOQ&oe=664955EB"
+                                src={userData?.avatar}
                                 alt="avatar"
                             />
                         </div>

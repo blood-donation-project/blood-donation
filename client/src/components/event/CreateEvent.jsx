@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import Datepicker from 'react-tailwindcss-datepicker';
 
 import { Spin, TimePicker } from 'antd';
-import moment from 'moment';
 import dayjs from 'dayjs';
 
 import {
