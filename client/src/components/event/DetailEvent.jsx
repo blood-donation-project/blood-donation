@@ -32,7 +32,7 @@ const DetailEvent = () => {
     return (
         <div className="">
             <NavMenu />
-            <div className="mt-[56px] xs:mt-[96px] bg-gray-100">
+            <div className="md:mt-[56px] xs:mt-[96px] bg-gray-100">
                 {/* Header */}
                 <div className="lg:max-w-6xl m-auto bg-white shadow-custom-bottom rounded-b-lg z-50">
                     <div className="relative flex justify-center">

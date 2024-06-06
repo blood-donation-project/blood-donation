@@ -154,7 +154,7 @@ const Event = () => {
         <>
             {/* Menu */}
             <NavMenu userData={userData} />
-            <div className="mt-[56px] xs:mt-[96px]">
+            <div className=" xs:mt-[96px] md:mt-[56px]">
                 <div className="md:flex">
                     {/* Sidebar left */}
                     <div className="hidden lg:block lg:w-[360px] ">
