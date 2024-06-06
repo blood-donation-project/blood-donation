@@ -189,6 +189,9 @@ const CreateEvent = ({ isOpen, onClose }) => {
                 });
         } catch (error) {
             console.log(' Error: ', error);
+            setLoading(false);
+        } finally {
+            setLoading(false);
         }
     };
     if (!isOpen) return null;
@@ -378,6 +381,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
                                 <input
                                     type="file"
                                     name="image"
+                                    required
                                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     onChange={handleImageChange}
                                 />
