@@ -4,7 +4,7 @@ import './style.css';
 import { toast } from 'react-toastify';
 import Datepicker from 'react-tailwindcss-datepicker';
 
-import { TimePicker } from 'antd';
+import { Spin, TimePicker } from 'antd';
 import moment from 'moment';
 import dayjs from 'dayjs';
 
@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 const CreateEvent = ({ isOpen, onClose }) => {
     const [createEvent] = useCreateEventMutation();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [eventName, setEventName] = useState('');
     const { RangePicker } = TimePicker;
     const [selectedTime, setSelectedTime] = useState([
@@ -141,6 +142,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
     // Handle Form
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const formData = new FormData();
         formData.append('image', imageEvent);
         let imageUrl;
@@ -178,6 +180,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
                     setStreet('');
                     setImageEvent('');
                     setDescription('');
+                    setLoading(false);
                     onClose();
                     navigate(0);
                 })
@@ -198,211 +201,224 @@ const CreateEvent = ({ isOpen, onClose }) => {
             unmountOnExit
         >
             <div className="fixed  inset-0 flex overflow-auto items-center justify-center bg-gray-800 bg-opacity-75 z-50 transition-opacity duration-700">
-                <div className="bg-white h-[90%] top-6 overflow-y-scroll p-8  shadow-lg w-full max-w-lg relative">
-                    <button
-                        className="absolute outline-none top-2 right-2 text-gray-400 hover:text-gray-600"
-                        onClick={handleClose}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                <Spin
+                    spinning={loading}
+                    tip={'Loading...'}
+                    fullscreen={loading}
+                    size="large"
+                >
+                    <div className="bg-white h-[90%] top-6 overflow-y-scroll p-8  shadow-lg w-full max-w-lg relative">
+                        <button
+                            className="absolute outline-none top-2 right-2 text-gray-400 hover:text-gray-600"
+                            onClick={handleClose}
                         >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
-                    <h2 className="text-2xl font-semibold mb-6 text-center">
-                        Thêm mới sự kiện
-                    </h2>
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-4">
-                            <label className="block text-[16px] font-medium text-gray-700">
-                                Tên sự kiện
-                            </label>
-                            <input
-                                type="text"
-                                required
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={eventName}
-                                onChange={(e) => setEventName(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <div className="flex flex-col overflow-hidden">
-                                <label htmlFor="">Địa chỉ</label>
-                                <div className="my-2">
-                                    <label
-                                        className="mr-2"
-                                        htmlFor="provinces"
-                                    >
-                                        Tỉnh/ Thành Phố:
-                                    </label>
-                                    <select
-                                        name="provinces"
-                                        id="provices"
-                                        value={selectedProvince.id}
-                                        onChange={handleProvinceChange}
-                                        className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                                    >
-                                        <option value="">
-                                            Chọn Tỉnh/Thành Phố
-                                        </option>
-                                        {provinces?.map((province) => (
-                                            <option
-                                                key={province.idProvince}
-                                                value={province.idProvince}
-                                            >
-                                                {province.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="my-2">
-                                    <label
-                                        htmlFor="district"
-                                        className="mr-9"
-                                    >
-                                        Quận/Huyện:
-                                    </label>
-                                    <select
-                                        name="district"
-                                        id="district"
-                                        value={selectedDistrict.id}
-                                        onChange={handleDistrictChange}
-                                        className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                                    >
-                                        <option value="">
-                                            Chọn Quận/Huyện
-                                        </option>
-                                        {districts?.map((district) => (
-                                            <option
-                                                key={district.idDistrict}
-                                                value={district.idDistrict}
-                                            >
-                                                {district.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="my-2 ">
-                                    <label
-                                        htmlFor="wards"
-                                        className="mr-12"
-                                    >
-                                        Xã/Phường:
-                                    </label>
-                                    <select
-                                        name="wards"
-                                        id="wards"
-                                        onChange={handleWardChange}
-                                        value={selectedWards?.id}
-                                        className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                                    >
-                                        <option value="">Chọn Xã/Phường</option>
-                                        {wards?.map((ward) => (
-                                            <option
-                                                key={ward.idCommune}
-                                                value={ward.idCommune}
-                                            >
-                                                {ward.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                        <h2 className="text-2xl font-semibold mb-6 text-center">
+                            Thêm mới sự kiện
+                        </h2>
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-4">
+                                <label className="block text-[16px] font-medium text-gray-700">
+                                    Tên sự kiện
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    value={eventName}
+                                    onChange={(e) =>
+                                        setEventName(e.target.value)
+                                    }
+                                />
                             </div>
-                            <input
-                                type="text"
-                                required
-                                placeholder="Tên đường, Số nhà"
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={street}
-                                onChange={(e) => setStreet(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Thời gian hoạt động
-                            </label>
-                            <Datepicker
-                                primaryColor="blue"
-                                displayFormat="DD/MM/YYYY"
-                                separator="-"
-                                minDate={new Date()}
-                                asSingle={true}
-                                useRange={false}
-                                value={dateValue}
-                                inputClassName={
-                                    ' outline-none p-2 py-3 w-full border border-gray-300 transition-all duration-300 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-lg'
-                                }
-                                onChange={handleDateValueChange}
-                                readOnly={true}
-                            />
-                        </div>
+                            <div className="mb-4">
+                                <div className="flex flex-col overflow-hidden">
+                                    <label htmlFor="">Địa chỉ</label>
+                                    <div className="my-2">
+                                        <label
+                                            className="mr-2"
+                                            htmlFor="provinces"
+                                        >
+                                            Tỉnh/ Thành Phố:
+                                        </label>
+                                        <select
+                                            name="provinces"
+                                            id="provices"
+                                            value={selectedProvince.id}
+                                            onChange={handleProvinceChange}
+                                            className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                                        >
+                                            <option value="">
+                                                Chọn Tỉnh/Thành Phố
+                                            </option>
+                                            {provinces?.map((province) => (
+                                                <option
+                                                    key={province.idProvince}
+                                                    value={province.idProvince}
+                                                >
+                                                    {province.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="my-2">
+                                        <label
+                                            htmlFor="district"
+                                            className="mr-9"
+                                        >
+                                            Quận/Huyện:
+                                        </label>
+                                        <select
+                                            name="district"
+                                            id="district"
+                                            value={selectedDistrict.id}
+                                            onChange={handleDistrictChange}
+                                            className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                                        >
+                                            <option value="">
+                                                Chọn Quận/Huyện
+                                            </option>
+                                            {districts?.map((district) => (
+                                                <option
+                                                    key={district.idDistrict}
+                                                    value={district.idDistrict}
+                                                >
+                                                    {district.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="my-2 ">
+                                        <label
+                                            htmlFor="wards"
+                                            className="mr-12"
+                                        >
+                                            Xã/Phường:
+                                        </label>
+                                        <select
+                                            name="wards"
+                                            id="wards"
+                                            onChange={handleWardChange}
+                                            value={selectedWards?.id}
+                                            className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                                        >
+                                            <option value="">
+                                                Chọn Xã/Phường
+                                            </option>
+                                            {wards?.map((ward) => (
+                                                <option
+                                                    key={ward.idCommune}
+                                                    value={ward.idCommune}
+                                                >
+                                                    {ward.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="Tên đường, Số nhà"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    value={street}
+                                    onChange={(e) => setStreet(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Thời gian hoạt động
+                                </label>
+                                <Datepicker
+                                    primaryColor="blue"
+                                    displayFormat="DD/MM/YYYY"
+                                    separator="-"
+                                    minDate={new Date()}
+                                    asSingle={true}
+                                    useRange={false}
+                                    value={dateValue}
+                                    inputClassName={
+                                        ' outline-none p-2 py-3 w-full border border-gray-300 transition-all duration-300 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-lg'
+                                    }
+                                    onChange={handleDateValueChange}
+                                    readOnly={true}
+                                />
+                            </div>
 
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Thời gian hiến máu
-                            </label>
-                            <RangePicker
-                                className="mt-1 w-2/3 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={selectedTime}
-                                onChange={onChange}
-                                format={'HH:mm'}
-                            />
-                        </div>
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Thêm ảnh
-                            </label>
-                            {/* Input */}
-                            <input
-                                type="file"
-                                name="image"
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                onChange={handleImageChange}
-                            />
-                            <img
-                                src={previewImage}
-                                alt=""
-                                className="max-w-full"
-                            />
-                        </div>
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Giới thiệu
-                            </label>
-                            {/* Input */}
-                            <textarea
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                cols={70}
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                            ></textarea>
-                        </div>
-                        <div className="flex justify-end">
-                            <button
-                                type="button"
-                                className="mr-3 outline-none px-4 py-2 bg-gray-300 text-gray-700 hover:text-gray-200 rounded-lg hover:bg-gray-400 transition duration-150"
-                                onClick={handleClose}
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-4 outline-none py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-150"
-                            >
-                                Thêm mới
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Thời gian hiến máu
+                                </label>
+                                <RangePicker
+                                    className="mt-1 w-2/3 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    value={selectedTime}
+                                    onChange={onChange}
+                                    format={'HH:mm'}
+                                />
+                            </div>
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Thêm ảnh
+                                </label>
+                                {/* Input */}
+                                <input
+                                    type="file"
+                                    name="image"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    onChange={handleImageChange}
+                                />
+                                <img
+                                    src={previewImage}
+                                    alt=""
+                                    className="max-w-full"
+                                />
+                            </div>
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Giới thiệu
+                                </label>
+                                {/* Input */}
+                                <textarea
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    cols={70}
+                                    value={description}
+                                    onChange={(e) =>
+                                        setDescription(e.target.value)
+                                    }
+                                ></textarea>
+                            </div>
+                            <div className="flex justify-end">
+                                <button
+                                    type="button"
+                                    className="mr-3 outline-none px-4 py-2 bg-gray-300 text-gray-700 hover:text-gray-200 rounded-lg hover:bg-gray-400 transition duration-150"
+                                    onClick={handleClose}
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 outline-none py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-150"
+                                >
+                                    Thêm mới
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </Spin>
             </div>
         </CSSTransition>
     );
