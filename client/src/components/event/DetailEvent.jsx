@@ -1,33 +1,124 @@
 import React, { useEffect, useState } from 'react';
 import NavMenu from '../NavMenu';
 import BlurBackgroundImage from '../BlurBackgroundImage';
-import { IoIosCheckmarkCircleOutline, IoMdMail } from 'react-icons/io';
+import {
+    IoIosCheckmarkCircleOutline,
+    IoMdMail,
+    IoIosArrowUp,
+} from 'react-icons/io';
 import {
     HiOutlinePencilSquare,
     HiUsers,
     HiOutlineXMark,
 } from 'react-icons/hi2';
 import dayjs from 'dayjs';
+import { Popconfirm } from 'antd';
 import { FaUser } from 'react-icons/fa';
-import { FaLocationDot, FaRegMessage } from 'react-icons/fa6';
+import { FaLocationDot, FaRegMessage, FaXmark } from 'react-icons/fa6';
 import { IoTimeSharp } from 'react-icons/io5';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useGetEventByIdEventQuery } from '../../Redux/features/events/eventAPI';
+import {
+    useCancelJoinMutation,
+    useCheckRegisEventMutation,
+    useGetEventByIdEventQuery,
+} from '../../Redux/features/events/eventAPI';
+import JoinEvent from './JoinEvent';
+import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 
 const DetailEvent = () => {
     const [showMore, setShowMore] = useState(false);
     const params = useParams();
     const navigate = useNavigate();
+    const [openConfirmDel, setOpenConfirmDel] = useState(false);
+    const [openConfirmCancel, setOpenConfirmCancel] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [isCheckJoin, setIsCheckJoin] = useState(false);
+    const [getUser, { data: userData }] = useGetUserMutation();
+    const [checkRegisterEvent, { data: checkRegis }] =
+        useCheckRegisEventMutation();
+    const [cancelJoin] = useCancelJoinMutation();
     const { data, error } = useGetEventByIdEventQuery(params.id);
-    console.log(error);
     const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
-    console.log(data);
 
+    console.log(userData?.role);
+    console.log(data);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const result = await getUser().unwrap();
+            } catch (error) {}
+        };
+        fetchUser();
+    }, [getUser]);
+
+    useEffect(() => {
+        const fetchEventByID = async () => {
+            try {
+                const result = await checkRegisterEvent(params.id).unwrap();
+                if (result) {
+                    setIsCheckJoin(true);
+                } else {
+                    setIsCheckJoin(false);
+                }
+
+                console.log(isCheckJoin);
+                console.log(typeof params.id);
+
+                console.log();
+            } catch (error) {}
+        };
+        fetchEventByID();
+    }, [checkRegisterEvent, isCheckJoin, params.id]);
+
+    const openPopup = () => {
+        setIsPopupOpen(true);
+    };
+
+    const closePopup = () => {
+        setIsPopupOpen(false);
+    };
     useEffect(() => {
         if (error?.status === 400) {
             navigate(-1);
         }
     });
+
+    const showPopconfirm = () => {
+        setOpenConfirmCancel(true);
+    };
+    const showPopconfirmDel = () => {
+        setOpenConfirmDel(true);
+    };
+    const handleOkCanCel = async () => {
+        try {
+            setConfirmLoading(true);
+            await cancelJoin(params.id).unwrap();
+            navigate(0);
+            setOpenConfirmDel(false);
+            setConfirmLoading(false);
+        } catch (error) {
+            setOpenConfirmDel(false);
+            setConfirmLoading(false);
+        }
+    };
+    // Del Event
+    const handleOk = () => {
+        setConfirmLoading(true);
+
+        setTimeout(() => {
+            setOpenConfirmDel(false);
+            setConfirmLoading(false);
+        }, 2000);
+    };
+    const handleCancel = () => {
+        setOpenConfirmCancel(false);
+    };
+
+    const handleCancelDel = () => {
+        setOpenConfirmDel(false);
+    };
 
     return (
         <div className="">
@@ -43,7 +134,7 @@ const DetailEvent = () => {
                                 alt=""
                             />
                         </div>
-                        <div className="absolute hidden md:flex z-50 -bottom-5 left-4 w-20 h-20  flex-col rounded-2xl shadow-lg ">
+                        <div className="absolute hidden md:flex z-30 -bottom-5 left-4 w-20 h-20  flex-col rounded-2xl shadow-lg ">
                             <div className="bg-red-500 w-full rounded-t-2xl h-5"></div>
                             <div className="bg-white h-[60px] rounded-b-2xl flex items-center justify-center">
                                 <h1 className="text-4xl font-semibold ">
@@ -65,29 +156,94 @@ const DetailEvent = () => {
                         </div>
                     </div>
                     <div className="flex gap-1 items-center justify-center ssm:justify-end h-16 ">
-                        <div className="p-1 hidden ssm:block">
-                            <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center bg-gray-200">
-                                <IoIosCheckmarkCircleOutline className="w-6 h-6" />
-                                <p>Tham gia</p>
-                            </button>
+                        <div
+                            className={`${
+                                userData?.role === 'Medical facility'
+                                    ? 'hidden'
+                                    : ''
+                            } p-1`}
+                        >
+                            {isCheckJoin ? (
+                                <Popconfirm
+                                    title={'Hủy tham gia sự kiện'}
+                                    description={
+                                        'Bạn có chắc chắn muốn hủy tham gia sự kiện này không?'
+                                    }
+                                    open={openConfirmCancel}
+                                    onConfirm={handleOkCanCel}
+                                    okButtonProps={{ loading: confirmLoading }}
+                                    onCancel={handleCancel}
+                                >
+                                    <button
+                                        onClick={showPopconfirm}
+                                        className="px-3 py-2 rounded-lg outline-none hover:bg-blue-200 
+                                flex items-center text-blue-500 justify-between gap-2 bg-blue-100"
+                                    >
+                                        <IoIosCheckmarkCircleOutline className="w-6 h-6" />
+                                        <p>Đã tham gia</p>
+                                        <IoIosArrowUp />
+                                    </button>
+                                </Popconfirm>
+                            ) : (
+                                <button
+                                    onClick={openPopup}
+                                    className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center bg-gray-200"
+                                >
+                                    <IoIosCheckmarkCircleOutline className="w-6 h-6" />
+                                    <p>Tham gia</p>
+                                </button>
+                            )}
                         </div>
+                        {isPopupOpen && <JoinEvent onClose={closePopup} />}
                         <div className="p-1">
                             <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
                                 <IoMdMail className="w-6 h-6" />
                                 <p>Mời</p>
                             </button>
                         </div>
-                        <div className="p-1 ">
+                        <div
+                            className={`${
+                                userData?.role === 'Medical facility'
+                                    ? ''
+                                    : 'hidden'
+                            } p-1`}
+                        >
                             <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
                                 <HiOutlinePencilSquare className="w-6 h-6" />
                                 <p>Chỉnh sửa</p>
                             </button>
                         </div>
-                        <div className="p-1">
-                            <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
-                                <HiOutlineXMark className="w-6 h-6" />
-                                <p>Hủy sự kiện</p>
-                            </button>
+                        <div
+                            className={`${
+                                userData?.role === 'Medical facility'
+                                    ? ''
+                                    : 'hidden'
+                            } p-1`}
+                        >
+                            <Popconfirm
+                                title={'Hủy sự kiện'}
+                                description={
+                                    'Bạn có chắc chắn muốn hủy sự kiện này không?'
+                                }
+                                open={openConfirmDel}
+                                onConfirm={handleOk}
+                                okButtonProps={{ loading: confirmLoading }}
+                                onCancel={handleCancelDel}
+                                className={`${
+                                    userData?.role === 'Medical facility'
+                                        ? ''
+                                        : 'hidden'
+                                }`}
+                            >
+                                <button
+                                    onClick={showPopconfirmDel}
+                                    className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 
+                                flex items-center justify-center gap-2 bg-gray-200"
+                                >
+                                    <HiOutlineXMark className="w-6 h-6" />
+                                    <p>Hủy sự kiện</p>
+                                </button>
+                            </Popconfirm>
                         </div>
                     </div>
                 </div>

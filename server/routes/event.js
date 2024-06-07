@@ -14,7 +14,29 @@ router.post(
     eventController.getEventById
 );
 
-router.get('/detail-event/:id', middlewareController.verifyToken, eventController.getEventByIdEven)
+router.post(
+    '/join-event/:id',
+    middlewareController.verifyToken,
+    eventController.joinEvent
+);
+
+router.post(
+    '/cancel-join/:id',
+    middlewareController.verifyToken,
+    eventController.cancelEvent
+);
+
+router.post(
+    '/check-register/:id',
+    middlewareController.verifyToken,
+    eventController.checkRegisEvent
+);
+
+router.get(
+    '/detail-event/:id',
+    middlewareController.verifyToken,
+    eventController.getEventByIdEven
+);
 
 router.post('/', middlewareController.verifyToken, eventController.getEvent);
 

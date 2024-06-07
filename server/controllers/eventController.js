@@ -2,6 +2,7 @@ const Event = require('../models/event');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const User = require('../models/user');
+const EventRegistration = require('../models/eventRagistrations');
 
 const eventController = {
     createEvent: async (req, res) => {
@@ -96,51 +97,71 @@ const eventController = {
             res.status(500).json({ error: 'Failed to fetch events' });
         }
     },
+    // By ID user
     getEventById: async (req, res) => {
-        const { eventName, startDate, endDate } = req.body;
-        const authHeader = req.headers.authorization;
-        if (!authHeader) {
-            res.status(401).json({
-                message: 'Authorization header missing',
-            });
-        }
-        token = authHeader.split(' ')[1];
-        const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
-        let query = {};
-
-        if (user.id) {
-            query.userId = user.id;
-        }
-
-        if (eventName) {
-            query.eventName = { $regex: new RegExp(eventName, 'i') }; // Tìm kiếm theo tên sự kiện
-        }
-
-        if (startDate && endDate) {
-            query.donationTime = {
-                $gte: moment(startDate).format('DD/MM/YYYY'),
-                $lte: moment(endDate).format('DD/MM/YYYY'),
-            };
-        } else if (startDate) {
-            query.donationTime = {
-                $gte: moment(startDate).format('DD/MM/YYYY'),
-            };
-        } else if (endDate) {
-            query.donationTime = {
-                $lte: moment(endDate).format('DD/MM/YYYY'),
-            };
-        }
-
         try {
-            const events = await Event.find(query)
-                .populate({
+            const { eventName, startDate, endDate } = req.body;
+            const authHeader = req.headers.authorization;
+
+            if (!authHeader) {
+                return res
+                    .status(401)
+                    .json({ message: 'Authorization header missing' });
+            }
+
+            const token = authHeader.split(' ')[1];
+            const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+
+            const query = {};
+
+            if (eventName) {
+                query.eventName = { $regex: eventName, $options: 'i' };
+            }
+
+            const getEventRegis = await EventRegistration.find({
+                userId: user.id,
+            });
+            console.log(getEventRegis);
+            if (getEventRegis.length > 0 && user.role !== 'Medical facility') {
+                const eventIds = getEventRegis.map((item) =>
+                    item.eventId.toString()
+                ); // Lấy danh sách các eventId
+                query._id = { $in: eventIds };
+            }
+
+            if (startDate && endDate) {
+                query.donationTime = {
+                    $gte: moment(startDate).format('DD/MM/YYYY'),
+                    $lte: moment(endDate).format('DD/MM/YYYY'),
+                };
+            } else if (startDate) {
+                query.donationTime = {
+                    $gte: moment(startDate).format('DD/MM/YYYY'),
+                };
+            } else if (endDate) {
+                query.donationTime = {
+                    $lte: moment(endDate).format('DD/MM/YYYY'),
+                };
+            }
+            console.log(query);
+            const events = await Event.find(query); // Lấy danh sách events trước
+            // Tối ưu populate: chỉ populate khi cần thiết
+            if (user.role === 'Medical facility') {
+                await Event.populate(events, {
                     path: 'userId',
                     select: 'username avatar introduce',
-                })
-                .lean();
+                });
+            } else {
+                await Event.populate(events, {
+                    path: 'userId',
+                    select: 'username avatar introduce',
+                });
+            }
+
             const count = events.length;
             res.json({ count, events });
         } catch (error) {
+            console.error('Error fetching events:', error);
             res.status(500).json({ error: 'Failed to fetch events' });
         }
     },
@@ -152,7 +173,7 @@ const eventController = {
                     select: 'username avatar introduce',
                 })
                 .exec(); // Thực thi populate
-                
+
             if (!event) {
                 return res.status(400).send({ message: 'Invalid link ID' });
             }
@@ -160,11 +181,11 @@ const eventController = {
             // Customize the returned data if needed:
             const customizedEvent = {
                 ...event._doc,
+                userId: event.userId._id,
                 username: event.userId.username,
                 avatar: event.userId.avatar,
                 introduce: event.userId.introduce,
             };
-            delete customizedEvent.userId;
 
             return res.status(200).json(customizedEvent);
         } catch (error) {
@@ -172,6 +193,85 @@ const eventController = {
             console.error(error);
             res.status(500).send({ message: 'Internal server error' });
         }
+    },
+    joinEvent: async (req, res) => {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            res.status(401).json({ message: 'Authorization header missing' });
+        }
+        const token = authHeader.split(' ')[1];
+        const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+        const eventId = req.params.id;
+        console.log(user.id);
+        const evenRegisExist = await EventRegistration.find({
+            userId: user.id,
+            eventId: eventId,
+        });
+        if (evenRegisExist.length > 0) {
+            return res.status(409).json({
+                code: 409,
+                message: 'You have already registered for this event',
+            });
+        }
+        const joinEvent = new EventRegistration({
+            userId: user.id,
+            eventId: eventId,
+        });
+        try {
+            const result = await joinEvent.save();
+            res.status(200).json(result);
+        } catch (error) {
+            console.error('Error saving event registration:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    cancelEvent: async (req, res) => {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            res.status(401).json({ message: 'Authorization header missing' });
+        }
+        const token = authHeader.split(' ')[1];
+        const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+        const eventId = req.params.id;
+        const evenRegisExist = await EventRegistration.find({
+            userId: user.id,
+            eventId: eventId,
+        });
+        console.log(eventId);
+        console.log(user.id);
+        if (evenRegisExist.length > 0) {
+            await EventRegistration.deleteOne({
+                userId: user.id,
+                eventId: eventId,
+            });
+            res.status(200).json({
+                message: 'Event registration deleted successfully',
+            });
+        } else {
+            res.status(404).json({ message: 'Event registration not found' });
+        }
+    },
+    checkRegisEvent: async (req, res) => {
+        try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                res.status(401).json({
+                    message: 'Authorization header missing',
+                });
+            }
+            const token = authHeader.split(' ')[1];
+            const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+            const eventId = req.params.id;
+            const eventRegistered = await EventRegistration.find({
+                userId: user.id,
+                eventId: eventId,
+            });
+            if (eventRegistered.length > 0) {
+                res.status(200).json({ message: 'Registered' });
+            } else {
+                res.status(404).json({ message: 'unregistered' });
+            }
+        } catch (error) {}
     },
 };
 

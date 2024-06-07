@@ -42,6 +42,29 @@ export const eventAPI = createApi({
                 method: 'GET',
             }),
         }),
+        joinEvent: builder.mutation({
+            //Id User
+            query: (eventId) => ({
+                url: `join-event/${eventId}`,
+                method: 'POST',
+                body: eventId,
+            }),
+        }),
+        cancelJoin: builder.mutation({
+            //Id User
+            query: (eventId) => ({
+                url: `cancel-join/${eventId}`,
+                method: 'POST',
+                body: eventId,
+            }),
+        }),
+        checkRegisEvent: builder.mutation({
+            query: (eventId) => ({
+                url: `check-register/${eventId}`,
+                method: 'POST',
+                body: eventId,
+            }),
+        }),
     }),
 });
 
@@ -50,6 +73,9 @@ export const {
     useGetEventMutation,
     useGetEventByIdMutation,
     useGetEventByIdEventQuery,
+    useJoinEventMutation,
+    useCancelJoinMutation,
+    useCheckRegisEventMutation,
 } = eventAPI;
 
 export default eventAPI;

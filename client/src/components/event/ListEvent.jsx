@@ -17,12 +17,11 @@ const ListEvent = ({
     eventId,
     buttonName,
 }) => {
-
     console.log(index);
     return (
         <div
             key={index}
-            className="ssm:w-[90%] w-full flex flex-col ssm:mb-4 mb-6 md:flex-row"
+            className="lg:w-[90%]  w-full flex flex-col ssm:mb-4 mb-6 md:flex-row"
         >
             <div className="w-full md:w-1/4  flex-1 min-h-36 flex justify-center items-center bg-white">
                 <img
@@ -56,7 +55,9 @@ const ListEvent = ({
                     <span className="max-w-fit text-[#7a7a7a] flex-1 text-[16px] whitespace-nowrap">
                         Thời gian hiến máu:
                     </span>
-                    <p className="ml-1">Từ {startTime} - {endTime}</p>
+                    <p className="ml-1">
+                        Từ {startTime} - {endTime}
+                    </p>
                 </div>
             </div>
             <div className="w-full md:w-1/4 p-[1%] bg-[#f4f4f4] md:flex items-center justify-end">

@@ -3,13 +3,13 @@ import { format, parse } from 'date-fns';
 import ListEvent from '../ListEvent';
 import schedule from '../../../assets/img/schedule.png';
 import { useGetEventByIdMutation } from '../../../Redux/features/events/eventAPI';
-const OrganizeEvent = ({ tab }) => {
+const OrganizeEvent = ({ tab, title }) => {
     const [getEventById, { data: eventDataById }] = useGetEventByIdMutation();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await getEventById().unwrap();
+                await getEventById().unwrap();
             } catch (error) {}
         };
         fetchData();
@@ -24,17 +24,28 @@ const OrganizeEvent = ({ tab }) => {
         const todayDate = new Date();
         return donationTimeDate instanceof Date && donationTimeDate < todayDate;
     });
+    const filterData = eventDataById?.events?.filter((item) => {
+        const donationTimeDate = parse(
+            item?.donationTime,
+            'dd/MM/yyyy',
+            new Date()
+        );
+        const todayDate = new Date();
+        return (
+            donationTimeDate instanceof Date && donationTimeDate >= todayDate
+        );
+    });
     return (
         <>
             <>
-                {tab === 'organize' ? (
+                {tab === 'organize' || tab === 'join' ? (
                     eventDataById?.count > 0 ? (
                         <div className="mt-5 max-w-7xl m-auto">
                             <h1 className="mb-4 ml-10 font-semibold text-xl">
-                                Sự kiện đang tổ chức
+                                {title}
                             </h1>
                             <div className="mb-10 w-full">
-                                {eventDataById?.events?.map((item, index) => (
+                                {filterData?.map((item, index) => (
                                     <ListEvent
                                         key={item?._id}
                                         image={item?.image}
@@ -57,7 +68,7 @@ const OrganizeEvent = ({ tab }) => {
                     ) : (
                         <div className="mt-5 max-w-7xl m-auto">
                             <h1 className="mb-4 ml-10 font-semibold text-xl">
-                                Sự kiện bạn tổ chức
+                                {title}
                             </h1>
                             <div className=" flex flex-col justify-center items-center my-20">
                                 <div>

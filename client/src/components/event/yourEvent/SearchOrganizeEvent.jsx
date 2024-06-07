@@ -59,7 +59,7 @@ const SearchOrganizeEvent = ({ eventDataById, title, tab, role }) => {
             ) : (
                 <div className="mt-5 max-w-7xl m-auto">
                     <h1 className="mb-4 ml-10 font-semibold text-xl">
-                        Sự kiện bạn tổ chức
+                        {title}
                     </h1>
                     <div className=" flex flex-col justify-center items-center my-20">
                         <div>
