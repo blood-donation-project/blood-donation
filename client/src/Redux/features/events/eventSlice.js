@@ -96,13 +96,28 @@ const eventSlice = createSlice({
             )
             .addMatcher(
                 eventAPI.endpoints.checkRegisEvent.matchFulfilled,
-                (state, { payload }) => {
-                    state.event = payload.event;
-                    console.log(payload);
+                (state, action) => {
+                    state.event = action.payload.event;
                 }
             )
             .addMatcher(
                 eventAPI.endpoints.checkRegisEvent.matchRejected,
+                (state, action) => {
+                    state.error = action.error.message;
+                }
+            )
+            .addMatcher(
+                eventAPI.endpoints.deleteEvent.matchFulfilled,
+                (state, action) => {
+                    state.event = action.payload?.event;
+                    console.log(action);
+                    if (action.payload?.code === 200) {
+                        toast.success('Hủy sự kiện thành công!');
+                    }
+                }
+            )
+            .addMatcher(
+                eventAPI.endpoints.deleteEvent.matchRejected,
                 (state, action) => {
                     state.error = action.error.message;
                 }

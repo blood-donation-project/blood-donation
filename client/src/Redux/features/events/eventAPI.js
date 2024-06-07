@@ -65,6 +65,13 @@ export const eventAPI = createApi({
                 body: eventId,
             }),
         }),
+        deleteEvent: builder.mutation({
+            query: (eventId) => ({
+                url: `delete-event/${eventId}`,
+                method: 'POST',
+                body: eventId,
+            }),
+        }),
     }),
 });
 
@@ -76,6 +83,7 @@ export const {
     useJoinEventMutation,
     useCancelJoinMutation,
     useCheckRegisEventMutation,
+    useDeleteEventMutation,
 } = eventAPI;
 
 export default eventAPI;

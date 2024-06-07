@@ -180,8 +180,8 @@ const CreateEvent = ({ isOpen, onClose }) => {
                     setImageEvent('');
                     setDescription('');
                     setLoading(false);
-                    onClose();
                     navigate(0);
+                    onClose();
                 })
                 .catch((error) => {
                     console.log(' Error: ', error);

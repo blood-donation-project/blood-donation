@@ -14,12 +14,13 @@ import {
 import dayjs from 'dayjs';
 import { Popconfirm } from 'antd';
 import { FaUser } from 'react-icons/fa';
-import { FaLocationDot, FaRegMessage, FaXmark } from 'react-icons/fa6';
+import { FaLocationDot, FaRegMessage } from 'react-icons/fa6';
 import { IoTimeSharp } from 'react-icons/io5';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
     useCancelJoinMutation,
     useCheckRegisEventMutation,
+    useDeleteEventMutation,
     useGetEventByIdEventQuery,
 } from '../../Redux/features/events/eventAPI';
 import JoinEvent from './JoinEvent';
@@ -36,6 +37,7 @@ const DetailEvent = () => {
     const [getUser, { data: userData }] = useGetUserMutation();
     const [checkRegisterEvent, { data: checkRegis }] =
         useCheckRegisEventMutation();
+    const [deleteEvent] = useDeleteEventMutation();
     const [cancelJoin] = useCancelJoinMutation();
     const { data, error } = useGetEventByIdEventQuery(params.id);
     const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
@@ -104,13 +106,12 @@ const DetailEvent = () => {
         }
     };
     // Del Event
-    const handleOk = () => {
+    const handleOk = async () => {
         setConfirmLoading(true);
-
-        setTimeout(() => {
-            setOpenConfirmDel(false);
-            setConfirmLoading(false);
-        }, 2000);
+        await deleteEvent(params.id).unwrap();
+        navigate(-1);
+        setOpenConfirmDel(false);
+        setConfirmLoading(false);
     };
     const handleCancel = () => {
         setOpenConfirmCancel(false);
@@ -129,7 +130,7 @@ const DetailEvent = () => {
                     <div className="relative flex justify-center">
                         <div className="relative image-container">
                             <BlurBackgroundImage
-                                className="max-w-3xl h-auto"
+                                className="max-w-3xl"
                                 src={data?.image}
                                 alt=""
                             />

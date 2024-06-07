@@ -122,11 +122,15 @@ const eventController = {
                 userId: user.id,
             });
             console.log(getEventRegis);
-            if (getEventRegis.length > 0 && user.role !== 'Medical facility') {
-                const eventIds = getEventRegis.map((item) =>
-                    item.eventId.toString()
-                ); // Lấy danh sách các eventId
-                query._id = { $in: eventIds };
+            if (user.role !== 'Medical facility') {
+                if (getEventRegis.length > 0) {
+                    const eventIds = getEventRegis.map((item) =>
+                        item.eventId.toString()
+                    ); // Lấy danh sách các eventId
+                    query._id = { $in: eventIds };
+                } else {
+                    return res.status(404).json({ message: '' });
+                }
             }
 
             if (startDate && endDate) {
@@ -143,7 +147,7 @@ const eventController = {
                     $lte: moment(endDate).format('DD/MM/YYYY'),
                 };
             }
-            console.log(query);
+            console.log('query: ', query);
             const events = await Event.find(query); // Lấy danh sách events trước
             // Tối ưu populate: chỉ populate khi cần thiết
             if (user.role === 'Medical facility') {
@@ -272,6 +276,22 @@ const eventController = {
                 res.status(404).json({ message: 'unregistered' });
             }
         } catch (error) {}
+    },
+    deleteEvent: async (req, res) => {
+        try {
+            const eventRegis = EventRegistration.find({
+                eventId: req.params.id,
+            });
+            if (eventRegis.length > 0) {
+                EventRegistration.deleteMany({ eventId: req.params.id });
+            }
+            await Event.findByIdAndDelete(req.params.id);
+            return res
+                .status(200)
+                .json({ code: 200, message: 'Delete Successfully' });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
     },
 };
 

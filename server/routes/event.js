@@ -32,6 +32,12 @@ router.post(
     eventController.checkRegisEvent
 );
 
+router.post(
+    '/delete-event/:id',
+    middlewareController.verifyToken,
+    eventController.deleteEvent
+);
+
 router.get(
     '/detail-event/:id',
     middlewareController.verifyToken,
