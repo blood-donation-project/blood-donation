@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             unique: true,
         },
-        birthday: {
+        dateOfBirth: {
             type: String,
             required: true,
         },
@@ -46,6 +46,7 @@ const userSchema = new mongoose.Schema(
             required: true,
             minlength: 6,
         },
+        friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
         role: {
             type: String,
             required: true,
@@ -69,6 +70,10 @@ const userSchema = new mongoose.Schema(
         },
         introduce: {
             type: String,
+        },
+        identification: {
+            type: String,
+            default: '',
         },
     },
     { timestamps: true }
