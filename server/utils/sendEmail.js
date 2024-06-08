@@ -59,14 +59,14 @@ async function sendEmailActivationEmail(email, url) {
         
                     <div class="content">
                         <p>Cảm ơn bạn đã đăng ký tài khoản.</p>
-                        <p>Để kích hoạt tài khoản của bạn, vui lòng nhấp vào nút bên dưới (link sẽ tồn tại trong 5 phút):</p>
+                        <p>Để kích hoạt tài khoản của bạn, vui lòng nhấp vào nút bên dưới:</p>
                         <a href="${url}" class="btn"><span>Kích hoạt tài khoản</span></a>
                         <p>Lưu ý: Liên kết này sẽ hết hạn sau 10 phút </p>
                         <p>Nếu bạn không yêu cầu đăng ký tài khoản này, vui lòng bỏ qua email này.</p>
                     </div>
         
                     <div class="footer">
-                        <p>&copy; 2024 Blood Donation. Bảo lưu mọi quyền.</p> 
+                        <p>&copy; 2024 Blood Donation.</p> 
                     </div>
                 </div>
             </body>
@@ -86,7 +86,7 @@ async function sendEmailForgotPassword(email, name, url) {
         await transporter.sendMail({
             from: process.env.USER,
             to: email,
-            subject: 'Blood Donation - Yêu cầu đặt lại mật khẩu',
+            subject: 'Kích hoạt email',
             html: `
             <!DOCTYPE html>
             <html lang="en">
@@ -96,28 +96,23 @@ async function sendEmailForgotPassword(email, name, url) {
                 <title>Kích hoạt tài khoản</title>
                 <style>
                     /* Reset styles */
-                    body { margin: 0; padding: 0; font-family: sans-serif; line-height: 1.6; color: #000 !important; }
-        
+                    body { margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #000; background-color: #f4f4f4; }
+            
                     /* Email container */
-                    .container { max-width: 600px; margin: 0 auto; padding: 30px; background-color: #f8f8f8; }
-        
+                    .container { max-width: 600px; margin: 0 auto; padding: 30px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+            
                     /* Header */
                     .header { text-align: center; margin-bottom: 30px; }
-                    .header img { max-width: 150px; } /* Nếu bạn có logo, hãy thêm vào đây */
-        
+                    .header img { max-width: 150px; }
+            
                     /* Content */
                     .content h1 { color: #e74c3c; font-size: 24px; margin-bottom: 15px; } /* Màu chủ đạo của Blood Donation */
                     .content p { margin-bottom: 20px; }
-        
+            
                     /* Button */
-
-                    span{
-                        color: #fff;
-                        text-align: center !important;
-                    }
-                    .btn { display: inline-block; padding: 12px 24px; background-color: #0866ff;  text-decoration: none; border-radius: 5px; text-align: center !important; }
+                    .btn { display: inline-block; padding: 12px 24px; background-color: #0866ff; color: #fff; text-decoration: none; border-radius: 5px; text-align: center; }
                     .btn:hover { background-color: #1877f2; } /* Hiệu ứng hover */
-        
+            
                     /* Footer */
                     .footer { text-align: center; font-size: 12px; color: #666; margin-top: 30px; }
                 </style>
@@ -125,24 +120,20 @@ async function sendEmailForgotPassword(email, name, url) {
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>Xin chào ${name},</h1> 
+                        <img src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717815464/news_images/c6ygagdwyczg6qapp9qx.svg" alt="Blood Donation Logo">
+                        <h1>Xin chào! Chào mừng bạn đến với Blood Donation</h1> 
                     </div>
-        
+            
                     <div class="content">
-                        <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản Blood Donation của bạn.</p>
-                        <p>Để đặt lại mật khẩu, vui lòng click vào nút bên dưới:</p>
-                        <a href="${url}" class="btn"><span>Đặt lại mật khẩu</span></a>
+                        <p>Cảm ơn bạn đã đăng ký tài khoản.</p>
+                        <p>Để kích hoạt tài khoản của bạn, vui lòng nhấp vào nút bên dưới (link sẽ tồn tại trong 5 phút):</p>
+                        <a href="${url}" class="btn"><span>Kích hoạt tài khoản</span></a>
                         <p>Lưu ý: Liên kết này sẽ hết hạn sau 10 phút </p>
-                        <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này. Mật khẩu của bạn sẽ vẫn được bảo mật.
-
-                        Nếu bạn cần hỗ trợ thêm, vui lòng liên hệ với chúng tôi qua email vanquang200310@gmail.com hoặc số điện thoại 0985827908. <br>
-                        
-                        Trân trọng. <br> 
-                        Đội ngũ Blood Donation</p>
+                        <p>Nếu bạn không yêu cầu đăng ký tài khoản này, vui lòng bỏ qua email này.</p>
                     </div>
-        
+            
                     <div class="footer">
-                        <p>&copy; 2024 Blood Donation. Bảo lưu mọi quyền.</p> 
+                        <p>&copy; 2024 Blood Donation.</p> 
                     </div>
                 </div>
             </body>
@@ -159,5 +150,5 @@ async function sendEmailForgotPassword(email, name, url) {
 
 module.exports = {
     sendEmailActivationEmail,
-    sendEmailForgotPassword
+    sendEmailForgotPassword,
 };

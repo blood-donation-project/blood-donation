@@ -29,10 +29,6 @@ const authController = {
                 avatar,
             } = req.body;
 
-            if (!name || !email || !password || !birthday || !gender) {
-                return res.status(400).json({ error: 'MISSING_FIELDS' });
-            }
-
             // Check if email exists
             const checkEmail = await User.findOne({ email });
             if (checkEmail) {
