@@ -38,6 +38,12 @@ router.post(
     eventController.deleteEvent
 );
 
+router.put(
+    '/update-event/:id',
+    middlewareController.verifyToken,
+    eventController.updateEvent
+);
+
 router.get(
     '/detail-event/:id',
     middlewareController.verifyToken,

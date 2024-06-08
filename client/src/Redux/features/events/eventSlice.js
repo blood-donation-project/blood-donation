@@ -110,7 +110,6 @@ const eventSlice = createSlice({
                 eventAPI.endpoints.deleteEvent.matchFulfilled,
                 (state, action) => {
                     state.event = action.payload?.event;
-                    console.log(action);
                     if (action.payload?.code === 200) {
                         toast.success('Hủy sự kiện thành công!');
                     }
@@ -120,12 +119,12 @@ const eventSlice = createSlice({
                 eventAPI.endpoints.deleteEvent.matchRejected,
                 (state, action) => {
                     state.error = action.error.message;
-                    console.log(action.payload);
                     if (action.payload?.data?.code === 403) {
                         toast.error('Bạn không có quyền xóa sự kiện này!');
                     }
                 }
-            );
+            )
+            
     },
 });
 

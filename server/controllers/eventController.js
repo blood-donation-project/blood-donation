@@ -304,7 +304,6 @@ const eventController = {
             });
 
             const event = await Event.findById(req.params.id);
-            console.log(event);
             if (user.id === event.userId.toString()) {
                 await Event.findByIdAndDelete(req.params.id);
                 if (eventRegis.length > 0) {
@@ -321,6 +320,49 @@ const eventController = {
                     .json({ code: 403, message: 'You are owner' });
             }
         } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    updateEvent: async (req, res) => {
+        try {
+            const eventId = req.params.id;
+            const eventData = req.body.eventData; // Lấy toàn bộ eventData
+
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                return res
+                    .status(401)
+                    .json({ message: 'Authorization header missing' });
+            }
+            console.log(req.body);
+            console.log(eventId);
+            const token = authHeader.split(' ')[1];
+            const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+
+            const event = await Event.findById(eventId);
+            if (!event) {
+                return res.status(404).json({ message: 'Event not found' });
+            }
+
+            if (user.id !== event.userId.toString()) {
+                return res.status(403).json({
+                    message: 'You are not authorized to update this event',
+                });
+            }
+
+            const updatedEvent = await Event.findByIdAndUpdate(
+                eventId,
+                eventData, // Sử dụng eventData để cập nhật
+                { new: true }
+            );
+
+            res.status(200).json({
+                code: 200,
+                message: 'Update Successfully',
+                data: updatedEvent,
+            });
+        } catch (error) {
+            console.error(error);
             res.status(500).json({ message: 'Internal server error' });
         }
     },

@@ -25,6 +25,7 @@ import {
 } from '../../Redux/features/events/eventAPI';
 import JoinEvent from './JoinEvent';
 import { useGetUserMutation } from '../../Redux/features/user/userAPI';
+import UpdateEvent from './UpdateEvent';
 
 const DetailEvent = () => {
     const [showMore, setShowMore] = useState(false);
@@ -41,10 +42,8 @@ const DetailEvent = () => {
     const [cancelJoin] = useCancelJoinMutation();
     const { data, error } = useGetEventByIdEventQuery(params.id);
     const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
-
-    console.log(userData);
-    console.log(data);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isUpdateOpen, setIsUpdateOpen] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -74,6 +73,7 @@ const DetailEvent = () => {
         fetchEventByID();
     }, [checkRegisterEvent, isCheckJoin, params.id]);
 
+    // Open Join
     const openPopup = () => {
         setIsPopupOpen(true);
     };
@@ -81,6 +81,16 @@ const DetailEvent = () => {
     const closePopup = () => {
         setIsPopupOpen(false);
     };
+
+    // Open Update
+    const openPopupUpdate = () => {
+        setIsUpdateOpen(true);
+    };
+
+    const closePopupUpdate = () => {
+        setIsUpdateOpen(false);
+    };
+
     useEffect(() => {
         if (error?.status === 400) {
             navigate(-1);
@@ -215,6 +225,7 @@ const DetailEvent = () => {
                             } p-1`}
                         >
                             <button
+                                onClick={openPopupUpdate}
                                 className={`${
                                     userData?._id === data?.userId
                                         ? ''
@@ -225,6 +236,13 @@ const DetailEvent = () => {
                                 <p>Chỉnh sửa</p>
                             </button>
                         </div>
+                        {isUpdateOpen && (
+                            <UpdateEvent
+                                eventData={data}
+                                isOpen={isUpdateOpen}
+                                onClose={closePopupUpdate}
+                            />
+                        )}
                         <div
                             className={`${
                                 userData?.role === 'Medical facility'

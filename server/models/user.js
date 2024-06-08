@@ -56,6 +56,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    backgroundImage: {
+        type: String,
+    },
     introduce: {
         type: String,
     },
