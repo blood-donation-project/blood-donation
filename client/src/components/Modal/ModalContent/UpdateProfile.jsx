@@ -12,7 +12,7 @@ import {
     getDistrictsByProvinceId,
     getProvinces,
     getWardsByDistrictId,
-} from '../../../services/province/locationServices';
+} from '../../../services/locationServices';
 
 const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     const {
@@ -197,7 +197,9 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                         </i>
                     </span>
                     <div className="flex items-center md:justify-center md:w-full">
-                        <h3 className="text-[18px] font-semibold">Chỉnh sửa trang cá nhân</h3>
+                        <h3 className="text-[18px] font-semibold">
+                            Chỉnh sửa trang cá nhân
+                        </h3>
                     </div>
                     <span
                         className="w-[36px] xs:hidden md:flex text-[18px] h-[36px] flex-center absolute right-4 top-2 rounded-[50%] bg-[#f1f5f9] cursor-pointer"
@@ -209,13 +211,21 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                     </span>
                 </div>
                 <div className="px-4 h-[calc(100%_-_50px)] overflow-y-scroll">
-                    <form className="w-full mx-[auto]" onSubmit={handleSubmit(handleSubmitForm)}>
+                    <form
+                        className="w-full mx-[auto]"
+                        onSubmit={handleSubmit(handleSubmitForm)}
+                    >
                         {/* Avatar */}
                         <div className="w-full mb-3 py-2">
-                            <h3 className="text-[18px] font-semibold">Ảnh đại diện</h3>
+                            <h3 className="text-[18px] font-semibold">
+                                Ảnh đại diện
+                            </h3>
                             <div className="py-[10px]  flex-center">
                                 <div className="relative">
-                                    <label htmlFor="avatar" className=" cursor-pointer contents">
+                                    <label
+                                        htmlFor="avatar"
+                                        className=" cursor-pointer contents"
+                                    >
                                         <Avatar
                                             className="w-[120px] h-[120px] rounded-[50%] object-cover"
                                             src={avatarURL}
@@ -242,11 +252,20 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
 
                         {/* Background image */}
                         <div className="w-full mb-3 py-2">
-                            <h3 className="text-[18px] font-semibold">Ảnh bìa</h3>
+                            <h3 className="text-[18px] font-semibold">
+                                Ảnh bìa
+                            </h3>
                             <div className="py-[10px]  flex-center">
                                 <div className="relative w-[70%] h-[150px] ">
-                                    <label htmlFor="backgroundImage" className=" cursor-pointer contents">
-                                        <Image className="w-full h-full object-cover" src={backgroundImageURL} alt="" />
+                                    <label
+                                        htmlFor="backgroundImage"
+                                        className=" cursor-pointer contents"
+                                    >
+                                        <Image
+                                            className="w-full h-full object-cover"
+                                            src={backgroundImageURL}
+                                            alt=""
+                                        />
                                     </label>
                                     <input
                                         id="backgroundImage"
@@ -272,32 +291,46 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 <label htmlFor="">Họ </label>
                                 <input
                                     className={`block outline-none border-b ${
-                                        errors.firstName ? 'border-bottom-error' : 'border-[#ccc]'
+                                        errors.firstName
+                                            ? 'border-bottom-error'
+                                            : 'border-[#ccc]'
                                     }  w-full py-[2px] mt-[2px]`}
                                     type="text"
-                                    {...register('firstName', { required: true, minLength: 1 })}
+                                    {...register('firstName', {
+                                        required: true,
+                                        minLength: 1,
+                                    })}
                                     defaultValue={profileData.firstName}
                                     onInput={clearSubmitError}
                                     placeholder="Nhập họ"
                                 />
                                 {errors.firstName && (
-                                    <span className="text-red-500 text-[14px]">Họ không được để trống</span>
+                                    <span className="text-red-500 text-[14px]">
+                                        Họ không được để trống
+                                    </span>
                                 )}
                             </div>
                             <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <label htmlFor="">Tên </label>
                                 <input
                                     className={`block outline-none border-b ${
-                                        errors.lastName ? 'border-bottom-error' : 'border-[#ccc]'
+                                        errors.lastName
+                                            ? 'border-bottom-error'
+                                            : 'border-[#ccc]'
                                     }  w-full py-[2px] mt-[2px]`}
                                     type="text"
-                                    {...register('lastName', { required: true, minLength: 1 })}
+                                    {...register('lastName', {
+                                        required: true,
+                                        minLength: 1,
+                                    })}
                                     onInput={clearSubmitError}
                                     defaultValue={profileData.lastName}
                                     placeholder="Nhập tên"
                                 />
                                 {errors.lastName && (
-                                    <span className="text-red-500 text-[14px]">Tên không được để trống</span>
+                                    <span className="text-red-500 text-[14px]">
+                                        Tên không được để trống
+                                    </span>
                                 )}
                             </div>
                         </div>
@@ -308,16 +341,24 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 <label htmlFor="">Số điện thoại </label>
                                 <input
                                     className={`block outline-none border-b ${
-                                        errors.phone ? 'border-bottom-error' : 'border-[#ccc]'
+                                        errors.phone
+                                            ? 'border-bottom-error'
+                                            : 'border-[#ccc]'
                                     }  w-full py-[2px] mt-[2px]`}
                                     type="text"
-                                    {...register('phone', { required: true, pattern: /^(0|\+84)[3|5|7|8|9][0-9]{8}$/ })}
+                                    {...register('phone', {
+                                        required: true,
+                                        pattern:
+                                            /^(0|\+84)[3|5|7|8|9][0-9]{8}$/,
+                                    })}
                                     defaultValue={profileData.phone}
                                     onInput={clearSubmitError}
                                     placeholder="Nhập số điện thoại"
                                 />
                                 {errors.phone && (
-                                    <span className="text-red-500 text-[14px]">Số điện thoại không hợp lệ !</span>
+                                    <span className="text-red-500 text-[14px]">
+                                        Số điện thoại không hợp lệ !
+                                    </span>
                                 )}
                             </div>
                             <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
@@ -326,15 +367,24 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <div className="w-full border-b border-b-[#ccc] ">
                                         <input
                                             className={
-                                                'w-full outline-none py-1 ' + `${errors.address ? 'border-error' : ''}`
+                                                'w-full outline-none py-1 ' +
+                                                `${
+                                                    errors.address
+                                                        ? 'border-error'
+                                                        : ''
+                                                }`
                                             }
                                             type="text"
-                                            {...register('address', { required: true })}
+                                            {...register('address', {
+                                                required: true,
+                                            })}
                                             placeholder="Số nhà, đường, v.v*"
                                         />
                                     </div>
                                     {errors.address && (
-                                        <span className="text-red-500 text-[14px]">Không được để trống</span>
+                                        <span className="text-red-500 text-[14px]">
+                                            Không được để trống
+                                        </span>
                                     )}
                                 </div>
                             </div>
@@ -350,7 +400,9 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                         onChange={changeProvince}
                                         options={options.province}
                                         placeholder="Chọn tỉnh thành"
-                                        isDisabled={options.province ? false : true}
+                                        isDisabled={
+                                            options.province ? false : true
+                                        }
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -360,7 +412,9 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                         onChange={changeDistrict}
                                         options={options.district}
                                         placeholder="Chọn quận huyện"
-                                        isDisabled={options.district ? false : true}
+                                        isDisabled={
+                                            options.district ? false : true
+                                        }
                                     />
                                 </div>
                                 <div className="mb-3">
@@ -370,7 +424,9 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                         onChange={changeWards}
                                         options={options.wards}
                                         placeholder="Chọn xã phường"
-                                        isDisabled={options.wards ? false : true}
+                                        isDisabled={
+                                            options.wards ? false : true
+                                        }
                                     />
                                 </div>
                             </div>
@@ -386,7 +442,10 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     defaultValue={profileData.role}
                                     onInput={clearSubmitError}
                                 >
-                                    <option defaultChecked={true} value="R2">
+                                    <option
+                                        defaultChecked={true}
+                                        value="R2"
+                                    >
                                         Người hiến máu
                                     </option>
                                     <option value="R3">Người nhận máu</option>
@@ -401,7 +460,10 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     onInput={clearSubmitError}
                                 >
                                     <option value="Null">Không xác định</option>
-                                    <option defaultChecked={true} value="A+">
+                                    <option
+                                        defaultChecked={true}
+                                        value="A+"
+                                    >
                                         A+
                                     </option>
                                     <option value="A-">A-</option>
@@ -415,7 +477,11 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                             </div>
                         </div>
 
-                        {submitError.status && <span className="text-red-color">{submitError.message}</span>}
+                        {submitError.status && (
+                            <span className="text-red-color">
+                                {submitError.message}
+                            </span>
+                        )}
                         <div className="w-full ">
                             <div className="w-full flex justify-end px-4 py-5">
                                 <button

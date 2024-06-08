@@ -11,15 +11,16 @@ import { FiMenu } from 'react-icons/fi';
 
 import ModalWrapper from './Modal/ModalWrapper';
 import MobileSearch from './Modal/ModalContent/MobileSearch';
-import logoWeb from '../assets/img/logo-web.jpg';
 import MobileMenu from './Modal/ModalContent/MobileMenu';
 import { useLogoutMutation } from '../Redux/features/auth/authAPI';
+import { useGetUserMutation } from '../Redux/features/user/userAPI';
 
-const NavMenu = ({ userData }) => {
+const NavMenu = () => {
+    const [logOut] = useLogoutMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
-    const [logOut] = useLogoutMutation();
     const navigate = useNavigate();
+
     const [searchText, setSearchText] = useState('');
     const [isShowingSearchResults, setIsShowingSearchResults] = useState(false);
     const [isShowingNotify, setIsShowingNotify] = useState(false);
@@ -51,6 +52,7 @@ const NavMenu = ({ userData }) => {
             mainPath: 'news',
         },
     ];
+
     const handleDivClick = (e) => {
         const dataId = e.currentTarget.getAttribute('data-id');
         setActiveId(dataId);
@@ -93,14 +95,12 @@ const NavMenu = ({ userData }) => {
     };
 
     const handleLogout = async () => {
-        try {
-            await logOut().unwrap();
-            navigate('/login');
-        } catch (error) {}
+        await logOut().unwrap();
+        navigate('/login');
     };
 
     return (
-        <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-40">
+        <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-10">
             {/* Nav */}
             <div className=" xs:h-[46px] items-center md:h-full md:px-[200px] lg:px-[300px]   flex xs:justify-between md:justify-center xs:border-b xs:border-b-[#ccc]">
                 {/* Logo & Search */}
@@ -108,7 +108,7 @@ const NavMenu = ({ userData }) => {
                     <Link to={'/'}>
                         <img
                             className="w-10 h-10 rounded-[50%]"
-                            src={logoWeb}
+                            src={''}
                             alt="logo web"
                         />
                     </Link>
@@ -220,7 +220,7 @@ const NavMenu = ({ userData }) => {
                             <NavLink
                                 className={
                                     pathname === nav.mainPath
-                                        ? ' flex justify-center items-center border-b-[4px] border-b-red-500  '
+                                        ? ' flex justify-center items-center border-b-[4px] border-b-[#386fd6]  '
                                         : ' flex justify-center items-center hover:bg-[#ebedf0] rounded-[8px] '
                                 }
                                 key={i}
@@ -229,7 +229,7 @@ const NavMenu = ({ userData }) => {
                                 <i
                                     className={
                                         pathname === nav.mainPath
-                                            ? 'text-red-500'
+                                            ? 'text-[#386fd6]'
                                             : 'text-[#65676B]'
                                     }
                                 >
@@ -241,15 +241,20 @@ const NavMenu = ({ userData }) => {
                 </div>
                 {/* Control Pc & Tablet */}
                 <div className=" xs:hidden md:h-[56px]  md:flex items-center  fixed top-0 right-0  pr-3">
+                    {/* Mobile menu icon */}
                     <div
                         className=" md:flex lg:hidden xs:hidden w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2"
                         onClick={showMobileMenu}
                     >
                         <FiMenu />
                     </div>
-                    <div className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 ">
+                    {/* Message */}
+                    <Link
+                        className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 "
+                        to="/message"
+                    >
                         <FaFacebookMessenger className="text-[20px]" />
-                    </div>
+                    </Link>
                     {/* Notifications*/}
                     <Tippy
                         interactive={true}
@@ -271,7 +276,7 @@ const NavMenu = ({ userData }) => {
                                         <div
                                             className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${
                                                 activeId === '1'
-                                                    ? 'font-semibold text-red-500 bg-red-100'
+                                                    ? 'font-semibold text-[#386fd6] bg-[#d3e1fb]'
                                                     : ''
                                             }`}
                                             data-id="1"
@@ -282,7 +287,7 @@ const NavMenu = ({ userData }) => {
                                         <div
                                             className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${
                                                 activeId === '2'
-                                                    ? 'font-semibold text-red-500 bg-red-100'
+                                                    ? 'font-semibold text-[#386fd6] bg-[#d3e1fb]'
                                                     : ''
                                             }`}
                                             data-id="2"
@@ -318,7 +323,7 @@ const NavMenu = ({ userData }) => {
                     >
                         <div
                             className={`w-10 h-10  cursor-pointer rounded-[50%] bg-[#e4e6eb] flex-center mr-2 transition ${
-                                isShowingNotify && 'text-red-500'
+                                isShowingNotify && 'text-[#386fd6]'
                             }`}
                             onClick={toggleVisibilityNotify}
                         >
@@ -347,13 +352,13 @@ const NavMenu = ({ userData }) => {
                                             <div>
                                                 <img
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src={userData?.avatar}
+                                                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
                                                     alt="avatar"
                                                 />
                                             </div>
                                             <div className="ml-2">
                                                 <p className="text-[16px] font-semibold ">
-                                                    {userData?.username}
+                                                    Hoàng Xuân Việt
                                                 </p>
                                             </div>
                                         </Link>
@@ -361,9 +366,9 @@ const NavMenu = ({ userData }) => {
                                     <div className="w-full h-[2px] my-1  bg-[#ccc]"></div>
                                     <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
                                         <Link
-                                            onClick={handleLogout}
                                             className="flex py-1.5 items-center "
-                                            to={'/'}
+                                            to={'/logout'}
+                                            onClick={handleLogout}
                                         >
                                             <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
                                                 <MdLogout className="text-[20px]" />
@@ -382,7 +387,7 @@ const NavMenu = ({ userData }) => {
                         <div onClick={toggleVisibilityAccountControl}>
                             <img
                                 className="w-10 h-10 rounded-[50%] cursor-pointer"
-                                src={userData?.avatar}
+                                src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/361256160_1420481928775878_514483897564070731_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=JnEgyCSJGO0Q7kNvgGkTvWu&_nc_ht=scontent.fhan2-5.fna&oh=00_AYBkfNMc23WtT5ya7AaKej7YpsHqnqvNuxDYHg7CIe0NOQ&oe=664955EB"
                                 alt="avatar"
                             />
                         </div>
@@ -422,7 +427,7 @@ const NavMenu = ({ userData }) => {
                             <i
                                 className={
                                     pathname === nav.mainPath
-                                        ? 'text-red-500'
+                                        ? 'text-[#386fd6]'
                                         : 'text-[#65676B]'
                                 }
                             >
