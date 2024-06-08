@@ -133,6 +133,16 @@ const eventController = {
                 }
             }
 
+            const getUserIdEvent = await Event.find({ userId: user.id });
+            if (user.role === 'Medical facility') {
+                if (getUserIdEvent.length > 0) {
+                    query.userId = user.id;
+                } else {
+                    return res.status(404).json({ message: '' });
+                }
+            }
+            console.log(getUserIdEvent);
+
             if (startDate && endDate) {
                 query.donationTime = {
                     $gte: moment(startDate).format('DD/MM/YYYY'),
@@ -147,8 +157,10 @@ const eventController = {
                     $lte: moment(endDate).format('DD/MM/YYYY'),
                 };
             }
+            console.log('Query: ', query);
             console.log('query: ', query);
             const events = await Event.find(query); // Lấy danh sách events trước
+
             // Tối ưu populate: chỉ populate khi cần thiết
             if (user.role === 'Medical facility') {
                 await Event.populate(events, {
@@ -279,16 +291,35 @@ const eventController = {
     },
     deleteEvent: async (req, res) => {
         try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                res.status(401).json({
+                    message: 'Authorization header missing',
+                });
+            }
+            const token = authHeader.split(' ')[1];
+            const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
             const eventRegis = EventRegistration.find({
                 eventId: req.params.id,
             });
-            if (eventRegis.length > 0) {
-                EventRegistration.deleteMany({ eventId: req.params.id });
+
+            const event = await Event.findById(req.params.id);
+            console.log(event);
+            if (user.id === event.userId.toString()) {
+                await Event.findByIdAndDelete(req.params.id);
+                if (eventRegis.length > 0) {
+                    await EventRegistration.deleteMany({
+                        eventId: req.params.id,
+                    });
+                }
+                return res
+                    .status(200)
+                    .json({ code: 200, message: 'Delete Successfully' });
+            } else {
+                return res
+                    .status(403)
+                    .json({ code: 403, message: 'You are owner' });
             }
-            await Event.findByIdAndDelete(req.params.id);
-            return res
-                .status(200)
-                .json({ code: 200, message: 'Delete Successfully' });
         } catch (error) {
             res.status(500).json({ message: 'Internal server error' });
         }

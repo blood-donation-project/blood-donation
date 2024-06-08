@@ -107,11 +107,16 @@ const DetailEvent = () => {
     };
     // Del Event
     const handleOk = async () => {
-        setConfirmLoading(true);
-        await deleteEvent(params.id).unwrap();
-        navigate(-1);
-        setOpenConfirmDel(false);
-        setConfirmLoading(false);
+        try {
+            setConfirmLoading(true);
+            await deleteEvent(params.id).unwrap();
+            navigate(-1);
+            setOpenConfirmDel(false);
+            setConfirmLoading(false);
+        } catch (error) {
+            setOpenConfirmDel(false);
+            setConfirmLoading(false);
+        }
     };
     const handleCancel = () => {
         setOpenConfirmCancel(false);
