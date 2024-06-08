@@ -42,7 +42,7 @@ const DetailEvent = () => {
     const { data, error } = useGetEventByIdEventQuery(params.id);
     const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
 
-    console.log(userData?.role);
+    console.log(userData);
     console.log(data);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -214,7 +214,13 @@ const DetailEvent = () => {
                                     : 'hidden'
                             } p-1`}
                         >
-                            <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
+                            <button
+                                className={`${
+                                    userData?._id === data?.userId
+                                        ? ''
+                                        : 'hidden'
+                                } px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200`}
+                            >
                                 <HiOutlinePencilSquare className="w-6 h-6" />
                                 <p>Chỉnh sửa</p>
                             </button>
@@ -236,7 +242,7 @@ const DetailEvent = () => {
                                 okButtonProps={{ loading: confirmLoading }}
                                 onCancel={handleCancelDel}
                                 className={`${
-                                    userData?.role === 'Medical facility'
+                                    userData?._id === data?.userId
                                         ? ''
                                         : 'hidden'
                                 }`}
