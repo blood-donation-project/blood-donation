@@ -141,7 +141,6 @@ const eventController = {
                     return res.status(404).json({ message: '' });
                 }
             }
-            console.log(getUserIdEvent);
 
             if (startDate && endDate) {
                 query.donationTime = {
@@ -157,8 +156,6 @@ const eventController = {
                     $lte: moment(endDate).format('DD/MM/YYYY'),
                 };
             }
-            console.log('Query: ', query);
-            console.log('query: ', query);
             const events = await Event.find(query); // Lấy danh sách events trước
 
             // Tối ưu populate: chỉ populate khi cần thiết
@@ -189,7 +186,6 @@ const eventController = {
                     select: 'username avatar introduce',
                 })
                 .exec(); // Thực thi populate
-            console.log(event);
             if (!event) {
                 return res.status(400).send({ message: 'Invalid link ID' });
             }
@@ -221,7 +217,6 @@ const eventController = {
         const token = authHeader.split(' ')[1];
         const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
         const eventId = req.params.id;
-        console.log(user.id);
         const evenRegisExist = await EventRegistration.find({
             userId: user.id,
             eventId: eventId,
@@ -256,8 +251,6 @@ const eventController = {
             userId: user.id,
             eventId: eventId,
         });
-        console.log(eventId);
-        console.log(user.id);
         if (evenRegisExist.length > 0) {
             await EventRegistration.deleteOne({
                 userId: user.id,
@@ -343,8 +336,6 @@ const eventController = {
                     .status(401)
                     .json({ message: 'Authorization header missing' });
             }
-            console.log(req.body);
-            console.log(eventId);
             const token = authHeader.split(' ')[1];
             const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
 
