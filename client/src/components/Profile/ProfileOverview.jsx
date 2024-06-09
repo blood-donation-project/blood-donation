@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { FaPen, FaUserCheck } from 'react-icons/fa';
 import { FaFacebookMessenger } from 'react-icons/fa6';
@@ -8,13 +8,28 @@ import Avatar from '../Image/Avatar';
 import ModalWrapper from '../Modal/ModalWrapper';
 import ViewPhoto from '../Modal/ModalContent/ViewPhoto';
 import UpdateProfile from '../Modal/ModalContent/UpdateProfile';
+import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 
 const ProfileOverview = () => {
     const location = useLocation();
     const pathName = location.pathname.split('/')[3] || '';
+    const [getUser, { data: userData }] = useGetUserMutation();
+    const [isShowingViewImageModal, setIsShowingViewImageModal] =
+        useState(false);
+    const [isShowingUpdateProfileModal, setIsShowingUpdateProfieModal] =
+        useState(false);
 
-    const [isShowingViewImageModal, setIsShowingViewImageModal] = useState(false);
-    const [isShowingUpdateProfileModal, setIsShowingUpdateProfieModal] = useState(false);
+    useEffect(() => {
+        try {
+            const fetchUserData = async () => {
+                await getUser().unwrap();
+            };
+            fetchUserData();
+        } catch (error) {
+            console.log(error);
+        }
+    }, [getUser]);
+
     const showViewImageModal = () => {
         setIsShowingViewImageModal(true);
     };
@@ -57,11 +72,14 @@ const ProfileOverview = () => {
     return (
         <div className="rounded-[14px] overflow-hidden ">
             {/* Background Image */}
-            <div className="h-[460px]" onClick={showViewImageModal}>
+            <div
+                className="h-[460px]"
+                onClick={showViewImageModal}
+            >
                 <Image
-                    src="https://helpx.adobe.com/content/dam/help/en/photoshop/using/convert-color-image-black-white/jcr_content/main-pars/before_and_after/image-before/Landscape-Color.jpg"
+                    src={userData?.backgroundImage}
                     className="w-full h-full object-cover cursor-pointer"
-                    alt="avatar"
+                    alt="background"
                 />
             </div>
 
@@ -74,7 +92,7 @@ const ProfileOverview = () => {
                             onClick={showViewImageModal}
                         >
                             <Avatar
-                                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
+                                src={userData?.avatar}
                                 className="w-[144px] h-[144px]"
                                 alt="avatar"
                             />
@@ -82,10 +100,14 @@ const ProfileOverview = () => {
                     </div>
                     <div className="ml-[12px] xs:flex md:block xs:flex-col xs:items-center">
                         <div className="flex-center ">
-                            <h3 className="text-[24px] font-semibold leading-[24px] ">Hoàng Xuân Việt</h3>
+                            <h3 className="text-[24px] font-semibold leading-[24px] ">
+                                {userData?.username}
+                            </h3>
                         </div>
                         <div className="">
-                            <h3 className="text-[12px] font-semibold text-[#65676B] mt-1 ">287 Bạn bè</h3>
+                            <h3 className="text-[12px] font-semibold text-[#65676B] mt-1 ">
+                                287 Bạn bè
+                            </h3>
                         </div>
                         <div className="flex tyn-media-multiple mt-1">
                             <div className="tyn-media-multiple w-[34px] h-[34px] rounded-[50%] overflow-hidden border-[2px] dark:border-darkBackground-300 ">

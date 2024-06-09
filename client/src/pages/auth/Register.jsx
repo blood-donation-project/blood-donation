@@ -40,7 +40,7 @@ const Register = () => {
     const [street, setStreet] = useState('');
     const [password, setPassword] = useState('');
     const [rePassword, setRepassword] = useState('');
-    const [role, setRole] = useState('Người hiến máu');
+    const [role, setRole] = useState('donor');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -70,10 +70,10 @@ const Register = () => {
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
 
-        const province = provinces?.find((p) => p?.idProvince === provinceId);
+        const province = provinces?.data?.find((p) => p?.id === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.name || '',
+            name: province?.full_name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
@@ -83,10 +83,10 @@ const Register = () => {
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.find((d) => d?.idDistrict === districtId);
+        const district = districts?.data?.find((d) => d?.id === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.name : '',
+            name: district ? district?.full_name : '',
         });
         // Reset wards when district changes
         setWards([]);
@@ -94,8 +94,8 @@ const Register = () => {
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.find((w) => w.idCommune === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
+        const ward = wards?.data?.find((w) => w.id === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.full_name : '' });
     };
     const handlePhoneNumberChange = (e) => {
         const input = e.target.value;
@@ -234,19 +234,19 @@ const Register = () => {
                                 className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                             >
                                 <option
-                                    value={'donor'}
+                                    value={'Người hiến máu'}
                                     className=""
                                 >
                                     Người hiến máu
                                 </option>
                                 <option
-                                    value={'blood recipient'}
+                                    value={'Người cần máu'}
                                     className="p-2 mt-1"
                                 >
                                     Người cần hiến máu
                                 </option>
                                 <option
-                                    value={'Medical facility'}
+                                    value={'Cơ sở y tế'}
                                     className="p-2"
                                 >
                                     Cơ sở y tế
@@ -255,7 +255,7 @@ const Register = () => {
                         </div>
 
                         {/* Date of birthday */}
-                        {role !== 'Medical facility' ? (
+                        {role !== 'Cơ sở y tế' ? (
                             <div>
                                 <div>
                                     <label htmlFor="">Ngày Sinh</label>
@@ -317,12 +317,12 @@ const Register = () => {
                                     onChange={handleProvinceChange}
                                 >
                                     <option value="0">Chọn tỉnh</option>
-                                    {provinces?.map((province) => (
+                                    {provinces?.data?.map((province) => (
                                         <option
-                                            key={province.idProvince}
-                                            value={province.idProvince}
+                                            key={province.id}
+                                            value={province.id}
                                         >
-                                            {province.name}
+                                            {province.full_name}
                                         </option>
                                     ))}
                                 </select>
@@ -333,12 +333,12 @@ const Register = () => {
                                     onChange={handleDistrictChange}
                                 >
                                     <option value="">Chọn quận/huyện</option>
-                                    {districts?.map((district) => (
+                                    {districts?.data?.map((district) => (
                                         <option
-                                            key={district.idDistrict}
-                                            value={district.idDistrict}
+                                            key={district.id}
+                                            value={district.id}
                                         >
-                                            {district.name}
+                                            {district.full_name}
                                         </option>
                                     ))}
                                 </select>
@@ -349,12 +349,12 @@ const Register = () => {
                                     value={selectedWards?.id}
                                 >
                                     <option value="">Chọn xã</option>
-                                    {wards?.map((ward) => (
+                                    {wards?.data?.map((ward) => (
                                         <option
-                                            key={ward.idCommune}
-                                            value={ward.idCommune}
+                                            key={ward.id}
+                                            value={ward.id}
                                         >
-                                            {ward.name}
+                                            {ward.full_name}
                                         </option>
                                     ))}
                                 </select>

@@ -14,7 +14,6 @@ import {
 } from '../../services/locationServices';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUpdateEventMutation } from '../../Redux/features/events/eventAPI';
 const UpdateEvent = ({ eventData, isOpen, onClose }) => {
     const params = useParams();
     const navigate = useNavigate();

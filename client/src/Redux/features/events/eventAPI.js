@@ -72,6 +72,13 @@ export const eventAPI = createApi({
                 body: eventId,
             }),
         }),
+        getUserRegister: builder.mutation({
+            query: (eventId) => ({
+                url: `get-user-register-event/${eventId}`,
+                method: 'POST',
+                body: eventId,
+            }),
+        }),
     }),
 });
 
@@ -84,6 +91,7 @@ export const {
     useCancelJoinMutation,
     useCheckRegisEventMutation,
     useDeleteEventMutation,
+    useGetUserRegisterMutation,
 } = eventAPI;
 
 export default eventAPI;

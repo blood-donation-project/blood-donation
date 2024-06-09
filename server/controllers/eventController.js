@@ -122,7 +122,7 @@ const eventController = {
                 userId: user.id,
             });
             console.log(getEventRegis);
-            if (user.role !== 'Medical facility') {
+            if (user.role !== 'Cơ sở y tế') {
                 if (getEventRegis.length > 0) {
                     const eventIds = getEventRegis.map((item) =>
                         item.eventId.toString()
@@ -134,7 +134,7 @@ const eventController = {
             }
 
             const getUserIdEvent = await Event.find({ userId: user.id });
-            if (user.role === 'Medical facility') {
+            if (user.role === 'Cơ sở y tế') {
                 if (getUserIdEvent.length > 0) {
                     query.userId = user.id;
                 } else {
@@ -162,7 +162,7 @@ const eventController = {
             const events = await Event.find(query); // Lấy danh sách events trước
 
             // Tối ưu populate: chỉ populate khi cần thiết
-            if (user.role === 'Medical facility') {
+            if (user.role === 'Cơ sở y tế') {
                 await Event.populate(events, {
                     path: 'userId',
                     select: 'username avatar introduce',
@@ -189,15 +189,18 @@ const eventController = {
                     select: 'username avatar introduce',
                 })
                 .exec(); // Thực thi populate
-
+            console.log(event);
             if (!event) {
                 return res.status(400).send({ message: 'Invalid link ID' });
+            }
+            if (!event.userId) {
+                return res.status(400).send({ message: 'Invalid userId' });
             }
 
             // Customize the returned data if needed:
             const customizedEvent = {
                 ...event._doc,
-                userId: event.userId._id,
+                userId: event.userId?._id,
                 username: event.userId.username,
                 avatar: event.userId.avatar,
                 introduce: event.userId.introduce,
@@ -281,9 +284,15 @@ const eventController = {
             const eventRegistered = await EventRegistration.find({
                 userId: user.id,
                 eventId: eventId,
-            });
+            })
+                .populate({
+                    path: 'userId',
+                    select: 'username avatar',
+                })
+                .lean()
+                .exec();
             if (eventRegistered.length > 0) {
-                res.status(200).json({ message: 'Registered' });
+                res.status(200).json(eventRegistered);
             } else {
                 res.status(404).json({ message: 'unregistered' });
             }
@@ -364,6 +373,33 @@ const eventController = {
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    getUserRegisterEvent: async (req, res) => {
+        try {
+            const result = await EventRegistration.find({
+                eventId: req.params.id,
+            })
+                .populate({
+                    path: 'userId',
+                    select: 'username avatar',
+                })
+                .lean()
+                .exec();
+
+            if (result.length > 0) {
+                const count = result.length;
+                return res
+                    .status(200)
+                    .json({ message: 'Success', data: { count, result } });
+            } else {
+                res.status(200).json({
+                    data: [],
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching event registrations:', error); // Log the error
+            return res.status(500).json({ message: 'Internal server error' });
         }
     },
 };

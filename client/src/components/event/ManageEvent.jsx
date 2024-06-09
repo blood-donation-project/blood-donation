@@ -47,9 +47,7 @@ const ManageEvent = () => {
         const fetchData = async () => {
             try {
                 const result = await getUser().unwrap();
-                console.log(result?.role);
-                console.log(optionComponent);
-                result?.role === 'Medical facility'
+                result?.role === 'Cơ sở y tế'
                     ? setOptionComponent('organize')
                     : setOptionComponent('join');
             } catch (error) {}
@@ -255,7 +253,7 @@ const ManageEvent = () => {
                                             }  flex justify-center items-center rounded-full`}
                                         >
                                             {userData?.role ===
-                                            'Medical facility' ? (
+                                            'Cơ sở y tế' ? (
                                                 <FaCalendarAlt className="w-6 h-6" />
                                             ) : (
                                                 <FaCheckCircle className="w-6 h-6" />
@@ -263,7 +261,7 @@ const ManageEvent = () => {
                                         </div>
                                         <h2>
                                             {userData?.role ===
-                                            'Medical facility'
+                                            'Cơ sở y tế'
                                                 ? 'Tổ chức'
                                                 : 'Sẽ tham gia'}
                                         </h2>
@@ -297,7 +295,7 @@ const ManageEvent = () => {
 
                     {/* Content */}
                     <div className="h-full w-full lg:w-[calc(100%_-_360px)]">
-                        {userData?.role === 'Medical facility' ? (
+                        {userData?.role === 'Cơ sở y tế' ? (
                             <div className=" flex justify-end">
                                 <button
                                     onClick={handleOpenPopup}
@@ -317,7 +315,7 @@ const ManageEvent = () => {
                                 onClose={handleClosePopup}
                             />
                         </div>
-                        {userData?.role === 'Medical facility' ? (
+                        {userData?.role === 'Cơ sở y tế' ? (
                             isSearch ? (
                                 <SearchOrganizeEvent
                                     eventDataById={eventDataById}

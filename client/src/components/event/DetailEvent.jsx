@@ -26,8 +26,14 @@ import {
 import JoinEvent from './JoinEvent';
 import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 import UpdateEvent from './UpdateEvent';
+import { useGetUserRegisterMutation } from '../../Redux/features/events/eventAPI';
+import DetailJoiner from './DetailJoiner';
+import { toast } from 'react-toastify';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const DetailEvent = () => {
+    useAutoRefreshToken('/home/');
+
     const [showMore, setShowMore] = useState(false);
     const params = useParams();
     const navigate = useNavigate();
@@ -36,23 +42,39 @@ const DetailEvent = () => {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [isCheckJoin, setIsCheckJoin] = useState(false);
     const [getUser, { data: userData }] = useGetUserMutation();
-    const [checkRegisterEvent, { data: checkRegis }] =
+    const [checkRegisterEvent, { data: userRegisted }] =
         useCheckRegisEventMutation();
+    const [getUserRegister, { data: userRegister }] =
+        useGetUserRegisterMutation();
     const [deleteEvent] = useDeleteEventMutation();
     const [cancelJoin] = useCancelJoinMutation();
     const { data, error } = useGetEventByIdEventQuery(params.id);
-    const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
+    const day = data?.donationTime
+        ? dayjs(data.donationTime, 'DD/MM/YYYY').date()
+        : 'N/A';
+    // Open Popup
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-
+    const [isOpenDetail, setOpenDetail] = useState(false);
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const result = await getUser().unwrap();
+                await getUser().unwrap();
             } catch (error) {}
         };
         fetchUser();
     }, [getUser]);
+
+    useEffect(() => {
+        try {
+            const fetchData = async () => {
+                await getUserRegister(params.id).unwrap();
+            };
+            fetchData();
+        } catch (error) {
+            console.error('Error fetching user registration data:', error);
+        }
+    }, [getUserRegister, params.id]);
 
     useEffect(() => {
         const fetchEventByID = async () => {
@@ -63,11 +85,6 @@ const DetailEvent = () => {
                 } else {
                     setIsCheckJoin(false);
                 }
-
-                console.log(isCheckJoin);
-                console.log(typeof params.id);
-
-                console.log();
             } catch (error) {}
         };
         fetchEventByID();
@@ -93,9 +110,10 @@ const DetailEvent = () => {
 
     useEffect(() => {
         if (error?.status === 400) {
+            toast.error('Sự kiện không tồn tại!');
             navigate(-1);
         }
-    });
+    }, [error?.status, navigate]);
 
     const showPopconfirm = () => {
         setOpenConfirmCancel(true);
@@ -174,9 +192,7 @@ const DetailEvent = () => {
                     <div className="flex gap-1 items-center justify-center ssm:justify-end h-16 ">
                         <div
                             className={`${
-                                userData?.role === 'Medical facility'
-                                    ? 'hidden'
-                                    : ''
+                                userData?.role === 'Cơ sở y tế' ? 'hidden' : ''
                             } p-1`}
                         >
                             {isCheckJoin ? (
@@ -211,7 +227,11 @@ const DetailEvent = () => {
                             )}
                         </div>
                         {isPopupOpen && <JoinEvent onClose={closePopup} />}
-                        <div className="p-1">
+                        <div
+                            className={`${
+                                userData?.role !== 'Cơ sở y tế' ? '' : 'hidden'
+                            } p-1`}
+                        >
                             <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
                                 <IoMdMail className="w-6 h-6" />
                                 <p>Mời</p>
@@ -219,9 +239,7 @@ const DetailEvent = () => {
                         </div>
                         <div
                             className={`${
-                                userData?.role === 'Medical facility'
-                                    ? ''
-                                    : 'hidden'
+                                userData?.role === 'Cơ sở y tế' ? '' : 'hidden'
                             } p-1`}
                         >
                             <button
@@ -245,9 +263,7 @@ const DetailEvent = () => {
                         )}
                         <div
                             className={`${
-                                userData?.role === 'Medical facility'
-                                    ? ''
-                                    : 'hidden'
+                                userData?.role === 'Cơ sở y tế' ? '' : 'hidden'
                             } p-1`}
                         >
                             <Popconfirm
@@ -291,10 +307,16 @@ const DetailEvent = () => {
                                                     Chi tiết
                                                 </h2>
                                             </div>
-                                            <button className="flex px-4 pt-1 pb-2 font-thin items-center hover:bg-gray-200 w-full rounded-lg gap-2">
+                                            <button className="flex outline-none px-4 pt-1 pb-2 font-thin items-center hover:bg-gray-200 w-full rounded-lg gap-2">
                                                 <HiUsers className="w-5 h-5 text-gray-500" />
                                                 <div>
-                                                    <p>1 người đã tham gia</p>
+                                                    <p>
+                                                        {
+                                                            userRegister?.data
+                                                                ?.count
+                                                        }{' '}
+                                                        người đã tham gia
+                                                    </p>
                                                 </div>
                                             </button>
                                             <div className="flex px-4 py-2 font-thin items-center gap-2">
@@ -369,77 +391,111 @@ const DetailEvent = () => {
                                                 <h2 className="text-xl font-semibold">
                                                     Người đã tham gia
                                                 </h2>
-                                                <button className="text-blue-600 text-[16px] hover:underline">
+                                                <button
+                                                    onClick={() =>
+                                                        setOpenDetail(
+                                                            !isOpenDetail
+                                                        )
+                                                    }
+                                                    className="text-blue-600 text-[16px] hover:underline"
+                                                >
                                                     Xem tất cả
                                                 </button>
                                             </div>
+                                            {isOpenDetail && (
+                                                <DetailJoiner
+                                                    isOpen={isOpenDetail}
+                                                    onClose={() =>
+                                                        setOpenDetail(false)
+                                                    }
+                                                    userRegister={userRegister}
+                                                    userData={userData}
+                                                    userRegisted={userRegisted}
+                                                    eventDataByID={data}
+                                                />
+                                            )}
                                             <div className="flex px-4 pt-1 pb-2 font-thin items-center justify-center gap-2 ">
-                                                <button className="flex flex-col items-center rounded-lg justify-center px-10 py-2 bg-gray-100 hover:bg-gray-300">
+                                                <button className="flex outline-none flex-col items-center rounded-lg justify-center px-10 py-2 bg-gray-100 hover:bg-gray-300">
                                                     <h1 className="text-xl font-bold">
-                                                        1
+                                                        {
+                                                            userRegister?.data
+                                                                ?.count
+                                                        }
                                                     </h1>
                                                     <h2 className="text-sm text-[#65676B]">
                                                         Người tham gia
                                                     </h2>
                                                 </button>
                                             </div>
-                                            <div className="border-b-2 border-gray-400 mt-2"></div>
-                                            <div className="flex px-4 pt-4  font-thin items-center gap-2 ">
-                                                <h1 className="text-xl font-bold">
-                                                    Đi cùng bạn bè
-                                                </h1>
-                                            </div>
+                                            {/* Check role */}
+                                            <div
+                                                className={`${
+                                                    userData?.role !==
+                                                    'Cơ sở y tế'
+                                                        ? ''
+                                                        : 'hidden'
+                                                }`}
+                                            >
+                                                <div className="border-b-2 border-gray-400 mt-2"></div>
+                                                <div className="flex px-4 pt-4  font-thin items-center gap-2 ">
+                                                    <h1 className="text-xl font-bold">
+                                                        Đi cùng bạn bè
+                                                    </h1>
+                                                </div>
 
-                                            {/* Map Friends */}
-                                            <div className="my-4">
-                                                <Link
-                                                    to={''}
-                                                    className="flex px-4  font-thin items-center gap-2 hover:bg-gray-200 rounded-xl"
-                                                >
-                                                    <div className="flex items-center w-full">
-                                                        <div className="my-2 mr-3">
-                                                            <img
-                                                                className="w-9 h-9 rounded-full"
-                                                                src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717557842/news_images/fcqms56gcinpofmgq0pi.jpg"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                        <div className="flex items-center justify-between w-full">
-                                                            <div>
-                                                                <p>
-                                                                    Lê Minh Tuấn
-                                                                </p>
+                                                {/* Map Friends */}
+                                                <div className="my-4">
+                                                    <Link
+                                                        to={''}
+                                                        className="flex px-4  font-thin items-center gap-2 hover:bg-gray-200 rounded-xl"
+                                                    >
+                                                        <div className="flex items-center w-full">
+                                                            <div className="my-2 mr-3">
+                                                                <img
+                                                                    className="w-9 h-9 rounded-full"
+                                                                    src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717557842/news_images/fcqms56gcinpofmgq0pi.jpg"
+                                                                    alt=""
+                                                                />
                                                             </div>
-                                                            <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
-                                                                Mời
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                                <Link
-                                                    to={''}
-                                                    className="flex px-4  font-thin items-center gap-2 hover:bg-gray-200 rounded-xl"
-                                                >
-                                                    <div className="flex items-center w-full">
-                                                        <div className="my-2 mr-3">
-                                                            <img
-                                                                className="w-9 h-9 rounded-full"
-                                                                src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717557842/news_images/fcqms56gcinpofmgq0pi.jpg"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                        <div className="flex items-center justify-between w-full">
-                                                            <div>
-                                                                <p>
-                                                                    Lê Minh Tuấn
-                                                                </p>
+                                                            <div className="flex items-center justify-between w-full">
+                                                                <div>
+                                                                    <p>
+                                                                        Lê Minh
+                                                                        Tuấn
+                                                                    </p>
+                                                                </div>
+                                                                <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
+                                                                    Mời
+                                                                </button>
                                                             </div>
-                                                            <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
-                                                                Mời
-                                                            </button>
                                                         </div>
-                                                    </div>
-                                                </Link>
+                                                    </Link>
+                                                    <Link
+                                                        to={''}
+                                                        className="flex px-4  font-thin items-center gap-2 hover:bg-gray-200 rounded-xl"
+                                                    >
+                                                        <div className="flex items-center w-full">
+                                                            <div className="my-2 mr-3">
+                                                                <img
+                                                                    className="w-9 h-9 rounded-full"
+                                                                    src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717557842/news_images/fcqms56gcinpofmgq0pi.jpg"
+                                                                    alt=""
+                                                                />
+                                                            </div>
+                                                            <div className="flex items-center justify-between w-full">
+                                                                <div>
+                                                                    <p>
+                                                                        Lê Minh
+                                                                        Tuấn
+                                                                    </p>
+                                                                </div>
+                                                                <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
+                                                                    Mời
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -487,13 +543,16 @@ const DetailEvent = () => {
                                                                         }
                                                                     </h1>
                                                                 </div>
-                                                                <button className="w-full py-2 bg-gray-300 flex items-center justify-center gap-3 hover:bg-gray-400 rounded-lg">
+                                                                <Link
+                                                                    to={`/message/${userData?._id}`}
+                                                                    className="w-full py-2 bg-gray-300 flex items-center justify-center gap-3 hover:bg-gray-400 rounded-lg"
+                                                                >
                                                                     <FaRegMessage className="w-6 h-6" />
                                                                     <h1>
                                                                         Nhắn
                                                                         ngay
                                                                     </h1>
-                                                                </button>
+                                                                </Link>
                                                             </div>
                                                         </div>
                                                     </div>

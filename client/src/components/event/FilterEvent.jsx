@@ -51,12 +51,10 @@ const FilterEvent = () => {
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
 
-        const province = provinces?.results?.find(
-            (p) => p?.province_id === provinceId
-        );
+        const province = provinces?.data?.find((p) => p?.id === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.province_name || '',
+            name: province?.name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
@@ -66,12 +64,10 @@ const FilterEvent = () => {
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.results?.find(
-            (d) => d?.district_id === districtId
-        );
+        const district = districts?.data?.find((d) => d?.id === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.district_name : '',
+            name: district ? district?.name : '',
         });
         // Reset wards when district changes
         setWards([]);
@@ -79,8 +75,8 @@ const FilterEvent = () => {
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.results?.find((w) => w.ward_id === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.ward_name : '' });
+        const ward = wards?.data?.find((w) => w.id === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
     };
     return (
         <div>
@@ -95,17 +91,17 @@ const FilterEvent = () => {
                 <select
                     name="provinces"
                     id="provices"
-                    value={selectedProvince.id}
+                    value={selectedProvince.full_name}
                     onChange={handleProvinceChange}
                     className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                 >
                     <option value="">Chọn Tỉnh/Thành Phố</option>
-                    {provinces?.results?.map((province) => (
+                    {provinces?.data?.map((province) => (
                         <option
-                            key={province.province_id}
-                            value={province.province_id}
+                            key={province.id}
+                            value={province.id}
                         >
-                            {province.province_name}
+                            {province.full_name}
                         </option>
                     ))}
                 </select>
@@ -120,17 +116,17 @@ const FilterEvent = () => {
                 <select
                     name="district"
                     id="district"
-                    value={selectedDistrict.district_name}
+                    value={selectedDistrict.full_name}
                     onChange={handleDistrictChange}
                     className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                 >
                     <option value="">Chọn Quận/Huyện</option>
-                    {districts?.results?.map((district) => (
+                    {districts?.data?.map((district) => (
                         <option
-                            key={district.district_id}
-                            value={district.district_id}
+                            key={district.id}
+                            value={district.id}
                         >
-                            {district.district_name}
+                            {district.full_name}
                         </option>
                     ))}
                 </select>
@@ -146,16 +142,16 @@ const FilterEvent = () => {
                     name="wards"
                     id="wards"
                     onChange={handleWardChange}
-                    value={selectedWards?.district_name}
+                    value={selectedWards?.full_name}
                     className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                 >
                     <option value="">Chọn Xã/Phường</option>
-                    {wards?.results?.map((ward) => (
+                    {wards?.data?.map((ward) => (
                         <option
-                            key={ward.ward_id}
-                            value={ward.ward_id}
+                            key={ward.id}
+                            value={ward.id}
                         >
-                            {ward.ward_name}
+                            {ward.full_name}
                         </option>
                     ))}
                 </select>

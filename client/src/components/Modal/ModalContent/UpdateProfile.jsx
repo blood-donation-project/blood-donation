@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { IoMdClose } from 'react-icons/io';
-import { FaPen, FaSpinner } from 'react-icons/fa';
+import { FaPen } from 'react-icons/fa';
 import Select from 'react-select';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 
@@ -13,6 +13,14 @@ import {
     getProvinces,
     getWardsByDistrictId,
 } from '../../../services/locationServices';
+import axios from 'axios';
+import {
+    useGetUserMutation,
+    useUpdateUserMutation,
+} from '../../../Redux/features/user/userAPI';
+import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
+import { useNavigate } from 'react-router-dom';
+import { Slide, ToastContainer } from 'react-toastify';
 
 const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     const {
@@ -21,46 +29,77 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         formState: { errors },
         reset,
     } = useForm({});
+    const navigate = useNavigate();
+    const [updateUser] = useUpdateUserMutation();
+    const [getUser, { data: userData }] = useGetUserMutation();
     const [loading, setLoading] = useState(false);
     const [avatarURL, setAvatarURL] = useState('');
     const [backgroundImageURL, setBackgroundImageURL] = useState('');
+    const [selectedValue, setSelectedValue] = useState({
+        province: null,
+        district: null,
+        wards: null,
+    });
+    useAutoRefreshToken('/home/');
+
+    useEffect(() => {
+        try {
+            const fetchData = async () => {
+                await getUser().unwrap();
+            };
+            fetchData();
+        } catch (error) {}
+    }, [getUser]);
+
     const [profileData, setProfileData] = useState({
-        firstName: '',
-        lastName: '',
+        fullName: '',
+        identification: '',
         avatar: null,
         backgroundImage: null,
-        birth: '',
-        gender: '',
-        address: '',
+        address: {
+            province: '', // Store the selected province object
+            district: '', // Store the selected district object
+            ward: '', // Store the selected ward object
+        },
+        street: '',
         phone: '',
         bloodType: '',
         role: '',
     });
+
+    useEffect(() => {
+        setProfileData((prevProfileData) => ({
+            ...prevProfileData,
+            fullName: userData?.username,
+            identification: userData?.identification,
+            avatar: userData?.avatar,
+            backgroundImage: userData?.backgroundImage,
+            address: {
+                province: userData?.address?.province, // Store the selected province object
+                district: userData?.address?.district, // Store the selected district object
+                ward: userData?.ward, // Store the selected ward object
+            },
+            street: userData?.address?.street,
+            phone: userData?.phoneNumber,
+            bloodType: userData?.bloodGroup,
+            role: userData?.role,
+        }));
+    }, [userData]);
 
     const [options, setOptions] = useState({
         province: undefined,
         district: undefined,
         wards: undefined,
     });
-    const [selectedValue, setSelectedValue] = useState({
-        province: null,
-        district: null,
-        wards: null,
-    });
-
-    const [submitError, setSubmitError] = useState({
-        status: false,
-        message: '',
-    });
 
     useEffect(() => {
         getProvinces()
             .then((res) => {
-                const formatOptions = res.results.map((el) => {
+                const formatOptions = res?.data?.map((el) => {
                     return {
                         ...el,
-                        value: el.province_name,
-                        label: el.province_name,
+                        value: el?.id,
+                        label: el?.full_name,
                     };
                 });
                 setOptions((prev) => {
@@ -77,13 +116,13 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
 
     useEffect(() => {
         if (selectedValue.province) {
-            getDistrictsByProvinceId(selectedValue.province.province_id)
+            getDistrictsByProvinceId(selectedValue.province.id)
                 .then((res) => {
-                    const formatOptions = res.results.map((el) => {
+                    const formatOptions = res?.data?.map((el) => {
                         return {
                             ...el,
-                            value: el.district_name,
-                            label: el.district_name,
+                            value: el?.id,
+                            label: el?.full_name,
                         };
                     });
                     setOptions((prev) => {
@@ -101,13 +140,13 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
 
     useEffect(() => {
         if (selectedValue.district) {
-            getWardsByDistrictId(selectedValue.district.district_id)
+            getWardsByDistrictId(selectedValue.district.id)
                 .then((res) => {
-                    const formatOptions = res.results.map((el) => {
+                    const formatOptions = res?.data?.map((el) => {
                         return {
                             ...el,
-                            value: el.ward_name,
-                            label: el.ward_name,
+                            value: el?.id,
+                            label: el?.full_name,
                         };
                     });
                     setOptions((prev) => {
@@ -122,12 +161,30 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                 });
         }
     }, [selectedValue.district]);
+    useEffect(() => {
+        // Kiểm tra xem selectedValue đã có đầy đủ thông tin hay chưa
+        if (
+            selectedValue.province ||
+            selectedValue.district ||
+            selectedValue.wards
+        ) {
+            setProfileData((prev) => ({
+                ...prev,
+                address: {
+                    province: selectedValue.province,
+                    district: selectedValue.district,
+                    ward: selectedValue.wards,
+                },
+            }));
+        }
+    }, [selectedValue]);
 
     const changeProvince = (selectValue) => {
         setSelectedValue((prev) => {
             return {
                 ...prev,
                 province: selectValue,
+                district: '',
             };
         });
     };
@@ -137,6 +194,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
             return {
                 ...prev,
                 district: selectValue,
+                wards: '',
             };
         });
     };
@@ -154,38 +212,83 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         if (e.target.files) {
             const imageFile = e.target.files[0];
             setAvatarURL(URL.createObjectURL(imageFile));
+            setProfileData((prev) => ({ ...prev, avatar: imageFile }));
         }
-        clearSubmitError();
     };
-
     const handleBackgroundChange = (e) => {
         if (e.target.files) {
             const imageFile = e.target.files[0];
             setBackgroundImageURL(URL.createObjectURL(imageFile));
+            setProfileData((prev) => ({ ...prev, backgroundImage: imageFile }));
         }
-        clearSubmitError();
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setProfileData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
     };
 
     const clearForm = () => {
         reset();
     };
 
-    const clearSubmitError = () => {
-        setSubmitError((prev) => {
-            return {
-                ...prev,
-                status: false,
-                message: '',
-            };
-        });
-    };
-
-    const handleSubmitForm = (data) => {
-        // console.log(data);
+    const handleSubmitForm = async (e) => {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('avatar', profileData.avatar);
+        formData.append('backgroundImage', profileData.backgroundImage);
+        let avatarUrl;
+        let backgroundUrl;
+        try {
+            const response = await axios.post(
+                'http://localhost:3001/news/upload-images',
+                formData
+            );
+            avatarUrl = response.data.images.avatar;
+            backgroundUrl = response.data.images.backgroundImage;
+            console.log(avatarURL);
+            console.log(backgroundUrl);
+        } catch (error) {}
+        const updateUserr = {
+            username: profileData.fullName,
+            identification: profileData.identification,
+            avatar: avatarUrl,
+            backgroundImage: backgroundUrl,
+            street: profileData.street,
+            province: profileData.address?.province?.name,
+            district: profileData.address?.district?.name,
+            ward: profileData.address?.ward?.name,
+            phoneNumber: profileData.phone,
+            bloodGroup: profileData.bloodType,
+            role: profileData.role,
+        };
+        try {
+            await updateUser(updateUserr).unwrap();
+            navigate(0);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
-        <div className=" z-[9] xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
+        <div className="  xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
+            <ToastContainer
+                className={'z-[999]'}
+                position="top-right"
+                autoClose={2000}
+                transition={Slide}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             <div className={`box-zoom-in   h-[100%]  `}>
                 <div className="  md:flex-center xs:flex   h-[50px] border-b border-b-[#ccc]">
                     <span
@@ -228,7 +331,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     >
                                         <Avatar
                                             className="w-[120px] h-[120px] rounded-[50%] object-cover"
-                                            src={avatarURL}
+                                            src={avatarURL || userData?.avatar}
                                             alt=""
                                         />
                                     </label>
@@ -239,6 +342,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                         {...register('image')}
                                         accept="image/jpg, imgage/png"
                                         onInput={handleAvatarChange}
+                                        onChange={handleAvatarChange}
                                     />
                                     <label
                                         htmlFor="avatar"
@@ -263,7 +367,10 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     >
                                         <Image
                                             className="w-full h-full object-cover"
-                                            src={backgroundImageURL}
+                                            src={
+                                                backgroundImageURL ||
+                                                userData?.backgroundImage
+                                            }
                                             alt=""
                                         />
                                     </label>
@@ -288,50 +395,39 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                         {/* Full name */}
                         <div className="md:flex-row xs:flex-col w-full flex justify-between mb-3">
                             <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
-                                <label htmlFor="">Họ </label>
+                                <label htmlFor="">Họ và Tên </label>
                                 <input
                                     className={`block outline-none border-b ${
-                                        errors.firstName
+                                        errors.fullName
                                             ? 'border-bottom-error'
                                             : 'border-[#ccc]'
                                     }  w-full py-[2px] mt-[2px]`}
                                     type="text"
-                                    {...register('firstName', {
-                                        required: true,
+                                    {...register('fullName', {
                                         minLength: 1,
                                     })}
-                                    defaultValue={profileData.firstName}
-                                    onInput={clearSubmitError}
-                                    placeholder="Nhập họ"
+                                    onChange={handleInputChange}
+                                    defaultValue={userData?.username}
+                                    placeholder="Nhập họ và tên"
                                 />
-                                {errors.firstName && (
-                                    <span className="text-red-500 text-[14px]">
-                                        Họ không được để trống
-                                    </span>
-                                )}
                             </div>
                             <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
-                                <label htmlFor="">Tên </label>
+                                <label htmlFor="">Căn cước công dân </label>
                                 <input
                                     className={`block outline-none border-b ${
-                                        errors.lastName
+                                        errors.identification
                                             ? 'border-bottom-error'
                                             : 'border-[#ccc]'
                                     }  w-full py-[2px] mt-[2px]`}
                                     type="text"
-                                    {...register('lastName', {
-                                        required: true,
+                                    {...register('identification', {
                                         minLength: 1,
+                                        pattern: /^[0-9]{9}$|^[0-9]{12}$/,
                                     })}
-                                    onInput={clearSubmitError}
-                                    defaultValue={profileData.lastName}
-                                    placeholder="Nhập tên"
+                                    onChange={handleInputChange}
+                                    defaultValue={userData?.identification}
+                                    placeholder="Nhập căn cước công dân"
                                 />
-                                {errors.lastName && (
-                                    <span className="text-red-500 text-[14px]">
-                                        Tên không được để trống
-                                    </span>
-                                )}
                             </div>
                         </div>
 
@@ -347,19 +443,13 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     }  w-full py-[2px] mt-[2px]`}
                                     type="text"
                                     {...register('phone', {
-                                        required: true,
                                         pattern:
                                             /^(0|\+84)[3|5|7|8|9][0-9]{8}$/,
                                     })}
-                                    defaultValue={profileData.phone}
-                                    onInput={clearSubmitError}
+                                    onChange={handleInputChange}
+                                    defaultValue={userData?.phoneNumber}
                                     placeholder="Nhập số điện thoại"
                                 />
-                                {errors.phone && (
-                                    <span className="text-red-500 text-[14px]">
-                                        Số điện thoại không hợp lệ !
-                                    </span>
-                                )}
                             </div>
                             <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <div className="">
@@ -369,23 +459,20 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                             className={
                                                 'w-full outline-none py-1 ' +
                                                 `${
-                                                    errors.address
+                                                    errors.street
                                                         ? 'border-error'
                                                         : ''
                                                 }`
                                             }
                                             type="text"
-                                            {...register('address', {
-                                                required: true,
-                                            })}
+                                            {...register('street', {})}
                                             placeholder="Số nhà, đường, v.v*"
+                                            defaultValue={
+                                                userData?.address?.street
+                                            }
+                                            onChange={handleInputChange}
                                         />
                                     </div>
-                                    {errors.address && (
-                                        <span className="text-red-500 text-[14px]">
-                                            Không được để trống
-                                        </span>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -396,10 +483,16 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 <div className="mb-3">
                                     <span>Tỉnh/Thành phố</span>
                                     <Select
-                                        value={selectedValue.province}
                                         onChange={changeProvince}
                                         options={options.province}
-                                        placeholder="Chọn tỉnh thành"
+                                        value={
+                                            selectedValue.province ||
+                                            userData?.address?.province
+                                        }
+                                        placeholder={
+                                            userData?.address?.province ||
+                                            'Chọn Tỉnh/Thành Phố'
+                                        }
                                         isDisabled={
                                             options.province ? false : true
                                         }
@@ -408,10 +501,16 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 <div className="mb-3">
                                     <span>Quận/Huyện</span>
                                     <Select
-                                        value={selectedValue.district}
-                                        onChange={changeDistrict}
                                         options={options.district}
-                                        placeholder="Chọn quận huyện"
+                                        onChange={changeDistrict}
+                                        value={
+                                            selectedValue.district ||
+                                            userData?.address?.district
+                                        }
+                                        placeholder={
+                                            userData?.address?.district ||
+                                            'Chọn Quận/Huyện'
+                                        }
                                         isDisabled={
                                             options.district ? false : true
                                         }
@@ -420,10 +519,16 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 <div className="mb-3">
                                     <span>Xã/Phường</span>
                                     <Select
-                                        value={selectedValue.wards}
                                         onChange={changeWards}
                                         options={options.wards}
-                                        placeholder="Chọn xã phường"
+                                        value={
+                                            selectedValue.wards ||
+                                            userData?.address?.ward
+                                        }
+                                        placeholder={
+                                            userData?.address?.ward ||
+                                            'Chọn Xã/Phường'
+                                        }
                                         isDisabled={
                                             options.wards ? false : true
                                         }
@@ -439,16 +544,21 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 <select
                                     className="block w-full outline-none border border-[#ccc] py-[2px] mt-[2px]"
                                     {...register('role')}
-                                    defaultValue={profileData.role}
-                                    onInput={clearSubmitError}
+                                    defaultValue={userData?.role}
+                                    onChange={handleInputChange}
                                 >
+                                    <option value={userData?.role}>
+                                        {userData?.role}
+                                    </option>
                                     <option
                                         defaultChecked={true}
-                                        value="R2"
+                                        value="Người hiến máu"
                                     >
                                         Người hiến máu
                                     </option>
-                                    <option value="R3">Người nhận máu</option>
+                                    <option value="Người cần máu">
+                                        Người cần máu
+                                    </option>
                                 </select>
                             </div>
                             <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
@@ -457,9 +567,17 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     className="block w-full outline-none border border-[#ccc] py-[2px] mt-[2px]"
                                     {...register('bloodType')}
                                     defaultValue={profileData.bloodType}
-                                    onInput={clearSubmitError}
+                                    onChange={handleInputChange}
                                 >
-                                    <option value="Null">Không xác định</option>
+                                    {userData?.bloodGroup ? (
+                                        <option value={userData?.bloodGroup}>
+                                            {userData?.bloodGroup}
+                                        </option>
+                                    ) : (
+                                        <option value="Null">
+                                            Không xác định
+                                        </option>
+                                    )}
                                     <option
                                         defaultChecked={true}
                                         value="A+"
@@ -477,40 +595,14 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                             </div>
                         </div>
 
-                        {submitError.status && (
-                            <span className="text-red-color">
-                                {submitError.message}
-                            </span>
-                        )}
                         <div className="w-full ">
                             <div className="w-full flex justify-end px-4 py-5">
                                 <button
-                                    className=" px-7 py-1 border border-[#ccc] rounded bgr-hover-color"
-                                    type="button"
-                                    onClick={clearForm}
+                                    className="ml-4 w-[117px] py-1 bg-red-500 rounded text-white"
+                                    type="submit"
                                 >
-                                    Xóa bỏ
+                                    Chỉnh sửa
                                 </button>
-                                {loading ? (
-                                    <button
-                                        className="ml-4 w-[117px] py-1  rounded text-white bg-red-500 flex-center"
-                                        type="submit"
-                                        disabled
-                                        onClick={(e) => e.preventDefault()}
-                                    >
-                                        <i className="spinner flex">
-                                            <FaSpinner />
-                                        </i>
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="ml-4 w-[117px] py-1 bg-red-500 rounded text-white"
-                                        type="submit"
-                                        disabled={submitError.status}
-                                    >
-                                        Chỉnh sửa
-                                    </button>
-                                )}
                             </div>
                         </div>
                     </form>

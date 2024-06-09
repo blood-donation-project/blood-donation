@@ -66,7 +66,6 @@ const eventSlice = createSlice({
                 eventAPI.endpoints.joinEvent.matchFulfilled,
                 (state, { payload }) => {
                     state.event = payload.event;
-                    console.log(payload);
                 }
             )
             .addMatcher(
@@ -82,7 +81,6 @@ const eventSlice = createSlice({
                 eventAPI.endpoints.cancelJoin.matchFulfilled,
                 (state, { payload }) => {
                     state.event = payload.event;
-                    console.log(payload);
                 }
             )
             .addMatcher(
@@ -124,7 +122,18 @@ const eventSlice = createSlice({
                     }
                 }
             )
-            
+            .addMatcher(
+                eventAPI.endpoints.getUserRegister.matchFulfilled,
+                (state, action) => {
+                    state.event = action.payload?.event;
+                }
+            )
+            .addMatcher(
+                eventAPI.endpoints.getUserRegister.matchRejected,
+                (state, action) => {
+                    state.error = action.error.message;
+                }
+            );
     },
 });
 

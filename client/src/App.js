@@ -31,6 +31,7 @@ function App() {
     return (
         <div>
             <ToastContainer
+                className={'z-[999]'}
                 position="top-right"
                 autoClose={2000}
                 transition={Slide}
@@ -59,6 +60,11 @@ function App() {
                 />
                 <Route
                     path="/message"
+                    exact
+                    element={<Message />}
+                />
+                <Route
+                    path="/message/:id"
                     exact
                     element={<Message />}
                 />

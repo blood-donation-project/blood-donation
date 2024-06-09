@@ -33,6 +33,12 @@ router.post(
 );
 
 router.post(
+    '/get-user-register-event/:id',
+    middlewareController.verifyToken,
+    eventController.getUserRegisterEvent
+);
+
+router.post(
     '/delete-event/:id',
     middlewareController.verifyToken,
     eventController.deleteEvent

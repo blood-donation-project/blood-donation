@@ -43,7 +43,7 @@ const SearchEvent = ({ eventData, userData }) => {
                                     endTime={item?.endTime}
                                     eventId={item?._id}
                                     buttonName={`${
-                                        userData?.role === 'Medical facility'
+                                        userData?.role === 'Cơ sở y tế'
                                             ? 'Xem thêm'
                                             : 'Tham Gia'
                                     }`}
