@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 
 import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';

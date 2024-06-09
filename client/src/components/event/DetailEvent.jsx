@@ -311,10 +311,8 @@ const DetailEvent = () => {
                                                 <HiUsers className="w-5 h-5 text-gray-500" />
                                                 <div>
                                                     <p>
-                                                        {
-                                                            userRegister?.data
-                                                                ?.count
-                                                        }{' '}
+                                                        {userRegister?.data
+                                                            ?.count || 0}{' '}
                                                         người đã tham gia
                                                     </p>
                                                 </div>
@@ -324,9 +322,12 @@ const DetailEvent = () => {
                                                 <div>
                                                     <p>
                                                         Sự kiện của{' '}
-                                                        <span className="font-bold">
+                                                        <Link
+                                                            to={`/user/${data?._id}`}
+                                                            className="font-bold hover:underline"
+                                                        >
                                                             {data?.username}{' '}
-                                                        </span>
+                                                        </Link>
                                                     </p>
                                                 </div>
                                             </div>
@@ -417,10 +418,8 @@ const DetailEvent = () => {
                                             <div className="flex px-4 pt-1 pb-2 font-thin items-center justify-center gap-2 ">
                                                 <button className="flex outline-none flex-col items-center rounded-lg justify-center px-10 py-2 bg-gray-100 hover:bg-gray-300">
                                                     <h1 className="text-xl font-bold">
-                                                        {
-                                                            userRegister?.data
-                                                                ?.count
-                                                        }
+                                                        {userRegister?.data
+                                                            ?.count || 0}
                                                     </h1>
                                                     <h2 className="text-sm text-[#65676B]">
                                                         Người tham gia

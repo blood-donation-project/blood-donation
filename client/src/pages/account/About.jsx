@@ -6,8 +6,21 @@ import { FaUserNurse } from 'react-icons/fa6';
 
 import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
+import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 
 const AboutPage = () => {
+    const [getUser, { data: userData }] = useGetUserMutation();
+    console.log(userData);
+    useEffect(() => {
+        try {
+            const fetchUserData = async () => {
+                await getUser().unwrap();
+            };
+            fetchUserData();
+        } catch (error) {
+            console.log(error);
+        }
+    }, [getUser]);
     return (
         <>
             <NavMenu />
@@ -25,10 +38,14 @@ const AboutPage = () => {
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <MdEmail />
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">Email</div>
+                                        <div className="text-[#65676B] text-[14px]">
+                                            Email
+                                        </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">hoangxuanviet1312@gmail.com</span>
+                                        <span className=" word-wrap">
+                                            {userData?.email}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
@@ -36,10 +53,12 @@ const AboutPage = () => {
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <FaBirthdayCake />
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">Ngày sinh</div>
+                                        <div className="text-[#65676B] text-[14px]">
+                                            Ngày sinh
+                                        </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                        13/12/2003
+                                        {userData?.dateOfBirth}
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -47,19 +66,25 @@ const AboutPage = () => {
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <PiGenderIntersexFill />
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">Giới tính</div>
+                                        <div className="text-[#65676B] text-[14px]">
+                                            Giới tính
+                                        </div>
                                     </div>
-                                    <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">Nam</div>
+                                    <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
+                                        {userData?.gender}
+                                    </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                     <div className="flex md:flex-col xs:flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <FaCity />
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">Địa chỉ</div>
+                                        <div className="text-[#65676B] text-[14px]">
+                                            Địa chỉ
+                                        </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        Giải Phóng, Hai Bà Trưng, TP.Hà Nội
+                                        {`${userData?.address?.street}, ${userData?.address?.ward}, ${userData?.address?.district}, ${userData?.address?.province} `}
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -67,10 +92,12 @@ const AboutPage = () => {
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <FaPhone />
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">Liên hệ</div>
+                                        <div className="text-[#65676B] text-[14px]">
+                                            Liên hệ
+                                        </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        0345678123
+                                        {userData?.phoneNumber}
                                     </div>
                                 </div>
 
@@ -79,10 +106,14 @@ const AboutPage = () => {
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <MdBloodtype />
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">Nhóm máu</div>
+                                        <div className="text-[#65676B] text-[14px]">
+                                            Nhóm máu
+                                        </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">AB+</span>
+                                        <span className=" word-wrap">
+                                            {userData?.bloodGroup || '-'}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -90,10 +121,14 @@ const AboutPage = () => {
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <FaUserNurse />
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">Vai trò</div>
+                                        <div className="text-[#65676B] text-[14px]">
+                                            Vai trò
+                                        </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">Người hiến máu</span>
+                                        <span className=" word-wrap">
+                                            {userData?.role}
+                                        </span>
                                     </div>
                                 </div>
                             </div>

@@ -16,6 +16,8 @@ const ProfileOverview = () => {
     const [getUser, { data: userData }] = useGetUserMutation();
     const [isShowingViewImageModal, setIsShowingViewImageModal] =
         useState(false);
+    const [isShowingViewImageAVTModal, setIsShowingViewImageAVTModal] =
+        useState(false);
     const [isShowingUpdateProfileModal, setIsShowingUpdateProfieModal] =
         useState(false);
 
@@ -31,13 +33,19 @@ const ProfileOverview = () => {
     }, [getUser]);
 
     const showViewImageModal = () => {
-        setIsShowingViewImageModal(true);
+        setIsShowingViewImageAVTModal(true);
     };
 
     const hideViewImageModal = () => {
-        setIsShowingViewImageModal(false);
+        setIsShowingViewImageAVTModal(false);
     };
 
+    const showViewBGImageModal = () => {
+        setIsShowingViewImageModal(true);
+    };
+    const hideViewBGImageModal = () => {
+        setIsShowingViewImageModal(false);
+    };
     const showUpdateProfileModal = () => {
         setIsShowingUpdateProfieModal(true);
     };
@@ -74,7 +82,7 @@ const ProfileOverview = () => {
             {/* Background Image */}
             <div
                 className="h-[460px]"
-                onClick={showViewImageModal}
+                onClick={showViewBGImageModal}
             >
                 <Image
                     src={userData?.backgroundImage}
@@ -178,11 +186,26 @@ const ProfileOverview = () => {
             </div>
             <ModalWrapper
                 hideModal={hideViewImageModal}
+                isShowing={isShowingViewImageAVTModal}
+                bgrColor="bg-[rgba(255,255,255,0.9)]"
+            >
+                <ViewPhoto
+                    hideModal={hideViewImageModal}
+                    srcImage={userData?.avatar}
+                />
+            </ModalWrapper>
+
+            <ModalWrapper
+                hideModal={hideViewBGImageModal}
                 isShowing={isShowingViewImageModal}
                 bgrColor="bg-[rgba(255,255,255,0.9)]"
             >
-                <ViewPhoto hideModal={hideViewImageModal} />
+                <ViewPhoto
+                    hideModal={hideViewBGImageModal}
+                    srcImage={userData?.backgroundImage}
+                />
             </ModalWrapper>
+
             <ModalWrapper
                 hideModal={hideUpdateProfileModal}
                 isShowing={isShowingUpdateProfileModal}

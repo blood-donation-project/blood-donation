@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
@@ -29,6 +29,19 @@ const NavMenu = () => {
     const [isShowingSearchMobile, setIsShowingSearchMobile] = useState(false);
     const [isShowingMobileMenu, setIsShowingMobileMenu] = useState(false);
     const [activeId, setActiveId] = useState('1');
+
+    const [getUser, { data: userData }] = useGetUserMutation();
+    console.log(userData);
+    useEffect(() => {
+        try {
+            const fetchUserData = async () => {
+                await getUser().unwrap();
+            };
+            fetchUserData();
+        } catch (error) {
+            console.log(error);
+        }
+    }, [getUser]);
 
     const navLinks = [
         {
@@ -302,7 +315,7 @@ const NavMenu = () => {
                                             <div>
                                                 <img
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
+                                                    src={"https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"}
                                                     alt="avatar"
                                                 />
                                             </div>
@@ -347,18 +360,18 @@ const NavMenu = () => {
                                     <div className="px-2 py-1 hover:bg-[#ebedf0] rounded-[6px] ">
                                         <Link
                                             className="flex py-1.5 items-center "
-                                            to={`/user/${12312}`}
+                                            to={`/user/${userData?._id}`}
                                         >
                                             <div>
                                                 <img
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
+                                                    src={userData?.avatar}
                                                     alt="avatar"
                                                 />
                                             </div>
                                             <div className="ml-2">
                                                 <p className="text-[16px] font-semibold ">
-                                                    Hoàng Xuân Việt
+                                                    {userData?.username}
                                                 </p>
                                             </div>
                                         </Link>
@@ -387,7 +400,7 @@ const NavMenu = () => {
                         <div onClick={toggleVisibilityAccountControl}>
                             <img
                                 className="w-10 h-10 rounded-[50%] cursor-pointer"
-                                src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/361256160_1420481928775878_514483897564070731_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=JnEgyCSJGO0Q7kNvgGkTvWu&_nc_ht=scontent.fhan2-5.fna&oh=00_AYBkfNMc23WtT5ya7AaKej7YpsHqnqvNuxDYHg7CIe0NOQ&oe=664955EB"
+                                src={userData?.avatar}
                                 alt="avatar"
                             />
                         </div>
