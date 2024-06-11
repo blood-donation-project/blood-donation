@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import {
+    Link,
+    NavLink,
+    useActionData,
+    useLocation,
+    useNavigate,
+} from 'react-router-dom';
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
 import { TiHome } from 'react-icons/ti';
 import { MdEvent, MdLogout } from 'react-icons/md';
@@ -14,8 +20,10 @@ import MobileSearch from './Modal/ModalContent/MobileSearch';
 import MobileMenu from './Modal/ModalContent/MobileMenu';
 import { useLogoutMutation } from '../Redux/features/auth/authAPI';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
+import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
 
 const NavMenu = () => {
+    useAutoRefreshToken('/api/user/get-user');
     const [logOut] = useLogoutMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
@@ -31,16 +39,15 @@ const NavMenu = () => {
     const [activeId, setActiveId] = useState('1');
 
     const [getUser, { data: userData }] = useGetUserMutation();
-    console.log(userData);
     useEffect(() => {
-        try {
-            const fetchUserData = async () => {
+        const fetchUserData = async () => {
+            try {
                 await getUser().unwrap();
-            };
-            fetchUserData();
-        } catch (error) {
-            console.log(error);
-        }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchUserData();
     }, [getUser]);
 
     const navLinks = [
@@ -315,7 +322,9 @@ const NavMenu = () => {
                                             <div>
                                                 <img
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src={"https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"}
+                                                    src={
+                                                        'https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C'
+                                                    }
                                                     alt="avatar"
                                                 />
                                             </div>

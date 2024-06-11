@@ -40,9 +40,8 @@ const Register = () => {
     const [street, setStreet] = useState('');
     const [password, setPassword] = useState('');
     const [rePassword, setRepassword] = useState('');
-    const [role, setRole] = useState('donor');
+    const [role, setRole] = useState('Người hiến máu');
     const navigate = useNavigate();
-
     useEffect(() => {
         getProvinces().then(setProvinces);
     }, []);
@@ -103,19 +102,19 @@ const Register = () => {
         const numbersOnly = input.replace(/[^0-9]/g, '');
         setPhoneNumber(numbersOnly);
     };
+    // handle dateOfBirth
+
     // Submit Form
     const handleSubmit = async (event) => {
         try {
             event.preventDefault();
             setIsLoading(true);
-            const formatDate = moment(valueDate?.startDate).format(
-                'DD/MM/YYYY'
-            );
+
             const newUser = {
                 name: name,
                 email: email,
                 phoneNumber: phoneNumber,
-                birthday: formatDate,
+                birthday: valueDate?.startDate,
                 gender: gender,
                 address: {
                     province: selectedProvince.name,

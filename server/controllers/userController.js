@@ -55,7 +55,6 @@ const userController = {
             const user = await User.findById(decodedToken.id).select(
                 '-password'
             );
-            console.log(user.id);
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -96,6 +95,34 @@ const userController = {
             res.status(200).json(result);
         } catch (error) {
             return res.status(500).json({ message: 'Lỗi cập nhật người dùng' });
+        }
+    },
+    //Get user by iD
+    getUserById: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            const authHeader = req.headers.authorization;
+            const token = authHeader && authHeader.split(' ')[1];
+            if (!token) {
+                return res.status(401).json({ message: 'No token provided' });
+            }
+            const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+            const [userById, currentUser] = await Promise.all([
+                User.findById(userId).select('-password').lean(),
+                User.findById(decodedToken.id).lean(),
+            ]);
+            if (!userById) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const check =
+                userById._id.toString() === currentUser._id.toString()
+                    ? 'owner'
+                    : 'not owner';
+            const { ...userData } = userById;
+            return res.status(200).json({ check, user: userData });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
         }
     },
 };

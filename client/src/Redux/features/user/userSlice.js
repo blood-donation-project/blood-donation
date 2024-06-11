@@ -42,6 +42,19 @@ const userSlice = createSlice({
                         );
                     }
                 }
+            )
+            .addMatcher(
+                userAPI.endpoints.getUserById.matchFulfilled,
+                (state, { payload }) => {
+                    state.user = payload;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                userAPI.endpoints.getUserById.matchRejected,
+                (state, action) => {
+                    state.error = action.error.message;
+                }
             );
     },
 });

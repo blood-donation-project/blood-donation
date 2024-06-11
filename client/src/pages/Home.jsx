@@ -15,6 +15,7 @@ import UserFriendLoading from '../components/LoadingSkeleton/User/UserFriendLoad
 import UserSuggestLoading from '../components/LoadingSkeleton/User/UserSuggestLoading';
 
 const HomePage = () => {
+    useAutoRefreshToken('/home/');
     const [isShowingModal, setIsShowingModal] = useState(false);
 
     const showModal = () => {
@@ -25,14 +26,15 @@ const HomePage = () => {
         setIsShowingModal(false);
     };
 
-    useAutoRefreshToken('/home/');
     const [getUser, { data: userData }] = useGetUserMutation();
     //  GET USER HERE!
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const result = await getUser().unwrap();
-            } catch (error) {}
+                await getUser().unwrap();
+            } catch (error) {
+                console.log(error);
+            }
         };
         fetchUser();
     }, [getUser]);

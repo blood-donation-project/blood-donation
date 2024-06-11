@@ -1,36 +1,39 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import { FaPen, FaUserCheck } from 'react-icons/fa';
 import { FaFacebookMessenger } from 'react-icons/fa6';
-
+import { IoPersonAdd } from 'react-icons/io5';
 import Image from '../Image/Image';
 import Avatar from '../Image/Avatar';
 import ModalWrapper from '../Modal/ModalWrapper';
 import ViewPhoto from '../Modal/ModalContent/ViewPhoto';
 import UpdateProfile from '../Modal/ModalContent/UpdateProfile';
-import { useGetUserMutation } from '../../Redux/features/user/userAPI';
+import { useGetUserByIdMutation } from '../../Redux/features/user/userAPI';
 
 const ProfileOverview = () => {
     const location = useLocation();
     const pathName = location.pathname.split('/')[3] || '';
-    const [getUser, { data: userData }] = useGetUserMutation();
+    const params = useParams();
+    // Get User By ID
+    const [getUserById, { data: userDataById }] = useGetUserByIdMutation();
     const [isShowingViewImageModal, setIsShowingViewImageModal] =
         useState(false);
     const [isShowingViewImageAVTModal, setIsShowingViewImageAVTModal] =
         useState(false);
     const [isShowingUpdateProfileModal, setIsShowingUpdateProfieModal] =
         useState(false);
-
+    console.log(userDataById);
     useEffect(() => {
         try {
+            const userId = params.id;
             const fetchUserData = async () => {
-                await getUser().unwrap();
+                await getUserById(userId).unwrap();
             };
             fetchUserData();
         } catch (error) {
             console.log(error);
         }
-    }, [getUser]);
+    }, [getUserById, params.id]);
 
     const showViewImageModal = () => {
         setIsShowingViewImageAVTModal(true);
@@ -56,22 +59,22 @@ const ProfileOverview = () => {
 
     const navProfileLinks = [
         {
-            path: `/user/${123}/`,
+            path: `/user/${userDataById?.user?._id}/`,
             title: 'Bài viết',
             lastPath: '',
         },
         {
-            path: `/user/${123}/about`,
+            path: `/user/${userDataById?.user?._id}/about`,
             title: 'Giới thiệu',
             lastPath: 'about',
         },
         {
-            path: `/user/${123}/friends`,
+            path: `/user/${userDataById?.user?._id}/friends`,
             title: 'Bạn bè',
             lastPath: 'friends',
         },
         {
-            path: `/user/${123}/photos`,
+            path: `/user/${userDataById?.user?._id}/photos`,
             title: 'Ảnh',
             lastPath: 'photos',
         },
@@ -85,7 +88,7 @@ const ProfileOverview = () => {
                 onClick={showViewBGImageModal}
             >
                 <Image
-                    src={userData?.backgroundImage}
+                    src={userDataById?.user?.backgroundImage}
                     className="w-full h-full object-cover cursor-pointer"
                     alt="background"
                 />
@@ -100,7 +103,7 @@ const ProfileOverview = () => {
                             onClick={showViewImageModal}
                         >
                             <Avatar
-                                src={userData?.avatar}
+                                src={userDataById?.user?.avatar}
                                 className="w-[144px] h-[144px]"
                                 alt="avatar"
                             />
@@ -109,7 +112,7 @@ const ProfileOverview = () => {
                     <div className="ml-[12px] xs:flex md:block xs:flex-col xs:items-center">
                         <div className="flex-center ">
                             <h3 className="text-[24px] font-semibold leading-[24px] ">
-                                {userData?.username}
+                                {userDataById?.user?.username}
                             </h3>
                         </div>
                         <div className="">
@@ -136,24 +139,50 @@ const ProfileOverview = () => {
                     </div>
                 </div>
                 <div className="xs:mt-3 xs:justify-center md:justify-start md:mt-0 flex items-center">
-                    <button
-                        className="bg-[#e4e6eb] hover:bg-[#d8d8d8] flex-center rounded-[6px] px-2 py-1"
-                        onClick={showUpdateProfileModal}
-                    >
-                        <FaPen className="mr-2" />
-                        Chỉnh sửa trang cá nhân
-                    </button>
-
-                    {/* <div className="flex">
-                        <button className="bg-[#e4e6eb] hover:bg-[#d8d8d8] mr-2 flex-center rounded-[6px] px-2 py-1">
-                            <FaUserCheck className="mr-2" />
-                            Bạn bè
-                        </button>{' '}
-                        <button className="bg-[#e4e6eb] hover:bg-red-600 bg-red-500 text-white flex-center rounded-[6px] px-2 py-1">
-                            <FaFacebookMessenger className="mr-2" />
-                            Nhắn tin
+                    {/* Handle User */}
+                    {userDataById?.check === 'owner' ? (
+                        <button
+                            className="bg-[#e4e6eb] hover:bg-[#d8d8d8] flex-center rounded-[6px] px-2 py-1"
+                            onClick={showUpdateProfileModal}
+                        >
+                            <FaPen className="mr-2" />
+                            Chỉnh sửa trang cá nhân
                         </button>
-                    </div> */}
+                    ) : userDataById?.user?.role === 'Cơ sở y tế' ? (
+                        <div className="flex">
+                            {/* Handle Add friend */}
+                            <button className="bg-[#e4e6eb] hover:bg-[#d8d8d8] mr-2 flex-center rounded-[6px] px-2 py-1">
+                                <FaUserCheck className="mr-2" />
+                                Theo Dõi
+                            </button>{' '}
+                            <Link
+                                to={`/message/${userDataById?.user?._id}`}
+                                className="bg-[#0866ff] hover:bg-[#0554d3] text-white flex-center rounded-[6px] px-2 py-1"
+                            >
+                                <FaFacebookMessenger className="mr-2" />
+                                Nhắn tin
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="flex">
+                            {/* Handle Add friend */}
+                            <button className="bg-[#e4e6eb] hover:bg-[#d8d8d8] mr-2 flex-center rounded-[6px] px-2 py-1">
+                                <FaUserCheck className="mr-2 w-4 h-4" />
+                                Bạn bè
+                            </button>
+                            <button className="bg-[#0866ff] hover:bg-[#0554d3] text-white mr-2 flex-center rounded-[6px] px-2 py-1">
+                                <IoPersonAdd className="mr-2" />
+                                Thêm bạn bè
+                            </button>{' '}
+                            <Link
+                                to={`/message/${userDataById?.user?._id}`}
+                                className="bg-[#0866ff] hover:bg-[#0554d3] text-white flex-center rounded-[6px] px-2 py-1"
+                            >
+                                <FaFacebookMessenger className="mr-2" />
+                                Nhắn tin
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -191,7 +220,7 @@ const ProfileOverview = () => {
             >
                 <ViewPhoto
                     hideModal={hideViewImageModal}
-                    srcImage={userData?.avatar}
+                    srcImage={userDataById?.avatar}
                 />
             </ModalWrapper>
 
@@ -202,7 +231,7 @@ const ProfileOverview = () => {
             >
                 <ViewPhoto
                     hideModal={hideViewBGImageModal}
-                    srcImage={userData?.backgroundImage}
+                    srcImage={userDataById?.backgroundImage}
                 />
             </ModalWrapper>
 

@@ -6,21 +6,24 @@ import { FaUserNurse } from 'react-icons/fa6';
 
 import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
-import { useGetUserMutation } from '../../Redux/features/user/userAPI';
+import { useGetUserByIdMutation } from '../../Redux/features/user/userAPI';
+import { useParams } from 'react-router-dom';
 
 const AboutPage = () => {
-    const [getUser, { data: userData }] = useGetUserMutation();
-    console.log(userData);
+    const [getUserById, { data: userDataById }] = useGetUserByIdMutation();
+    const params = useParams();
+    console.log(userDataById);
     useEffect(() => {
         try {
+            const userId = params.id;
             const fetchUserData = async () => {
-                await getUser().unwrap();
+                await getUserById(userId).unwrap();
             };
             fetchUserData();
         } catch (error) {
             console.log(error);
         }
-    }, [getUser]);
+    }, [getUserById, params.id]);
     return (
         <>
             <NavMenu />
@@ -32,9 +35,9 @@ const AboutPage = () => {
                 <div className="bg-gray-200 pt-4 pb-10 min-h-[calc(100vh_-_636px)] ">
                     <div className="max-w-[1150px] mx-auto md:px-4">
                         <div className="bg-white p-4 md:rounded-lg overflow-hidden">
-                            <div className="grid md:grid-cols-7">
-                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                    <div className="flex md:flex-col xs:flex-row">
+                            <div className="grid md:grid-cols-2 gap-2">
+                                <div className=" flex flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                    <div className="flex gap-6 items-center flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <MdEmail />
                                         </div>
@@ -44,12 +47,12 @@ const AboutPage = () => {
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
                                         <span className=" word-wrap">
-                                            {userData?.email}
+                                            {userDataById?.user?.email}
                                         </span>
                                     </div>
                                 </div>
-                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
-                                    <div className="flex md:flex-col xs:flex-row">
+                                <div className=" flex  flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
+                                    <div className="flex gap-7 items-center flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <FaBirthdayCake />
                                         </div>
@@ -58,11 +61,11 @@ const AboutPage = () => {
                                         </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                        {userData?.dateOfBirth}
+                                        {userDataById?.user?.dateOfBirth}
                                     </div>
                                 </div>
-                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                    <div className="flex md:flex-col xs:flex-row">
+                                <div className=" flex  flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                    <div className="flex gap-7 items-center flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <PiGenderIntersexFill />
                                         </div>
@@ -71,11 +74,11 @@ const AboutPage = () => {
                                         </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                        {userData?.gender}
+                                        {userDataById?.user?.gender}
                                     </div>
                                 </div>
-                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                    <div className="flex md:flex-col xs:flex-row">
+                                <div className=" flex  flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                    <div className="flex gap-7 items-center flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <FaCity />
                                         </div>
@@ -84,25 +87,51 @@ const AboutPage = () => {
                                         </div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        {`${userData?.address?.street}, ${userData?.address?.ward}, ${userData?.address?.district}, ${userData?.address?.province} `}
+                                        {`${userDataById?.user?.address?.street}, 
+                                        ${userDataById?.user.address?.ward}, 
+                                        ${userDataById?.user?.address?.district}, 
+                                        ${userDataById?.user?.address?.province} `}
                                     </div>
                                 </div>
-                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                    <div className="flex md:flex-col xs:flex-row">
-                                        <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                            <FaPhone />
+                                {userDataById?.user?.role !== 'Cơ sở y tế' ? (
+                                    userDataById?.check === 'owner' ? (
+                                        <div className=" flex  flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                            <div className="flex gap-7 items-center flex-row">
+                                                <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
+                                                    <FaPhone />
+                                                </div>
+                                                <div className="text-[#65676B] text-[14px]">
+                                                    Liên hệ
+                                                </div>
+                                            </div>
+                                            <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
+                                                {
+                                                    userDataById?.user
+                                                        ?.phoneNumber
+                                                }
+                                            </div>
                                         </div>
-                                        <div className="text-[#65676B] text-[14px]">
-                                            Liên hệ
+                                    ) : (
+                                        ''
+                                    )
+                                ) : (
+                                    <div className=" flex  flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                        <div className="flex gap-7 items-center flex-row">
+                                            <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
+                                                <FaPhone />
+                                            </div>
+                                            <div className="text-[#65676B] text-[14px]">
+                                                Liên hệ
+                                            </div>
+                                        </div>
+                                        <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
+                                            {userDataById?.user?.phoneNumber}
                                         </div>
                                     </div>
-                                    <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        {userData?.phoneNumber}
-                                    </div>
-                                </div>
+                                )}
 
-                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                    <div className="flex md:flex-col xs:flex-row">
+                                <div className=" flex  flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                    <div className="flex gap-7 items-center flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <MdBloodtype />
                                         </div>
@@ -112,12 +141,13 @@ const AboutPage = () => {
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
                                         <span className=" word-wrap">
-                                            {userData?.bloodGroup || '-'}
+                                            {userDataById?.user?.bloodGroup ||
+                                                '-'}
                                         </span>
                                     </div>
                                 </div>
-                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                    <div className="flex md:flex-col xs:flex-row">
+                                <div className=" flex  flex-col gap-1 px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                    <div className="flex gap-7 items-center flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
                                             <FaUserNurse />
                                         </div>
@@ -127,7 +157,7 @@ const AboutPage = () => {
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
                                         <span className=" word-wrap">
-                                            {userData?.role}
+                                            {userDataById?.user?.role}
                                         </span>
                                     </div>
                                 </div>

@@ -20,7 +20,7 @@ const authController = {
                 name,
                 email,
                 password,
-                birthday,
+                dateOfBirth,
                 address,
                 phoneNumber,
                 gender,
@@ -43,17 +43,15 @@ const authController = {
 
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
-            const formattedBirthday = moment(birthday, 'DD/MM/YYYY').format(
-                'DD/MM/YYYY'
-            );
-
+            const formattedBirthday = moment(dateOfBirth).format('DD/MM/YYYY');
+            console.log(formattedBirthday);
             // Create new User
             const newUser = new User({
                 username: name,
                 email,
                 address,
                 phoneNumber,
-                birthday: formattedBirthday,
+                dateOfBirth: formattedBirthday,
                 gender,
                 role,
                 password: hashedPassword,
@@ -115,7 +113,11 @@ const authController = {
                     .status(404)
                     .json({ code: 401, message: 'Wrong password' });
             }
-
+            if (user.block) {
+                return res
+                    .status(403)
+                    .json({ code: 403, message: 'ACCOUNT_LOCKED' });
+            }
             if (!user.verified) {
                 let token = await Token.findOne({
                     userId: user._id,

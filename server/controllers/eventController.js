@@ -30,7 +30,7 @@ const eventController = {
             const formattedDay = moment(donationTime, 'YYYY/MM/DD').format(
                 'DD/MM/YYYY'
             );
-            console.log(donationTime);
+            
 
             const newEvent = new Event({
                 eventName,

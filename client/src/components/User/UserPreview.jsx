@@ -16,6 +16,7 @@ import Avatar from '../Image/Avatar';
     }
 */
 
+
 const UserPreview = ({ data }) => {
     return (
         <div className="p-4">

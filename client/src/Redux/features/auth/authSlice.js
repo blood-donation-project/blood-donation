@@ -25,10 +25,17 @@ const authSlice = createSlice({
                     state.error = action.error.message;
                     if (action.payload?.data?.code === 401) {
                         toast.error('Tài khoản hoặc mật khẩu không chính xác.');
-                    } else if (action.payload?.data?.code === 403) {
+                    } else if (
+                        action.payload?.data?.message ===
+                        'Email is not verified'
+                    ) {
                         toast.error(
                             'Vui lòng xác thực email trước khi đăng nhập'
                         );
+                    } else if (
+                        action.payload?.data?.message === 'ACCOUNT_LOCKED'
+                    ) {
+                        toast.error('Tài khoản này đã bị khóa!');
                     } else {
                         toast.error('Đăng nhập thất bại !');
                     }

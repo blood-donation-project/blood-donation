@@ -27,9 +27,20 @@ export const userAPI = createApi({
                 body: eventData,
             }),
         }),
+        getUserById: builder.mutation({
+            query: (userId) => ({
+                url: `get-user-by-id/${userId}`,
+                method: 'POST',
+                body: userId,
+            }),
+        }),
     }),
 });
 
-export const { useGetUserMutation, useUpdateUserMutation } = userAPI;
+export const {
+    useGetUserMutation,
+    useUpdateUserMutation,
+    useGetUserByIdMutation,
+} = userAPI;
 
 export default userAPI;
