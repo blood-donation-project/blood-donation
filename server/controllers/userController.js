@@ -62,7 +62,6 @@ const userController = {
                 identification: identification,
                 _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
             });
-            console.log('Identi', req.body);
             const checkPhoneNumber = await User.findOne({
                 phoneNumber: phoneNumber,
                 _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
@@ -77,7 +76,6 @@ const userController = {
             if (checkPhoneNumber) {
                 return res.status(409).json({ message: 'PhoneNumber exist' });
             }
-            console.log(checkPhoneNumber);
 
             const result = await User.updateOne(
                 { _id: user.id },

@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import eventAPI from './eventAPI';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
 const eventSlice = createSlice({
     name: 'event',

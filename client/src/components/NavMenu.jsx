@@ -21,7 +21,8 @@ import MobileMenu from './Modal/ModalContent/MobileMenu';
 import { useLogoutMutation } from '../Redux/features/auth/authAPI';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
 import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
-
+import { useGetReceiverMutation } from '../Redux/features/message/messageAPI';
+import { useParams } from 'react-router-dom';
 const NavMenu = () => {
     useAutoRefreshToken('/api/user/get-user');
     const [logOut] = useLogoutMutation();
@@ -49,6 +50,19 @@ const NavMenu = () => {
         };
         fetchUserData();
     }, [getUser]);
+
+    const [getReceiver, { data: receiverMessage }] = useGetReceiverMutation();
+    const params = useParams();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getReceiver().unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getReceiver, params.id]);
 
     const navLinks = [
         {
@@ -271,7 +285,7 @@ const NavMenu = () => {
                     {/* Message */}
                     <Link
                         className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 "
-                        to="/message"
+                        to={`/message/${receiverMessage?.[0]?.latestMessage?.receiverId}`}
                     >
                         <FaFacebookMessenger className="text-[20px]" />
                     </Link>

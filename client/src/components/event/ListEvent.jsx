@@ -17,7 +17,6 @@ const ListEvent = ({
     eventId,
     buttonName,
 }) => {
-    console.log(index);
     return (
         <div
             key={index}

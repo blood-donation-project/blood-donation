@@ -30,8 +30,7 @@ export const userAPI = createApi({
         getUserById: builder.mutation({
             query: (userId) => ({
                 url: `get-user-by-id/${userId}`,
-                method: 'POST',
-                body: userId,
+                method: 'GET',
             }),
         }),
     }),

@@ -1,25 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IoSend } from 'react-icons/io5';
 import Picker from 'emoji-picker-react';
-import { BsEmojiSmileFill } from "react-icons/bs";
+import { BsEmojiSmileFill } from 'react-icons/bs';
+import { useSendMessageMutation } from '../../../Redux/features/message/messageAPI';
+import { useParams } from 'react-router-dom';
 // Chat Footer component
-const ChatFooter = ({ onSendMessage }) => {
+const ChatFooter = () => {
     const emojiRef = useRef(null);
     const emojiButtonRef = useRef(null);
-    const [message, setMessage] = useState('');
+    const [sendMessage] = useSendMessageMutation();
+    const params = useParams();
+    const [content, setContent] = useState('');
     const [isPickerVisible, setPickerVisible] = useState(false);
 
-    const handleSendMessage = (e) => {
+    const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!message.trim()) return;
-        onSendMessage(message);
-        setMessage('');
+        if (!content.trim()) return;
+        try {
+            const receiverId = params.id;
+            await sendMessage({ receiverId, content }).unwrap();
+            setContent('');
+        } catch (error) {
+            console.log(error);
+            setContent('');
+        }
     };
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (emojiRef.current && !emojiRef.current.contains(event.target) && !emojiButtonRef.current.contains(event.target) ) {
-                    setPickerVisible(false)
-                
+            if (
+                emojiRef.current &&
+                !emojiRef.current.contains(event.target) &&
+                !emojiButtonRef.current.contains(event.target)
+            ) {
+                setPickerVisible(false);
             }
         };
 
@@ -30,7 +43,7 @@ const ChatFooter = ({ onSendMessage }) => {
     }, [emojiRef]);
 
     const onEmojiClick = (emojiObject) => {
-        setMessage((prevInput) => prevInput + emojiObject.emoji);
+        setContent((prevInput) => prevInput + emojiObject.emoji);
     };
 
     const togglePicker = () => {
@@ -38,7 +51,7 @@ const ChatFooter = ({ onSendMessage }) => {
     };
 
     return (
-        <div className="chat-footer px-4 py-3 flex-none">
+        <div className="chat-footer px-4 py-3 flex-none border">
             <form
                 className="flex items-center"
                 onSubmit={handleSendMessage}
@@ -47,7 +60,6 @@ const ChatFooter = ({ onSendMessage }) => {
                     {isPickerVisible && (
                         <div
                             ref={emojiRef}
-                            
                             className="absolute z-10 bottom-full right-2 mb-2"
                         >
                             <Picker
@@ -56,22 +68,20 @@ const ChatFooter = ({ onSendMessage }) => {
                             />
                         </div>
                     )}
-                    <button 
+                    <button
                         ref={emojiButtonRef}
                         onClick={togglePicker}
                         className="absolute right-9  outline-none"
                         type="button"
                     >
-                        <BsEmojiSmileFill 
-                        className='w-7 h-7 text-blue-600 hover:text-blue-500'
-                        />
+                        <BsEmojiSmileFill className="w-7 h-7 text-blue-600 hover:text-blue-500" />
                     </button>
                     <input
                         className=" flex-1 p-4 bg-gray-200 text-lg rounded-3xl mr-2 outline-none transition-all duration-300 focus:border border-blue-500"
                         type="text"
                         placeholder="Aa"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
                     />
                 </div>
                 <button

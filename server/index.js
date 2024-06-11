@@ -10,6 +10,7 @@ const homeRoute = require('./routes/home');
 const newsRoute = require('./routes/news');
 const eventRoute = require('./routes/event');
 const userRoute = require('./routes/user');
+const messageRoute = require('./routes/message');
 const errorMiddleware = require('./middleware/errorMiddleware');
 const middlewareController = require('./controllers/middlewareController');
 
@@ -35,6 +36,8 @@ app.use('/home', middlewareController.verifyToken, homeRoute);
 app.use('/news', newsRoute);
 app.use('/events', eventRoute);
 app.use('/api/user', middlewareController.verifyToken, userRoute);
+app.use('/message', messageRoute);
+
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3001;

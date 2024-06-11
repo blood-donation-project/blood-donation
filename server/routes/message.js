@@ -1,22 +1,23 @@
 const router = require('express').Router();
+const messageController = require('../controllers/messageController');
 const middlewareController = require('../controllers/middlewareController');
-const userController = require('../controllers/userController');
-
-router.get(
-    '/get-user',
-    middlewareController.verifyToken,
-    userController.getUser
-);
-
-router.get(
-    '/get-user-by-id/:id',
-    middlewareController.verifyToken,
-    userController.getUserById
-);
 
 router.post(
-    '/update-user',
+    '/send-message/:id',
     middlewareController.verifyToken,
-    userController.updateUser
+    messageController.sendMessage
 );
+
+router.get(
+    '/get-message/:id',
+    middlewareController.verifyToken,
+    messageController.getMessage
+);
+
+router.get(
+    '/get-receiver',
+    middlewareController.verifyToken,
+    messageController.getReceiver
+);
+
 module.exports = router;

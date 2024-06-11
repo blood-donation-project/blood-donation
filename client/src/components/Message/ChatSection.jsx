@@ -5,7 +5,7 @@ import ChatFooter from './ChatSection/ChatFooter';
 
 const ChatSection = () => {
     return (
-        <section className="flex flex-col flex-auto border-l border-gray-200">
+        <section className="flex h-screen flex-col flex-auto border-l border-gray-200">
             <ChatHeader />
             <ChatBody />
             <ChatFooter />

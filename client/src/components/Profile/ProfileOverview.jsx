@@ -24,15 +24,15 @@ const ProfileOverview = () => {
         useState(false);
     console.log(userDataById);
     useEffect(() => {
-        try {
-            const userId = params.id;
-            const fetchUserData = async () => {
+        const userId = params.id;
+        const fetchUserData = async () => {
+            try {
                 await getUserById(userId).unwrap();
-            };
-            fetchUserData();
-        } catch (error) {
-            console.log(error);
-        }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchUserData();
     }, [getUserById, params.id]);
 
     const showViewImageModal = () => {
