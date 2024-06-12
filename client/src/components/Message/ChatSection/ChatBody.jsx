@@ -1,38 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useGetMessageMutation } from '../../../Redux/features/message/messageAPI';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
 import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
 import { Skeleton } from 'antd';
 import { useGetUserMutation } from '../../../Redux/features/user/userAPI';
-// Chat Body component
-const ChatBody = () => {
-    const [isLoading, setIsLoading] = useState(false);
+
+const ChatBody = ({ messages }) => {
     useAutoRefreshToken('/home/');
-    const [getMessage, { data: messageData }] = useGetMessageMutation();
     const [getUser, { data: userData }] = useGetUserMutation();
-    const params = useParams();
     const chatContainerRef = useRef(null);
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                const receiverId = params.id;
-                await getMessage(receiverId).unwrap();
-                setIsLoading(false);
-            } catch (error) {
-                console.log(error);
-                setIsLoading(false);
-            }
-        };
-        fetchData();
-    }, [getMessage, params.id]);
 
     useEffect(() => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop =
                 chatContainerRef.current.scrollHeight;
         }
-    }, [messageData]);
+    }, [messages]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,46 +26,41 @@ const ChatBody = () => {
         fetchData();
     }, [getUser]);
 
+    if (!userData) {
+        return <Skeleton active />;
+    }
+
     return (
         <div>
-            {messageData ? (
+            {messages.length > 0 ? (
                 <div
                     ref={chatContainerRef}
                     className="chat-body w-full h-[80vh] p-4 flex-1 overflow-y-scroll bg-white flex flex-col"
                 >
-                    <Skeleton
-                        loading={isLoading}
-                        active
-                        className=""
-                    >
-                        {messageData?.map((message) => (
+                    {messages.map((message, index) => (
+                        <div
+                            key={index}
+                            className={`flex ${
+                                message.senderId._id === userData._id
+                                    ? 'justify-end'
+                                    : 'justify-start'
+                            } break-words`}
+                        >
                             <div
-                                key={message._id}
-                                className={` flex ${
-                                    message?.senderId?._id === userData?._id
-                                        ? 'justify-end'
-                                        : 'justify-start'
-                                } break-words `}
+                                className={`px-3 py-2 rounded-3xl my-1 max-w-xs ${
+                                    message.senderId._id === userData._id
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-200 text-black'
+                                }`}
                             >
-                                <div
-                                    className={`px-3 py-2 rounded-3xl my-1 max-w-xs ${
-                                        message.senderId._id === userData?._id
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-200 text-black'
-                                    }`}
-                                >
-                                    {message.content}
-                                </div>
+                                {message.content}
                             </div>
-                        ))}
-                    </Skeleton>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <div className="flex h-[80vh] items-center flex-col">
-                    <Skeleton
-                        loading={isLoading}
-                        active
-                    >
+                    <Skeleton>
                         <div className="flex flex-col items-center">
                             <div className="h-10"></div>
                             <img

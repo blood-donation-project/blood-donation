@@ -2,29 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { IoSend } from 'react-icons/io5';
 import Picker from 'emoji-picker-react';
 import { BsEmojiSmileFill } from 'react-icons/bs';
-import { useSendMessageMutation } from '../../../Redux/features/message/messageAPI';
-import { useParams } from 'react-router-dom';
-// Chat Footer component
-const ChatFooter = () => {
+
+const ChatFooter = ({ input, setInput, handleSendMessage }) => {
     const emojiRef = useRef(null);
     const emojiButtonRef = useRef(null);
-    const [sendMessage] = useSendMessageMutation();
-    const params = useParams();
-    const [content, setContent] = useState('');
     const [isPickerVisible, setPickerVisible] = useState(false);
 
-    const handleSendMessage = async (e) => {
-        e.preventDefault();
-        if (!content.trim()) return;
-        try {
-            const receiverId = params.id;
-            await sendMessage({ receiverId, content }).unwrap();
-            setContent('');
-        } catch (error) {
-            console.log(error);
-            setContent('');
-        }
-    };
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -43,7 +26,7 @@ const ChatFooter = () => {
     }, [emojiRef]);
 
     const onEmojiClick = (emojiObject) => {
-        setContent((prevInput) => prevInput + emojiObject.emoji);
+        setInput((prevInput) => prevInput + emojiObject.emoji);
     };
 
     const togglePicker = () => {
@@ -53,8 +36,8 @@ const ChatFooter = () => {
     return (
         <div className="chat-footer px-4 py-3 flex-none border">
             <form
-                className="flex items-center"
                 onSubmit={handleSendMessage}
+                className="flex items-center"
             >
                 <div className="relative flex flex-1 items-center rounded-s-3xl">
                     {isPickerVisible && (
@@ -80,8 +63,8 @@ const ChatFooter = () => {
                         className=" flex-1 p-4 bg-gray-200 text-lg rounded-3xl mr-2 outline-none transition-all duration-300 focus:border border-blue-500"
                         type="text"
                         placeholder="Aa"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
                     />
                 </div>
                 <button
