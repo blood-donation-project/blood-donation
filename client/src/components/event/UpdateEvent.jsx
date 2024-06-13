@@ -81,10 +81,11 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
 
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
-        const province = provinces?.find((p) => p?.idProvince === provinceId);
+
+        const province = provinces?.data?.find((p) => p?.id === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.name || '',
+            name: province?.full_name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
@@ -94,10 +95,10 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.find((d) => d?.idDistrict === districtId);
+        const district = districts?.data?.find((d) => d?.id === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.name : '',
+            name: district ? district?.full_name : '',
         });
         // Reset wards when district changes
         setWards([]);
@@ -105,9 +106,10 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.find((w) => w.idCommune === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
+        const ward = wards?.data?.find((w) => w.id === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.full_name : '' });
     };
+
     const handleDateValueChange = (newValue) => {
         setDateValue(newValue);
     };
@@ -234,7 +236,7 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
                         </svg>
                     </button>
                     <h2 className="text-2xl font-semibold mb-6 text-center">
-                        Chỉnh sự kiện
+                        Chỉnh sửa sự kiện
                     </h2>
                     <div className="overflow-y-auto max-h-[90%]">
                         <Spin
@@ -275,24 +277,29 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
                                                 onChange={handleProvinceChange}
                                                 className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                             >
-                                                <option value="">
-                                                    {selectedDistrict.name
-                                                        ? 'Chọn Tỉnh/Thành Phố'
-                                                        : eventData?.address
-                                                              ?.province}
-                                                </option>
-                                                {provinces?.map((province) => (
+                                                {
                                                     <option
-                                                        key={
-                                                            province.idProvince
-                                                        }
                                                         value={
-                                                            province.idProvince
+                                                            eventData?.address
+                                                                ?.province || ''
                                                         }
                                                     >
-                                                        {province.name}
+                                                        {eventData?.address
+                                                            ?.province ||
+                                                            'Chọn Tỉnh/Thành Phố'}
                                                     </option>
-                                                ))}
+                                                }
+
+                                                {provinces?.data?.map(
+                                                    (province) => (
+                                                        <option
+                                                            key={province.id}
+                                                            value={province.id}
+                                                        >
+                                                            {province.full_name}
+                                                        </option>
+                                                    )
+                                                )}
                                             </select>
                                         </div>
                                         <div className="my-2">
@@ -309,24 +316,28 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
                                                 onChange={handleDistrictChange}
                                                 className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                             >
-                                                <option value="">
-                                                    {selectedProvince.name
-                                                        ? 'Chọn Quận/Huyện'
-                                                        : eventData?.address
-                                                              ?.district}
-                                                </option>
-                                                {districts?.map((district) => (
+                                                {
                                                     <option
-                                                        key={
-                                                            district.idDistrict
-                                                        }
                                                         value={
-                                                            district.idDistrict
+                                                            eventData?.address
+                                                                ?.district || ''
                                                         }
                                                     >
-                                                        {district.name}
+                                                        {eventData?.address
+                                                            ?.district ||
+                                                            'Chọn Quận/ Huyện'}
                                                     </option>
-                                                ))}
+                                                }
+                                                {districts?.data?.map(
+                                                    (district) => (
+                                                        <option
+                                                            key={district.id}
+                                                            value={district.id}
+                                                        >
+                                                            {district.full_name}
+                                                        </option>
+                                                    )
+                                                )}
                                             </select>
                                         </div>
                                         <div className="my-2 ">
@@ -343,18 +354,24 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
                                                 value={selectedWards?.id}
                                                 className=" mt-1 p-2 w-1/2 border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                             >
-                                                <option value="">
-                                                    {selectedWards.name
-                                                        ? 'Chọn Xã/Phường'
-                                                        : eventData?.address
-                                                              ?.ward}
-                                                </option>
-                                                {wards?.map((ward) => (
+                                                {
                                                     <option
-                                                        key={ward.idCommune}
-                                                        value={ward.idCommune}
+                                                        value={
+                                                            eventData?.address
+                                                                ?.ward || ''
+                                                        }
                                                     >
-                                                        {ward.name}
+                                                        {eventData?.address
+                                                            ?.ward ||
+                                                            'Chọn Xã/Phường'}
+                                                    </option>
+                                                }
+                                                {wards?.data?.map((ward) => (
+                                                    <option
+                                                        key={ward.id}
+                                                        value={ward.id}
+                                                    >
+                                                        {ward.full_name}
                                                     </option>
                                                 ))}
                                             </select>
@@ -410,6 +427,7 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
                                     <input
                                         type="file"
                                         name="image"
+                                        required
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         onChange={handleImageChange}
                                     />
@@ -445,7 +463,7 @@ const UpdateEvent = ({ eventData, isOpen, onClose }) => {
                                         type="submit"
                                         className="px-4 outline-none py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-150"
                                     >
-                                        Thêm mới
+                                        Thay đổi
                                     </button>
                                 </div>
                             </form>

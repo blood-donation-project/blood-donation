@@ -285,7 +285,10 @@ const NavMenu = () => {
                     {/* Message */}
                     <Link
                         className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 "
-                        to={`/message/${receiverMessage?.[0]?.latestMessage?.receiverId}`}
+                        to={`/message/${
+                            receiverMessage?.[0]?.latestMessage?.receiverId ||
+                            ''
+                        }`}
                     >
                         <FaFacebookMessenger className="text-[20px]" />
                     </Link>
