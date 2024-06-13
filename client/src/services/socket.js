@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 const socket = io('http://localhost:3001');
 
 const register = (userId) => {
+    console.log('Registering user: ', userId);
     socket.emit('register', userId);
 };
 
@@ -32,6 +33,27 @@ const offNewMessage = () => {
     socket.off('newMessage');
 };
 
+const onUpdateUserStatus = (callback) => {
+    socket.on('updateUserStatus', callback);
+};
+
+const offUpdateUserStatus = (callback) => {
+    socket.off('updateUserStatus', callback);
+};
+
+const onOfflineDuration = (callback) => {
+    socket.on('offlineDuration', (data) => {
+        console.log(
+            `Received offline duration for user ${data.userId}: ${data.offlineDuration} ms`
+        ); // Log để kiểm tra userId và duration
+        callback(data);
+    });
+};
+
+const offOfflineDuration = (callback) => {
+    socket.off('offlineDuration', callback);
+};
+
 export {
     register,
     sendMessage,
@@ -40,4 +62,8 @@ export {
     joinConversationRoom,
     onNewMessage,
     offNewMessage,
+    onUpdateUserStatus,
+    offUpdateUserStatus,
+    onOfflineDuration,
+    offOfflineDuration,
 };

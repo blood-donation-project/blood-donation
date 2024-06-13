@@ -10,6 +10,8 @@ import {
     onNewMessage,
     offNewMessage,
     register,
+    onUpdateUserStatus,
+    offUpdateUserStatus,
 } from '../../../services/socket';
 
 const Contacts = () => {
@@ -21,6 +23,7 @@ const Contacts = () => {
     const messages = useSelector((state) => state.message.messages);
     const latestMessage = messages?.[messages?.length - 1];
     const [currentTime, setCurrentTime] = useState(moment());
+    const [onlineUsers, setOnlineUsers] = useState([]);
     const [conversations, setConversations] = useState([]);
     const params = useParams();
     const dispatch = useDispatch();
@@ -60,8 +63,11 @@ const Contacts = () => {
 
     // Hàm callback để xử lý sự kiện newMessage
     const handleNewMessage = useCallback((latestConversations) => {
-        console.log('Received newMessage event:', latestConversations); 
         setConversations(latestConversations);
+    }, []);
+
+    const handleUpdateUserStatus = useCallback((onlineUsers) => {
+        setOnlineUsers(onlineUsers);
     }, []);
 
     useEffect(() => {
@@ -73,12 +79,14 @@ const Contacts = () => {
         // Lắng nghe sự kiện newMessage để cập nhật danh sách hội thoại
         onNewMessage(handleNewMessage);
 
+        onUpdateUserStatus(handleUpdateUserStatus);
+
         // Cleanup khi component unmount hoặc khi userData?._id thay đổi
         return () => {
             offNewMessage(handleNewMessage);
+            offUpdateUserStatus(handleUpdateUserStatus);
         };
-    }, [userData?._id, handleNewMessage, params.id]);
-    console.log(conversations);
+    }, [userData?._id, handleNewMessage, handleUpdateUserStatus, params.id]);
     return (
         <div className="contacts p-2 flex-1 transition-all duration-300 overflow-y-scroll h-[70vh] cursor-default">
             <Skeleton
@@ -119,7 +127,7 @@ const Contacts = () => {
                                               }
                                           </p>
                                           <span className=""> · </span>
-                                          <p className="text-xs text-gray-500 flex items-center justify-center">
+                                          <p className="text-xs text-gray-500 flex  justify-center">
                                               {conversation?.latestMessage
                                                   ?.createAt
                                                   ? moment(
@@ -127,7 +135,8 @@ const Contacts = () => {
                                                             ?.latestMessage
                                                             ?.createAt
                                                     ).fromNow(currentTime)
-                                                  : ''}
+                                                  : ''}{' '}
+                                              trước
                                           </p>
                                       </div>
                                   </div>
