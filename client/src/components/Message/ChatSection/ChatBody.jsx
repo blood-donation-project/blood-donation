@@ -1,11 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
 import { Skeleton } from 'antd';
-import { useGetUserMutation } from '../../../Redux/features/user/userAPI';
+import {
+    useGetUserByIdMutation,
+    useGetUserMutation,
+} from '../../../Redux/features/user/userAPI';
+import { useParams } from 'react-router-dom';
 
 const ChatBody = ({ messages }) => {
     useAutoRefreshToken('/home/');
     const [getUser, { data: userData }] = useGetUserMutation();
+    const [getUserById, { data: userDataById }] = useGetUserByIdMutation();
+    const params = useParams();
     const chatContainerRef = useRef(null);
 
     useEffect(() => {
@@ -25,9 +31,18 @@ const ChatBody = ({ messages }) => {
         };
         fetchData();
     }, [getUser]);
-    if (!userData) {
-        return <Skeleton active />;
-    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userId = params.id; // Get user by id url
+                await getUserById(userId).unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getUserById, params.id]);
 
     return (
         <div>
@@ -59,17 +74,19 @@ const ChatBody = ({ messages }) => {
                 </div>
             ) : (
                 <div className="flex h-[80vh] items-center flex-col">
-                    <Skeleton>
+                    <Skeleton loading={false}>
                         <div className="flex flex-col items-center">
                             <div className="h-10"></div>
                             <img
-                                className="rounded-full mb-3"
-                                src="https://randomuser.me/api/portraits/med/men/75.jpg"
+                                className="rounded-full mb-3 w-20 h-20"
+                                src={userDataById?.user?.avatar}
                                 alt=""
                             />
-                            <p className="text-lg">Không biết</p>
+                            <p className="text-lg">
+                                {userDataById?.user?.username}
+                            </p>
                             <p className="text-sm text-[#65676B]">
-                                Sống tại Hà Nội
+                                Sống tại {userDataById?.user?.address?.province}
                             </p>
                         </div>
                         <div></div>
