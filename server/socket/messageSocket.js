@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 
 const onlineUsers = new Set();
-const offlineTimes = new Map();
 
 const messageSocket = (server, corsOptions) => {
     const io = socketIO(server, {
@@ -17,30 +16,14 @@ const messageSocket = (server, corsOptions) => {
         socket.on('disconnect', () => {
             console.log('User disconnected');
             onlineUsers.delete(socket.userId);
-            offlineTimes.set(socket.userId, new Date());
             io.emit('updateUserStatus', Array.from(onlineUsers));
         });
 
         socket.on('register', (userId) => {
-            console.log(`Register event received for user ${userId}`);
             socket.userId = userId;
             socket.join(userId); // Join user
             onlineUsers.add(userId);
             console.log(`User ${userId} registered and joined room ${userId}`);
-
-            // if user offline before,
-            if (offlineTimes.has(userId)) {
-                const lastOfflineTime = offlineTimes.get(userId);
-                const offlineDuration = new Date() - lastOfflineTime;
-                console.log(
-                    `Sending offline duration for user ${userId}: ${offlineDuration} ms`
-                );
-                io.to(userId).emit('offlineDuration', {
-                    userId,
-                    offlineDuration,
-                });
-                offlineTimes.delete(userId);
-            }
 
             io.emit('updateUserStatus', Array.from(onlineUsers));
         });

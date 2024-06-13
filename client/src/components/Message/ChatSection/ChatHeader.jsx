@@ -3,19 +3,14 @@ import { Link, useParams } from 'react-router-dom';
 import { useGetUserByIdMutation } from '../../../Redux/features/user/userAPI';
 import { FaCircle } from 'react-icons/fa';
 import {
-    offOfflineDuration,
     offUpdateUserStatus,
-    onOfflineDuration,
     onUpdateUserStatus,
-    register,
 } from '../../../services/socket';
-import moment from 'moment';
 
 // Chat Header component
 const ChatHeader = () => {
     const [getUserById, { data: userProfile }] = useGetUserByIdMutation();
     const [onlineUsers, setOnlineUsers] = useState([]);
-    const [offlineDurations, setOfflineDurations] = useState({});
     const params = useParams();
 
     useEffect(() => {
@@ -34,23 +29,13 @@ const ChatHeader = () => {
         setOnlineUsers(onlineUsers);
     }, []);
 
-    const handleOfflineDuration = useCallback(({ userId, offlineDuration }) => {
-        console.log(`User ${userId} offline for ${offlineDuration} ms`); // Log để kiểm tra userId và offlineDuration
-        setOfflineDurations((prev) => ({
-            ...prev,
-            [userId]: offlineDuration,
-        }));
-    }, []);
-
     useEffect(() => {
         onUpdateUserStatus(handleUpdateUserStatus);
-        onOfflineDuration(handleOfflineDuration);
 
         return () => {
             offUpdateUserStatus(handleUpdateUserStatus);
-            offOfflineDuration(handleOfflineDuration);
         };
-    }, [handleUpdateUserStatus, handleOfflineDuration, params.id]);
+    }, [handleUpdateUserStatus, params.id]);
 
     return (
         <div className="chat-header px-6 py-2 flex flex-row flex-none justify-between items-center border-b shadow-lg">
@@ -75,7 +60,7 @@ const ChatHeader = () => {
                                 <FaCircle className="mr-1" /> Đang hoạt động
                             </span>
                         ) : (
-                            <span className="text-red-400 flex items-center">
+                            <span className="text-red-500 flex items-center">
                                 <FaCircle className="mr-1" /> Offline
                             </span>
                         )}

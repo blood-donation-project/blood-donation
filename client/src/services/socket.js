@@ -41,19 +41,6 @@ const offUpdateUserStatus = (callback) => {
     socket.off('updateUserStatus', callback);
 };
 
-const onOfflineDuration = (callback) => {
-    socket.on('offlineDuration', (data) => {
-        console.log(
-            `Received offline duration for user ${data.userId}: ${data.offlineDuration} ms`
-        ); // Log để kiểm tra userId và duration
-        callback(data);
-    });
-};
-
-const offOfflineDuration = (callback) => {
-    socket.off('offlineDuration', callback);
-};
-
 export {
     register,
     sendMessage,
@@ -64,6 +51,4 @@ export {
     offNewMessage,
     onUpdateUserStatus,
     offUpdateUserStatus,
-    onOfflineDuration,
-    offOfflineDuration,
 };

@@ -16,7 +16,7 @@ const SidebarHeader = () => {
                     src={logo}
                 />
             </div>
-            <p className="text-3xl font-medium hidden md:block group-hover:block">
+            <p className="gradient-text text-3xl font-medium hidden md:block group-hover:block">
                 Tin Nhắn
             </p>
         </div>
