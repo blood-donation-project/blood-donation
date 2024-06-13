@@ -25,17 +25,16 @@ const ChatBody = ({ messages }) => {
         };
         fetchData();
     }, [getUser]);
-
     if (!userData) {
         return <Skeleton active />;
     }
 
     return (
         <div>
-            {messages.length > 0 ? (
+            {messages?.length > 0 ? (
                 <div
                     ref={chatContainerRef}
-                    className="chat-body w-full h-[80vh] p-4 flex-1 overflow-y-scroll bg-white flex flex-col"
+                    className="chat-body w-full h-[80vh] p-4 flex-1 overflow-y-scroll bg-white "
                 >
                     {messages.map((message, index) => (
                         <div

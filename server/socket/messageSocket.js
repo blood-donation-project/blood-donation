@@ -1,5 +1,7 @@
 const socketIO = require('socket.io');
 const Message = require('../models/message');
+const mongoose = require('mongoose');
+const User = require('../models/user');
 
 const messageSocket = (server, corsOptions) => {
     const io = socketIO(server, {
@@ -15,7 +17,8 @@ const messageSocket = (server, corsOptions) => {
 
         socket.on('register', (userId) => {
             socket.userId = userId;
-            console.log(`User ${userId} registered`);
+            socket.join(userId); // Join user
+            console.log(`User ${userId} registered and joined room ${userId}`);
         });
 
         socket.on('privateMessage', async ({ receiverId, content }) => {
@@ -28,6 +31,9 @@ const messageSocket = (server, corsOptions) => {
             });
             await message.save();
 
+            const sender = await User.findById(senderId);
+            const receiver = await User.findById(receiverId);
+
             console.log(
                 `User ${senderId} sent a private message to User ${receiverId}: ${content}`
             );
@@ -35,10 +41,164 @@ const messageSocket = (server, corsOptions) => {
             // Setting send message
             const roomId = [senderId, receiverId].sort().join('_');
             io.to(roomId).emit('privateMessage', {
-                senderId: { _id: senderId },
+                senderId: {
+                    _id: sender._id,
+                    username: sender.username,
+                    avatar: sender.avatar,
+                },
+                receiverId: {
+                    _id: receiver._id,
+                    username: receiver.username,
+                    avatar: receiver.avatar,
+                },
                 content,
                 _id: message._id,
+                createAt: message.createAt,
             });
+
+            // Fetch latest conversations for sender
+            const latestConversationsSender = await Message.aggregate([
+                {
+                    $match: {
+                        $or: [
+                            {
+                                senderId: new mongoose.Types.ObjectId(
+                                    sender._id
+                                ),
+                            },
+                            {
+                                receiverId: new mongoose.Types.ObjectId(
+                                    sender._id
+                                ),
+                            },
+                        ],
+                    },
+                },
+                {
+                    $sort: { createAt: -1 },
+                },
+                {
+                    $group: {
+                        _id: {
+                            $cond: [
+                                {
+                                    $eq: [
+                                        '$senderId',
+                                        new mongoose.Types.ObjectId(sender._id),
+                                    ],
+                                },
+                                '$receiverId',
+                                '$senderId',
+                            ],
+                        },
+                        latestMessage: { $first: '$$ROOT' },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'user',
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        latestMessage: 1,
+                        user: { $arrayElemAt: ['$user', 0] },
+                    },
+                },
+                {
+                    $project: {
+                        latestMessage: 1,
+                        'user.username': 1,
+                        'user.avatar': 1,
+                        'user._id': 1,
+                    },
+                },
+                {
+                    $sort: { 'latestMessage.createAt': -1 },
+                },
+            ]);
+
+            // Fetch latest conversations for receiver
+            const latestConversationsReceiver = await Message.aggregate([
+                {
+                    $match: {
+                        $or: [
+                            {
+                                senderId: new mongoose.Types.ObjectId(
+                                    receiver._id
+                                ),
+                            },
+                            {
+                                receiverId: new mongoose.Types.ObjectId(
+                                    receiver._id
+                                ),
+                            },
+                        ],
+                    },
+                },
+                {
+                    $sort: { createAt: -1 },
+                },
+                {
+                    $group: {
+                        _id: {
+                            $cond: [
+                                {
+                                    $eq: [
+                                        '$senderId',
+                                        new mongoose.Types.ObjectId(
+                                            receiver._id
+                                        ),
+                                    ],
+                                },
+                                '$receiverId',
+                                '$senderId',
+                            ],
+                        },
+                        latestMessage: { $first: '$$ROOT' },
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'user',
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        latestMessage: 1,
+                        user: { $arrayElemAt: ['$user', 0] },
+                    },
+                },
+                {
+                    $project: {
+                        latestMessage: 1,
+                        'user.username': 1,
+                        'user.avatar': 1,
+                        'user._id': 1,
+                    },
+                },
+                {
+                    $sort: { 'latestMessage.createAt': -1 },
+                },
+            ]);
+
+            // Emit newMessage event with latest conversations to sender and receiver
+            io.to(sender._id.toString()).emit(
+                'newMessage',
+                latestConversationsSender
+            );
+            io.to(receiver._id.toString()).emit(
+                'newMessage',
+                latestConversationsReceiver
+            );
         });
 
         socket.on('joinRoom', (receiverId) => {

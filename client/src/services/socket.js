@@ -24,10 +24,20 @@ const joinConversationRoom = (receivedId) => {
     socket.emit('joinRoom', receivedId);
 };
 
+const onNewMessage = (callback) => {
+    socket.on('newMessage', callback);
+};
+
+const offNewMessage = () => {
+    socket.off('newMessage');
+};
+
 export {
     register,
     sendMessage,
     onMessageReceived,
     offMessageReceived,
     joinConversationRoom,
+    onNewMessage,
+    offNewMessage,
 };

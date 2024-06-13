@@ -117,7 +117,7 @@ const messageController = {
                     $project: {
                         _id: 0,
                         latestMessage: 1,
-                        user: { $arrayElemAt: ['$user', 0] }, // Sửa lỗi chính tả từ $arrayEleAt thành $arrayElemAt
+                        user: { $arrayElemAt: ['$user', 0] },
                     },
                 },
                 {
@@ -125,6 +125,7 @@ const messageController = {
                         latestMessage: 1,
                         'user.username': 1,
                         'user.avatar': 1,
+                        'user._id': 1,
                     },
                 },
                 {

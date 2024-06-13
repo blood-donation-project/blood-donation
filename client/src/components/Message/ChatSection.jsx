@@ -7,21 +7,29 @@ import { useParams } from 'react-router-dom';
 import {
     joinConversationRoom,
     offMessageReceived,
+    offNewMessage,
     onMessageReceived,
+    onNewMessage,
     register,
     sendMessage,
 } from '../../services/socket';
 import { useGetMessageMutation } from '../../Redux/features/message/messageAPI';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    messageReceived,
+    setMessages,
+} from '../../Redux/features/message/messageSlice';
 
 const ChatSection = () => {
-    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [getMessage, { data: messagesData }] = useGetMessageMutation();
     const [getUser, { data: userData }] = useGetUserMutation();
     const params = useParams();
     const userId = userData?._id;
     const receiverId = params?.id;
-
+    const dispatch = useDispatch();
+    const messages = useSelector((state) => state.message.messages);
+    const conversations = useSelector((state) => state.message.conversations);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -32,7 +40,7 @@ const ChatSection = () => {
         };
         fetchData();
     }, [getUser]);
-
+    console.log(conversations);
     useEffect(() => {
         if (userId) {
             register(userId);
@@ -43,7 +51,7 @@ const ChatSection = () => {
 
             const handleMessageReceived = (msg) => {
                 console.log('Message received:', msg);
-                setMessages((prevMessages) => [...prevMessages, msg]);
+                dispatch(messageReceived(msg));
             };
 
             onMessageReceived(handleMessageReceived);
@@ -51,8 +59,7 @@ const ChatSection = () => {
             const fetchMessages = async () => {
                 try {
                     const result = await getMessage(receiverId).unwrap();
-                    console.log(result);
-                    setMessages(result);
+                    dispatch(setMessages(result));
                 } catch (error) {
                     console.log('Error fetching messages: ', error);
                 }
@@ -61,9 +68,10 @@ const ChatSection = () => {
 
             return () => {
                 offMessageReceived(handleMessageReceived);
+                offNewMessage();
             };
         }
-    }, [getMessage, receiverId, userId]);
+    }, [getMessage, receiverId, userId, dispatch]);
 
     const handleSendMessage = useCallback(
         (e) => {
