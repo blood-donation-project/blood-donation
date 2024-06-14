@@ -58,23 +58,28 @@ const userController = {
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
-            const checkIdentification = await User.findOne({
-                identification: identification,
-                _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
-            });
-            const checkPhoneNumber = await User.findOne({
-                phoneNumber: phoneNumber,
-                _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
-            });
 
-            if (checkIdentification) {
-                return res
-                    .status(409)
-                    .json({ message: 'Identification exist' });
+            if (identification && identification.trim() !== '') {
+                const checkIdentification = await User.findOne({
+                    identification: identification,
+                    _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
+                });
+                if (checkIdentification) {
+                    return res
+                        .status(409)
+                        .json({ message: 'Identification exist' });
+                }
             }
-
-            if (checkPhoneNumber) {
-                return res.status(409).json({ message: 'PhoneNumber exist' });
+            if (phoneNumber && phoneNumber.trim() !== '') {
+                const checkPhoneNumber = await User.findOne({
+                    phoneNumber: phoneNumber,
+                    _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
+                });
+                if (checkPhoneNumber) {
+                    return res
+                        .status(409)
+                        .json({ message: 'PhoneNumber exist' });
+                }
             }
 
             const result = await User.updateOne(
@@ -123,6 +128,67 @@ const userController = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
+    // Get UserByMonth
+    getUserByMonths: async (req, res) => {
+        try {
+            const allMonths = Array.from({ length: 12 }, (_, i) =>
+                new Date(0, i).toLocaleString('en-US', { month: 'long' })
+            );
+            const currentYear = new Date().getFullYear();
+
+            const result = await User.aggregate([
+                {
+                    $match: {
+                        createAt: {
+                            $gte: new Date(`${currentYear}-01-01`),
+                            $lt: new Date(`${currentYear + 1}-01-01`),
+                        },
+                    },
+                },
+                {
+                    $facet: {
+                        usersByMonth: [
+                            {
+                                $group: {
+                                    _id: { $month: '$createAt' },
+                                    count: { $sum: 1 },
+                                },
+                            },
+                            { $sort: { _id: 1 } },
+                        ],
+                        totalUsers: [{ $count: 'count' }],
+                        totalRoles: [
+                            { $group: { _id: '$role', count: { $sum: 1 } } },
+                        ],
+                    },
+                },
+            ]);
+
+            const usersByMonth = fillMissingMonths(
+                result[0].usersByMonth,
+                allMonths
+            );
+            const totalUsers = result[0].totalUsers[0]?.count || 0;
+            const totalRoles = result[0].totalRoles; 
+
+            res.status(200).json({
+                usersByMonth,
+                totalUsers,
+                totalRoles,
+            });
+        } catch (error) {
+            console.error('Error in getUserByMonths:', error); 
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
 };
+
+function fillMissingMonths(data, allMonths) {
+    const monthCountMap = new Map(data.map((item) => [item._id, item.count]));
+    return allMonths.map((month) => ({
+        month,
+        count: monthCountMap.get(allMonths.indexOf(month) + 1) || 0,
+    }));
+}
 
 module.exports = userController;

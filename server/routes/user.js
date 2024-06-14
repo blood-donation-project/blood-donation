@@ -14,6 +14,11 @@ router.get(
     userController.getUserById
 );
 
+router.get(
+    '/get-user-by-months',
+    userController.getUserByMonths
+);
+
 router.post(
     '/update-user',
     middlewareController.verifyToken,

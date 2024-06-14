@@ -50,6 +50,8 @@ router.put(
     eventController.updateEvent
 );
 
+router.get('/get-events-by-month', eventController.getEventByMonths);
+
 router.get(
     '/detail-event/:id',
     middlewareController.verifyToken,

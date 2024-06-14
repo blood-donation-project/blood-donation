@@ -5,6 +5,7 @@ import { useGetUserMutation } from '../../../Redux/features/user/userAPI';
 import { Skeleton } from 'antd';
 import moment from 'moment';
 import 'moment/locale/vi';
+import { FaCircle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     onNewMessage,
@@ -21,7 +22,6 @@ const Contacts = () => {
     ] = useGetReceiverMutation();
     const [getUser, { data: userData }] = useGetUserMutation();
     const messages = useSelector((state) => state.message.messages);
-    const latestMessage = messages?.[messages?.length - 1];
     const [currentTime, setCurrentTime] = useState(moment());
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [conversations, setConversations] = useState([]);
@@ -106,10 +106,17 @@ const Contacts = () => {
                           >
                               <div className="w-16 h-16 relative flex flex-shrink-0">
                                   <img
-                                      className="shadow-md rounded-full w-full h-full object-cover"
+                                      className="shadow-md rounded-full absolute w-full h-full object-cover"
                                       src={conversation?.user?.avatar}
                                       alt=""
                                   />
+                                  {onlineUsers.includes(
+                                      conversation?.user?._id
+                                  ) ? (
+                                      <FaCircle className="text-green-500 z-10 absolute bottom-1 right-0 border-2 border-white rounded-full " />
+                                  ) : (
+                                      ''
+                                  )}
                               </div>
                               <div className="flex-auto text-lg min-w-0 ml-4 mr-6 hidden md:block group-hover:block">
                                   <p>{conversation?.user?.username}</p>

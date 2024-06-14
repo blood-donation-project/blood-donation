@@ -30,7 +30,6 @@ const eventController = {
             const formattedDay = moment(donationTime, 'YYYY/MM/DD').format(
                 'DD/MM/YYYY'
             );
-            
 
             const newEvent = new Event({
                 eventName,
@@ -391,6 +390,61 @@ const eventController = {
         } catch (error) {
             console.error('Error fetching event registrations:', error); // Log the error
             return res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    getEventByMonths: async (req, res) => {
+        try {
+            const allMonths = Array.from({ length: 12 }, (_, i) =>
+                new Date(0, i).toLocaleString('en-US', { month: 'long' })
+            );
+            const currentYear = new Date().getFullYear();
+
+            const result = await Event.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: new Date(`${currentYear}-01-01`),
+                            $lt: new Date(`${currentYear + 1}-01-01`),
+                        },
+                    },
+                },
+                {
+                    $facet: {
+                        eventsByMonth: [
+                            {
+                                $group: {
+                                    _id: { $month: '$createdAt' },
+                                    count: { $sum: 1 },
+                                },
+                            },
+                            { $sort: { _id: 1 } },
+                        ],
+                        totalEvents: [{ $count: 'count' }],
+                    },
+                },
+            ]);
+            const fillMissingMonths = (data, allMonths) => {
+                const monthCountMap = new Map(
+                    data.map((item) => [item._id, item.count])
+                );
+                return allMonths.map((month) => ({
+                    month,
+                    count: monthCountMap.get(allMonths.indexOf(month) + 1) || 0,
+                }));
+            };
+            const eventsByMonth = fillMissingMonths(
+                result[0].eventsByMonth,
+                allMonths
+            );
+            const totalEvents = result[0].totalEvents[0]?.count || 0;
+
+            res.status(200).json({
+                eventsByMonth,
+                totalEvents,
+            });
+        } catch (error) {
+            console.error('Error in getEventByMonths:', error);
+            res.status(500).json({ message: 'Internal server error' });
         }
     },
 };

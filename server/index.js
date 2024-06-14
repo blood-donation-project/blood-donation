@@ -44,7 +44,7 @@ app.use('/v1/auth', authRoute);
 app.use('/home', middlewareController.verifyToken, homeRoute);
 app.use('/news', newsRoute);
 app.use('/events', eventRoute);
-app.use('/api/user', middlewareController.verifyToken, userRoute);
+app.use('/api/user', userRoute);
 app.use('/message', messageRoute);
 
 // Socket.IO configuration

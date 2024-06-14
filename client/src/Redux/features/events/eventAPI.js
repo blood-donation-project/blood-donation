@@ -79,6 +79,12 @@ export const eventAPI = createApi({
                 body: eventId,
             }),
         }),
+        getEventByMonths: builder.query({
+            query: () => ({
+                url: `get-events-by-month`,
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
@@ -92,6 +98,7 @@ export const {
     useCheckRegisEventMutation,
     useDeleteEventMutation,
     useGetUserRegisterMutation,
+    useGetEventByMonthsQuery,
 } = eventAPI;
 
 export default eventAPI;

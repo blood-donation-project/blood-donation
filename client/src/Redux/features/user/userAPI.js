@@ -33,6 +33,12 @@ export const userAPI = createApi({
                 method: 'GET',
             }),
         }),
+        getUserByMonths: builder.query({
+            query: () => ({
+                url: 'get-user-by-months',
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
@@ -40,6 +46,7 @@ export const {
     useGetUserMutation,
     useUpdateUserMutation,
     useGetUserByIdMutation,
+    useGetUserByMonthsQuery,
 } = userAPI;
 
 export default userAPI;

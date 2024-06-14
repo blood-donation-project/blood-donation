@@ -27,6 +27,7 @@ import DetailEvent from './components/event/DetailEvent';
 import FriendsPage from './pages/friends/Friends';
 import FriendsRequestsPage from './pages/friends/FriendsRequests';
 import FriendsSuggest from './pages/friends/FriendsSuggest';
+import AdminPage from './pages/AdminPage';
 function App() {
     return (
         <div>
@@ -45,6 +46,14 @@ function App() {
                 theme="light"
             />
             <Routes>
+                {/* Admin Page */}
+                <Route
+                    path="/v1/admin/"
+                    element={<AdminPage />}
+                />
+                
+
+                {/* End Admin Page */}
                 <Route
                     path="/postnews"
                     element={<CreateNews />}
