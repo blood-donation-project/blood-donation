@@ -5,7 +5,6 @@ import { useGetEventByMonthsQuery } from '../../../Redux/features/events/eventAP
 const BarChartEvent = () => {
     const { data: eventDataByMonth } = useGetEventByMonthsQuery();
     const chartRef = useRef(null);
-    console.log(eventDataByMonth);
     const dataChart = eventDataByMonth?.eventsByMonth?.map(
         (item) => item?.count
     );
@@ -68,7 +67,7 @@ const BarChartEvent = () => {
         return () => {
             chartInstance.destroy();
         };
-    }, []);
+    }, [dataChart]);
 
     return (
         <>

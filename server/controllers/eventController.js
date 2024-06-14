@@ -423,15 +423,7 @@ const eventController = {
                     },
                 },
             ]);
-            const fillMissingMonths = (data, allMonths) => {
-                const monthCountMap = new Map(
-                    data.map((item) => [item._id, item.count])
-                );
-                return allMonths.map((month) => ({
-                    month,
-                    count: monthCountMap.get(allMonths.indexOf(month) + 1) || 0,
-                }));
-            };
+
             const eventsByMonth = fillMissingMonths(
                 result[0].eventsByMonth,
                 allMonths
@@ -448,5 +440,11 @@ const eventController = {
         }
     },
 };
-
+const fillMissingMonths = (data, allMonths) => {
+    const monthCountMap = new Map(data.map((item) => [item._id, item.count]));
+    return allMonths.map((month) => ({
+        month,
+        count: monthCountMap.get(allMonths.indexOf(month) + 1) || 0,
+    }));
+};
 module.exports = eventController;
