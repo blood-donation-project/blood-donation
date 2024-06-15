@@ -95,12 +95,12 @@ const ManageUser = () => {
         <div className="flex h-screen">
             <Menu activeComponent={'user'} />
 
-            <div className="flex-1 bg-[#f3f4f6] h-full overflow-y-scroll">
+            <div className="flex-1 bg-gradient-to-b from-blue-200 via-white to-pink-200 h-full overflow-y-scroll">
                 <div className="lg:py-6 py-[18px] pl-4 border-b bg-white w-full">
                     <h1 className="lg:text-3xl text-xl">Quản lý người dùng</h1>
                 </div>
                 <div className="p-4 max-w-4xl mx-auto">
-                    <div className="bg-white rounded-lg w-full p-4">
+                    <div className="bg-white rounded-xl w-full p-4 shadow-sm">
                         <div>
                             <div className="  ">
                                 <div className="bg-gray-100 flex items-center rounded-xl border-2">

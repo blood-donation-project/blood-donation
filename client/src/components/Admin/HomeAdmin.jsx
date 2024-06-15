@@ -14,8 +14,8 @@ const HomeAdmin = () => {
     const { data: eventDataByMonth } = useGetEventByMonthsQuery();
     return (
         <div className="h-screen flex">
-            <Menu activeComponent={'home'}/>
-            <div className="flex-1 bg-[#f3f4f6] h-full overflow-y-scroll">
+            <Menu activeComponent={'home'} />
+            <div className="flex-1 bg-gradient-to-b from-blue-200 via-white to-pink-200 h-full overflow-y-scroll">
                 <div className="lg:py-6 py-[18px] px-4 border-b bg-white w-full ">
                     <h1 className="lg:text-3xl text-xl">Trang Chủ</h1>
                 </div>
