@@ -224,7 +224,7 @@ const ManageUser = () => {
                                 <tr className="sticky -top-1 bg-white shadow-sm">
                                     <td className="w-[35%] text-start py-2 font-medium">
                                         <span className="ml-5">
-                                            Tên Người Dùng
+                                            Tên Người Dùng ({userData?.length})
                                         </span>
                                     </td>
                                     <td className="w-[25%] text-start ml-5 ">
