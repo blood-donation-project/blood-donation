@@ -39,6 +39,20 @@ export const userAPI = createApi({
                 method: 'GET',
             }),
         }),
+        getAllUser: builder.mutation({
+            query: (content) => ({
+                url: 'get-all-users',
+                method: 'POST',
+                body: content,
+            }),
+        }),
+        lockorUnlockUser: builder.mutation({
+            query: (userId) => ({
+                url: 'lock-or-unlock-user',
+                method: 'PUT',
+                body: { userId },
+            }),
+        }),
     }),
 });
 
@@ -47,6 +61,8 @@ export const {
     useUpdateUserMutation,
     useGetUserByIdMutation,
     useGetUserByMonthsQuery,
+    useGetAllUserMutation,
+    useLockorUnlockUserMutation,
 } = userAPI;
 
 export default userAPI;

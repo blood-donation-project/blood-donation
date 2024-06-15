@@ -22,6 +22,7 @@ import { useLogoutMutation } from '../Redux/features/auth/authAPI';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
 import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
 import { useGetReceiverMutation } from '../Redux/features/message/messageAPI';
+import { MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 const NavMenu = () => {
     useAutoRefreshToken('/api/user/get-user');
@@ -419,6 +420,23 @@ const NavMenu = () => {
                                             </div>
                                         </Link>
                                     </div>
+                                    {userData?.role === 'admin' && (
+                                        <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
+                                            <Link
+                                                className="flex py-1.5 items-center "
+                                                to={'/v1/admin'}
+                                            >
+                                                <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
+                                                    <MdOutlineAdminPanelSettings className="text-[20px]" />
+                                                </div>
+                                                <div className="ml-2">
+                                                    <p className="text-[14px] font-semibold ">
+                                                        Chuyển đến Admin
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}

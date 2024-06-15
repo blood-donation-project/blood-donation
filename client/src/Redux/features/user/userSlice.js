@@ -55,6 +55,32 @@ const userSlice = createSlice({
                 (state, action) => {
                     state.error = action.error.message;
                 }
+            )
+            .addMatcher(
+                userAPI.endpoints.getAllUser.matchFulfilled,
+                (state, { payload }) => {
+                    state.user = payload;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                userAPI.endpoints.getAllUser.matchRejected,
+                (state, action) => {
+                    state.error = action.error.message;
+                }
+            )
+            .addMatcher(
+                userAPI.endpoints.lockorUnlockUser.matchFulfilled,
+                (state, { payload }) => {
+                    state.user = payload;
+                    state.error = null;
+                }
+            )
+            .addMatcher(
+                userAPI.endpoints.lockorUnlockUser.matchRejected,
+                (state, action) => {
+                    state.error = action.error.message;
+                }
             );
     },
 });

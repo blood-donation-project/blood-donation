@@ -14,10 +14,11 @@ router.get(
     userController.getUserById
 );
 
-router.get(
-    '/get-user-by-months',
-    userController.getUserByMonths
-);
+router.get('/get-user-by-months', userController.getUserByMonths);
+
+router.post('/get-all-users', userController.getAllUsers);
+
+router.put('/lock-or-unlock-user', userController.lockorUnLockUser);
 
 router.post(
     '/update-user',

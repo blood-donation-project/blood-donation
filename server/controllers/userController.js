@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const userController = {
     getUser: async (req, res) => {
@@ -22,6 +23,57 @@ const userController = {
                 return res.status(403).json({ message: 'Invalid token' });
             }
             console.error('Error fetching user:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    lockorUnLockUser: async (req, res) => {
+        try {
+            const { userId } = req.body;
+            console.log(req.body);
+            const user = await User.findById(userId);
+            if (user.block) {
+                await User.findByIdAndUpdate(userId, { block: false });
+                return res
+                    .status(200)
+                    .json({ message: 'UnLock successfully!' });
+            } else {
+                await User.findByIdAndUpdate(userId, { block: true });
+                return res.status(200).json({ message: 'Lock successfully!' });
+            }
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    getAllUsers: async (req, res) => {
+        try {
+            const { searchTerm, role, block } = req.body;
+            console.log(req.body);
+            let query = {
+                role: { $ne: 'admin' },
+            };
+            if (searchTerm) {
+                const isObjectId = mongoose.Types.ObjectId.isValid(searchTerm);
+                if (isObjectId) {
+                    query._id = searchTerm;
+                } else {
+                    query.username = { $regex: searchTerm, $options: 'i' };
+                }
+            }
+            if (role) {
+                if (Array.isArray(role) && role.length > 0) {
+                    // Kiểm tra mảng có rỗng không
+                    query.role = { $in: role };
+                } else if (typeof role === 'string') {
+                    query.role = { $regex: role, $options: 'i' };
+                }
+            }
+            if (block) {
+                query.block = block;
+            }
+            const users = await User.find(query);
+            res.status(200).json(users);
+        } catch (error) {
+            console.log(error);
             res.status(500).json({ message: 'Internal server error' });
         }
     },
@@ -169,7 +221,7 @@ const userController = {
                 allMonths
             );
             const totalUsers = result[0].totalUsers[0]?.count || 0;
-            const totalRoles = result[0].totalRoles; 
+            const totalRoles = result[0].totalRoles;
 
             res.status(200).json({
                 usersByMonth,
@@ -177,7 +229,7 @@ const userController = {
                 totalRoles,
             });
         } catch (error) {
-            console.error('Error in getUserByMonths:', error); 
+            console.error('Error in getUserByMonths:', error);
             res.status(500).json({ message: 'Internal server error' });
         }
     },

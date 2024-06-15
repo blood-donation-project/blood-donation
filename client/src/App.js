@@ -27,7 +27,9 @@ import DetailEvent from './components/event/DetailEvent';
 import FriendsPage from './pages/friends/Friends';
 import FriendsRequestsPage from './pages/friends/FriendsRequests';
 import FriendsSuggest from './pages/friends/FriendsSuggest';
-import AdminPage from './pages/AdminPage';
+import HomeAdmin from './components/Admin/HomeAdmin';
+import ManageUser from './components/Admin/ManageUser';
+import ManageEventAd from './components/Admin/ManageEventAd';
 function App() {
     return (
         <div>
@@ -49,10 +51,16 @@ function App() {
                 {/* Admin Page */}
                 <Route
                     path="/v1/admin/"
-                    element={<AdminPage />}
+                    element={<HomeAdmin />}
                 />
-                
-
+                <Route
+                    path="/v1/admin/manage-users"
+                    element={<ManageUser />}
+                />
+                <Route
+                    path="/v1/admin/manage-events"
+                    element={<ManageEventAd />}
+                />
                 {/* End Admin Page */}
                 <Route
                     path="/postnews"
