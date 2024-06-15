@@ -404,22 +404,6 @@ const NavMenu = () => {
                                         </Link>
                                     </div>
                                     <div className="w-full h-[2px] my-1  bg-[#ccc]"></div>
-                                    <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
-                                        <Link
-                                            className="flex py-1.5 items-center "
-                                            to={'/logout'}
-                                            onClick={handleLogout}
-                                        >
-                                            <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
-                                                <MdLogout className="text-[20px]" />
-                                            </div>
-                                            <div className="ml-2">
-                                                <p className="text-[14px] font-semibold ">
-                                                    Đăng xuất
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    </div>
                                     {userData?.role === 'admin' && (
                                         <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
                                             <Link
@@ -437,6 +421,22 @@ const NavMenu = () => {
                                             </Link>
                                         </div>
                                     )}
+                                    <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
+                                        <Link
+                                            className="flex py-1.5 items-center "
+                                            to={'/logout'}
+                                            onClick={handleLogout}
+                                        >
+                                            <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
+                                                <MdLogout className="text-[20px]" />
+                                            </div>
+                                            <div className="ml-2">
+                                                <p className="text-[14px] font-semibold ">
+                                                    Đăng xuất
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         )}
