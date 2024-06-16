@@ -350,7 +350,10 @@ const NavMenu = () => {
                                     </div>
                                     {/* Map dữ liệu thông báo từ api */}
                                     {notifiData?.map((item, index) => (
-                                        <div className="grid pt-4">
+                                        <div
+                                            key={index}
+                                            className="grid pt-4"
+                                        >
                                             <div className="flex">
                                                 {item?.avatar && (
                                                     <div>
