@@ -13,6 +13,8 @@ const newsRoute = require('./routes/news');
 const eventRoute = require('./routes/event');
 const userRoute = require('./routes/user');
 const messageRoute = require('./routes/message');
+const adminRoute = require('./routes/admin');
+const notifiRoute = require('./routes/notification');
 const errorMiddleware = require('./middleware/errorMiddleware');
 const middlewareController = require('./controllers/middlewareController');
 const messageSocket = require('./socket/messageSocket');
@@ -46,6 +48,8 @@ app.use('/news', newsRoute);
 app.use('/events', eventRoute);
 app.use('/api/user', userRoute);
 app.use('/message', messageRoute);
+app.use('/notifi', notifiRoute);
+app.use('/v1/admin', middlewareController.verifyTokenAndAdmin, adminRoute);
 
 // Socket.IO configuration
 messageSocket(server, corsOptions);

@@ -2,7 +2,9 @@ const Event = require('../models/event');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const User = require('../models/user');
+const Notification = require('../models/notifications');
 const EventRegistration = require('../models/eventRagistrations');
+const mongoose = require('mongoose');
 
 const eventController = {
     createEvent: async (req, res) => {
@@ -324,6 +326,65 @@ const eventController = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
+
+    deleteEventByAdmin: async (req, res) => {
+        try {
+            const { eventId } = req.body;
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                res.status(401).json({
+                    message: 'Authorization header missing',
+                });
+            }
+            const token = authHeader.split(' ')[1];
+            const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+            const event = await Event.findById(eventId);
+
+            const eventRegis = await EventRegistration.find({
+                eventId: event._id,
+            });
+            if (!event)
+                return res.status(404).json({ message: 'not found Event' });
+            if (user.role !== 'admin')
+                return res.status(403).json({ message: 'You are not Admin' });
+            if (eventRegis.length === 0) {
+                await Event.findByIdAndDelete(event._id);
+                const newNotification = new Notification({
+                    userId: event.userId,
+                    content: `Admin đã xóa sự kiện: ${event.eventName} của bạn`,
+                    type: 'Hủy sự kiện',
+                });
+                newNotification.save();
+            }
+            const userIds = eventRegis.map(
+                (registration) => registration.userId
+            );
+            userIds.push(event.userId);
+            for (const userId of userIds) {
+                const newNotification = new Notification({
+                    userId,
+                    content: `Admin đã xóa sự kiện "${
+                        event.eventName
+                    }" (diễn ra vào ngày ${moment(event.startDate).format(
+                        'DD/MM/YYYY'
+                    )}) mà bạn đã đăng ký.`,
+                    type: 'Hủy sự kiện',
+                });
+                await newNotification.save();
+            }
+
+            await Promise.all([
+                Event.findByIdAndDelete(eventId),
+                EventRegistration.deleteMany({ eventId }),
+            ]);
+
+            res.status(200).json({
+                message: 'Đã xóa sự kiện và gửi thông báo thành công',
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    },
     updateEvent: async (req, res) => {
         try {
             const eventId = req.params.id;
@@ -436,6 +497,29 @@ const eventController = {
             });
         } catch (error) {
             console.error('Error in getEventByMonths:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    getAllEvent: async (req, res) => {
+        try {
+            const { searchTerm } = req.body;
+            console.log(req.body);
+            let query = {};
+            if (searchTerm) {
+                const isObjectId = mongoose.Types.ObjectId.isValid(searchTerm);
+                if (isObjectId) {
+                    query._id = searchTerm;
+                } else {
+                    query.eventName = { $regex: searchTerm, $options: 'i' };
+                }
+            }
+            const events = await Event.find(query).populate({
+                path: 'userId',
+                select: 'username avatar introduce',
+            });
+            res.status(200).json(events);
+        } catch (error) {
+            console.log(error);
             res.status(500).json({ message: 'Internal server error' });
         }
     },

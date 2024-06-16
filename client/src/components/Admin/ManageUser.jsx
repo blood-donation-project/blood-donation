@@ -9,7 +9,10 @@ import {
     useLockorUnlockUserMutation,
 } from '../../Redux/features/user/userAPI';
 import Menu from './Menu';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
+import { toast } from 'react-toastify';
 const ManageUser = () => {
+    useAutoRefreshToken('/api/user/get-user-by-months');
     const [getAllUsers, { data: userData }] = useGetAllUserMutation();
     const [handleLockUser] = useLockorUnlockUserMutation();
     const [input, setInput] = useState('');
@@ -28,7 +31,13 @@ const ManageUser = () => {
         const fetchData = async () => {
             try {
                 await getAllUsers(formData).unwrap();
-            } catch (error) {}
+            } catch (error) {
+                console.log(error);
+                if (error?.data?.message === 'You are not Admin') {
+                    toast.error('Bạn không có quyền truy cập trang này!');
+                    navigate('/');
+                }
+            }
         };
         fetchData();
     }, [getAllUsers]);

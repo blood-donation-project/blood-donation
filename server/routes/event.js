@@ -58,6 +58,18 @@ router.get(
     eventController.getEventByIdEven
 );
 
+router.post(
+    '/get-all-events',
+    middlewareController.verifyTokenAndAdmin,
+    eventController.getAllEvent
+);
+
+router.post(
+    '/delete-event-by-admin',
+    middlewareController.verifyTokenAndAdmin,
+    eventController.deleteEventByAdmin
+);
+
 router.post('/', middlewareController.verifyToken, eventController.getEvent);
 
 module.exports = router;

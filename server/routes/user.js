@@ -14,11 +14,23 @@ router.get(
     userController.getUserById
 );
 
-router.get('/get-user-by-months', userController.getUserByMonths);
+router.get(
+    '/get-user-by-months',
+    middlewareController.verifyTokenAndAdmin,
+    userController.getUserByMonths
+);
 
-router.post('/get-all-users', userController.getAllUsers);
+router.post(
+    '/get-all-users',
+    middlewareController.verifyTokenAndAdmin,
+    userController.getAllUsers
+);
 
-router.put('/lock-or-unlock-user', userController.lockorUnLockUser);
+router.put(
+    '/lock-or-unlock-user',
+    middlewareController.verifyTokenAndAdmin,
+    userController.lockorUnLockUser
+);
 
 router.post(
     '/update-user',

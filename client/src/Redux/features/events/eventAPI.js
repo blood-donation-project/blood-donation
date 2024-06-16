@@ -85,6 +85,20 @@ export const eventAPI = createApi({
                 method: 'GET',
             }),
         }),
+        getAllEvents: builder.mutation({
+            query: (searchTerm) => ({
+                url: `get-all-events`,
+                method: 'POST',
+                body: { searchTerm },
+            }),
+        }),
+        deleteEventByAdmin: builder.mutation({
+            query: (eventId) => ({
+                url: `delete-event-by-admin`,
+                method: 'POST',
+                body: { eventId },
+            }),
+        }),
     }),
 });
 
@@ -99,6 +113,8 @@ export const {
     useDeleteEventMutation,
     useGetUserRegisterMutation,
     useGetEventByMonthsQuery,
+    useGetAllEventsMutation,
+    useDeleteEventByAdminMutation,
 } = eventAPI;
 
 export default eventAPI;

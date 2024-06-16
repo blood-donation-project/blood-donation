@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { HiMiniUsers } from 'react-icons/hi2';
 import { TbCalendarEvent } from 'react-icons/tb';
 import { BsFilePost } from 'react-icons/bs';
@@ -9,9 +9,21 @@ import BarChartEvent from './Chart/BarChartEvent';
 import { useGetUserByMonthsQuery } from '../../Redux/features/user/userAPI';
 import { useGetEventByMonthsQuery } from '../../Redux/features/events/eventAPI';
 import Menu from './Menu';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 const HomeAdmin = () => {
-    const { data: getUserByMonths } = useGetUserByMonthsQuery();
+    useAutoRefreshToken('/home/');
+    const { data: getUserByMonths, error } = useGetUserByMonthsQuery();
     const { data: eventDataByMonth } = useGetEventByMonthsQuery();
+    const navigate = useNavigate();
+    useEffect(() => {
+        console.log(error);
+        if (error?.data?.message === 'You are not Admin') {
+            toast.error('Bạn không có quyền truy cập trang này!');
+            navigate('/');
+        }
+    }, [error, navigate]);
     return (
         <div className="h-screen flex">
             <Menu activeComponent={'home'} />
@@ -49,7 +61,7 @@ const HomeAdmin = () => {
                             <p className="text-sm text-[#6B7280]">
                                 Tổng số sự kiện
                             </p>
-                            <p className="text-lg">
+                            <p className="text-xl font-medium">
                                 {eventDataByMonth?.totalEvents}
                             </p>
                         </div>

@@ -92,7 +92,7 @@ const middlewareController = {
             // 3. Kiểm tra role và cập nhật req.user
             if (user.role !== 'admin') {
                 return res.status(403).json({
-                    message: 'You are not Admin to access this resource.',
+                    message: 'You are not Admin',
                 });
             }
 
