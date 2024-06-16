@@ -147,7 +147,6 @@ const NavMenu = () => {
         await logOut().unwrap();
         navigate('/login');
     };
-    console.log(notifiData);
     return (
         <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-40">
             {/* Nav */}

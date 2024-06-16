@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BsMessenger } from 'react-icons/bs';
 import { HiMiniUsers } from 'react-icons/hi2';
 import { FaBell } from 'react-icons/fa';
-import { MdEvent } from 'react-icons/md';
+import { MdEvent, MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { LuLogOut } from 'react-icons/lu';
 import { useGetUserMutation } from '../../../Redux/features/user/userAPI';
 import { useLogoutMutation } from '../../../Redux/features/auth/authAPI';
@@ -144,11 +144,26 @@ const MobileMenu = ({ hideModal }) => {
                 {/* Log out */}
                 <div className="bg-white rounded-lg shadow  mb-2">
                     <Link
+                        to={'/v1/admin'}
+                        className="flex items-center hover:bg-[#ebedf0] py-2.5 px-2 rounded-md"
+                    >
+                        <div className="h-9 w-9 flex-center">
+                            <MdOutlineAdminPanelSettings className="w-6 h-6" />
+                        </div>
+                        <div className="ml-2">
+                            <p className="text-[14px] font-semibold leading-[14px]">
+                                Chuyển tới trang Admin
+                            </p>
+                        </div>
+                    </Link>
+                </div>
+                <div className="bg-white rounded-lg shadow  mb-2">
+                    <Link
                         onClick={handleLogout}
                         className="flex items-center hover:bg-[#ebedf0] py-2.5 px-2 rounded-md"
                     >
                         <div className="h-9 w-9 flex-center">
-                            <LuLogOut />
+                            <LuLogOut className='w-6 h-6'/>
                         </div>
                         <div className="ml-2">
                             <p className="text-[14px] font-semibold leading-[14px]">
