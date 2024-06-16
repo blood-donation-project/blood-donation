@@ -24,9 +24,12 @@ import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
 import { useGetReceiverMutation } from '../Redux/features/message/messageAPI';
 import { MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
+import { useGetAllNotifiMutation } from '../Redux/features/notification/notifiAPI';
+import moment from 'moment';
 const NavMenu = () => {
     useAutoRefreshToken('/api/user/get-user');
     const [logOut] = useLogoutMutation();
+    const [getNotification, { data: notifiData }] = useGetAllNotifiMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
     const navigate = useNavigate();
@@ -51,6 +54,17 @@ const NavMenu = () => {
         };
         fetchUserData();
     }, [getUser]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getNotification(userData?._id).unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getNotification, userData?._id]);
 
     const [getReceiver, { data: receiverMessage }] = useGetReceiverMutation();
     const params = useParams();
@@ -133,7 +147,7 @@ const NavMenu = () => {
         await logOut().unwrap();
         navigate('/login');
     };
-
+    console.log(notifiData);
     return (
         <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-40">
             {/* Nav */}
@@ -335,28 +349,31 @@ const NavMenu = () => {
                                         </div>
                                     </div>
                                     {/* Map dữ liệu thông báo từ api */}
-                                    <div className="grid pt-4">
-                                        <div className="flex">
-                                            <div>
-                                                <img
-                                                    className="w-9 h-9 rounded-[50%]"
-                                                    src={
-                                                        'https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C'
-                                                    }
-                                                    alt="avatar"
-                                                />
-                                            </div>
-                                            <div className="ml-2">
-                                                <p className="text-[14px] leading-[14px]">
-                                                    Thông báo cái gì đó chưa
-                                                    nghiên cứu
-                                                </p>
-                                                <span className="text-[12px]">
-                                                    9 Giờ trước
-                                                </span>
+                                    {notifiData?.map((item, index) => (
+                                        <div className="grid pt-4">
+                                            <div className="flex">
+                                                {item?.avatar && (
+                                                    <div>
+                                                        <img
+                                                            className="w-9 h-9 rounded-[50%]"
+                                                            src={item?.avatar}
+                                                            alt="avatar"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="ml-2">
+                                                    <p className="text-[14px] leading-[14px]">
+                                                        {item?.content}
+                                                    </p>
+                                                    <span className="text-[12px]">
+                                                        {moment(
+                                                            item?.createAt
+                                                        ).fromNow()}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
