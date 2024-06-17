@@ -85,8 +85,12 @@ const ManagePost = () => {
                                             className="ml-5 hover:underline"
                                         ></Link>
                                     </td>
-                                    <td>{/* Ngày viết */}</td>
-                                    <td>{/* Ngày đăng */}</td>
+                                    <td>
+                                        {/* Ngày viết */}
+                                    </td>
+                                    <td>
+                                        {/* Ngày đăng */}
+                                    </td>
                                     <td className="text-center content-center ">
                                         <div className="flex justify-end items-center ">
                                             <Popconfirm

@@ -32,6 +32,7 @@ import ManageUser from './components/Admin/ManageUser';
 import ManageEventAd from './components/Admin/ManageEventAd';
 import NotificationAdmin from './components/Admin/NotificationAdmin';
 import ManagePost from './components/Admin/ManagePost';
+import AcceptPost from './components/Admin/AcceptPost';
 function App() {
     return (
         <div>
@@ -71,7 +72,10 @@ function App() {
                     path="/v1/admin/manage-post"
                     element={<ManagePost />}
                 />
-
+                <Route
+                    path="/v1/admin/manage-post/accept-post"
+                    element={<AcceptPost />}
+                />
                 {/* End Admin Page */}
                 <Route
                     path="/postnews"
