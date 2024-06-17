@@ -12,10 +12,12 @@ const Login = () => {
     // Example function to handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Handle the form data here
         try {
-            await login({ email, password }).unwrap();
-            navigate('/');
+            await login({ email, password })
+                .unwrap()
+                .then(() => {
+                    window.location.href = '/';
+                });
         } catch (error) {}
     };
 
@@ -24,34 +26,22 @@ const Login = () => {
             {/* Left Pane */}
             <div className="hidden lg:flex items-center justify-center flex-1 bg-white text-black">
                 <div className="w-full h-full text-center">
-                    <img
-                        className="w-full h-full bg-cover object-cover"
-                        src={imgBloodDonation}
-                        alt=""
-                    />
+                    <img className="w-full h-full bg-cover object-cover" src={imgBloodDonation} alt="" />
                 </div>
             </div>
 
             {/* Right Pane */}
             <div className="w-full bg-gray-100 lg:w-1/2 flex items-center justify-center">
                 <div className=" max-w-md w-full p-6">
-                    <h1 className="text-4xl font-semibold mb-6 text-black text-center">
-                        Đăng Nhập
-                    </h1>
+                    <h1 className="text-4xl font-semibold mb-6 text-black text-center">Đăng Nhập</h1>
                     <h2 className="text-[16px] font-thin mb-6 text-gray-500 text-center">
-                        "Mỗi lần hiến máu, bạn không những cứu sống một mạng
-                        người mà còn trao đi sự hy vọng và tình yêu thương"
+                        "Mỗi lần hiến máu, bạn không những cứu sống một mạng người mà còn trao đi sự hy vọng và tình yêu
+                        thương"
                     </h2>
                     {/* Register */}
-                    <form
-                        className="space-y-4 mt-4"
-                        onSubmit={handleSubmit}
-                    >
+                    <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
                         <div>
-                            <label
-                                htmlFor="email"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
+                            <label htmlFor="email" className="block text-[16px] font-medium text-gray-700">
                                 Email
                             </label>
                             <input
@@ -64,10 +54,7 @@ const Login = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="password"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
+                            <label htmlFor="password" className="block text-[16px] font-medium text-gray-700">
                                 Password
                             </label>
                             <input
@@ -89,19 +76,12 @@ const Login = () => {
                     </form>
 
                     <div className="flex justify-between mt-4 text-sm text-gray-600 text-center">
-                        <Link
-                            to={'/forgotpassword'}
-                            className="cursor-pointer hover:underline"
-                        >
+                        <Link to={'/forgotpassword'} className="cursor-pointer hover:underline">
                             Quên mật khẩu?
                         </Link>
                         <p>
                             Bạn chưa có tài khoản?{' '}
-                            <Link
-                                className="hover:underline text-black"
-                                to="/register"
-                                relative="path"
-                            >
+                            <Link className="hover:underline text-black" to="/register" relative="path">
                                 Đăng ký
                             </Link>
                         </p>

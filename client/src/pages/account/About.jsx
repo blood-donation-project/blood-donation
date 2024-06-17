@@ -6,8 +6,10 @@ import { FaUserNurse } from 'react-icons/fa6';
 
 import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
+import { useSelector } from 'react-redux';
 
 const AboutPage = () => {
+    const { user } = useSelector((state) => state.user);
     return (
         <>
             <NavMenu />
@@ -28,7 +30,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Email</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">hoangxuanviet1312@gmail.com</span>
+                                        <span className=" word-wrap">{user.email}</span>
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
@@ -39,7 +41,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Ngày sinh</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                        13/12/2003
+                                        {user.birthday}
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -49,7 +51,9 @@ const AboutPage = () => {
                                         </div>
                                         <div className="text-[#65676B] text-[14px]">Giới tính</div>
                                     </div>
-                                    <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">Nam</div>
+                                    <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
+                                        {user.gender}
+                                    </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                     <div className="flex md:flex-col xs:flex-row">
@@ -59,7 +63,13 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Địa chỉ</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        Giải Phóng, Hai Bà Trưng, TP.Hà Nội
+                                        {user.address.street +
+                                            ', ' +
+                                            user.address.ward +
+                                            ', ' +
+                                            user.address.district +
+                                            ', ' +
+                                            user.address.province}
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -70,7 +80,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Liên hệ</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        0345678123
+                                        {user.phoneNumber}
                                     </div>
                                 </div>
 
@@ -82,7 +92,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Nhóm máu</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">AB+</span>
+                                        <span className=" word-wrap">{user.bloodGroup || 'Không xác định'}</span>
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -93,7 +103,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Vai trò</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">Người hiến máu</span>
+                                        <span className=" word-wrap">{user.role}</span>
                                     </div>
                                 </div>
                             </div>

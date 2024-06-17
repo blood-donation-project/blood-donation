@@ -14,8 +14,9 @@ const newsController = {
         const file = req.file;
         console.log('Req body ', req.file);
         if (!file) {
-            return res.status(400).json({ error: 'No file provided' });
+            res.status(400).json({ error: 'No file provided' });
         }
+
         const bufferStream = new Readable();
         bufferStream.push(file.buffer);
         console.log(bufferStream);
@@ -26,7 +27,7 @@ const newsController = {
                 { folder: 'news_images' },
                 (error, result) => {
                     if (error) {
-                        return res.status(500).json({ error: error.message });
+                        res.status(500).json({ error: error.message });
                     }
                     res.status(200).json({
                         uploaded: true,

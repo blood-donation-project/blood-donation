@@ -1,7 +1,126 @@
 import { IoMdClose } from 'react-icons/io';
 import { FaArrowLeftLong } from 'react-icons/fa6';
+import { resetSurroundingUsersData } from '../../../Redux/features/search/searchSlice';
+import { useEffect, useState } from 'react';
+import { getProvinces } from '../../../services/locationServices';
+import { useSearchSurroundingUsersMutation } from '../../../Redux/features/search/searchAPI';
+import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
 
-const UserRoundingFilter = ({ accountId, hideModal, isShowing }) => {
+const UserRoundingFilter = ({ hideModal, isShowing, setPagination }) => {
+    const { user } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+
+    const [selectedValue, setSelectedValue] = useState({
+        province: user?.address?.province || 'Thành phố Hà Nội',
+        bloodGroup: user?.bloodGroup || '',
+    });
+
+    const [options, setOptions] = useState({
+        province: '',
+        bloodGroup: [
+            {
+                value: '',
+                label: 'Tất cả',
+            },
+            {
+                value: 'O-',
+                label: 'O-',
+            },
+            {
+                value: 'O+',
+                label: 'O+',
+            },
+            {
+                value: 'A-',
+                label: 'A-',
+            },
+            {
+                value: 'A+',
+                label: 'A+',
+            },
+            {
+                value: 'B-',
+                label: 'B-',
+            },
+            {
+                value: 'B+',
+                label: 'B+',
+            },
+            {
+                value: 'AB+',
+                label: 'AB+',
+            },
+            {
+                value: 'AB-',
+                label: 'AB-',
+            },
+        ],
+    });
+
+    const [searchSurroundingUsers] = useSearchSurroundingUsersMutation();
+
+    const fetchSurroundingUsers = () => {
+        searchSurroundingUsers({
+            province: selectedValue.province,
+            bloodGroup: encodeURIComponent(selectedValue.bloodGroup),
+            limit: 15,
+            page: 1,
+        })
+            .unwrap()
+            .then((res) => {
+                setPagination(res.pagination);
+                hideModal();
+            })
+            .catch(() => {
+                hideModal();
+            });
+    };
+
+    useEffect(() => {
+        getProvinces()
+            .then((res) => {
+                const formatOptions = res?.data?.map((el) => {
+                    return {
+                        ...el,
+                        value: el?.id,
+                        label: el?.full_name,
+                    };
+                });
+                setOptions((prev) => {
+                    return {
+                        ...prev,
+                        province: formatOptions,
+                    };
+                });
+            })
+            .catch((err) => {
+                // console.log(err);
+            });
+    }, []);
+
+    const changeProvince = (selectValue) => {
+        setSelectedValue((prev) => {
+            return {
+                ...prev,
+                province: selectValue.value,
+            };
+        });
+    };
+
+    const changeBloodGroup = (selectValue) => {
+        setSelectedValue((prev) => {
+            return {
+                ...prev,
+                bloodGroup: selectValue.value,
+            };
+        });
+    };
+
+    const handleSearch = () => {
+        dispatch(resetSurroundingUsersData());
+        fetchSurroundingUsers();
+    };
     return (
         <div className=" z-[9] xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
             <div className={`box-zoom-in   h-[100%]  `}>
@@ -28,39 +147,41 @@ const UserRoundingFilter = ({ accountId, hideModal, isShowing }) => {
                 </div>
                 <div className="p-2 h-[calc(100%_-_50px)] overflow-y-scroll">
                     <div>
-                        <div className="mb-4">
-                            {' '}
-                            <div>
-                                <h3>Thành phố/Tỉnh thành</h3>
-                            </div>
-                            <select className="bg-[#ebedf0] w-full rounded outline-none cursor-pointer mt-2 py-1">
-                                <option>Hà Nội</option>
-                                <option>Hồ Chí Minh</option>
-                            </select>
+                        {' '}
+                        <div>
+                            <h3>Thành phố/Tỉnh thành</h3>
                         </div>
-                        <div className="mb-4">
-                            {' '}
-                            <div>
-                                <h3>Vai trò</h3>
-                            </div>
-                            <select className="bg-[#ebedf0] w-full rounded outline-none cursor-pointer mt-2 py-1">
-                                <option>Người hiến máu</option>
-                                <option>Người nhận máu</option>
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            {' '}
-                            <div>
-                                <h3>Nhóm máu</h3>
-                            </div>
-                            <select className="bg-[#ebedf0] w-full rounded outline-none cursor-pointer mt-2 py-1">
-                                <option>A</option>
-                                <option>B</option>
-                            </select>
-                        </div>
+                        <Select
+                            className="bg-[#ebedf0] w-full rounded outline-none cursor-pointer mt-1"
+                            onChange={changeProvince}
+                            options={options.province}
+                            value={selectedValue.province || user?.address?.province}
+                            placeholder={selectedValue.province || user?.address?.province}
+                            isDisabled={options.province ? false : true}
+                        />
                     </div>
+
                     <div>
-                        <button className="w-full py-2 flex-center bg-red-500 text-white rounded font-semibold hover:bg-red-600">
+                        {' '}
+                        <div>
+                            <h3>Nhóm máu</h3>
+                        </div>
+                        <Select
+                            className="bg-[#ebedf0] w-full rounded outline-none cursor-pointer mt-1"
+                            onChange={changeBloodGroup}
+                            options={options.bloodGroup}
+                            value={selectedValue.bloodGroup || ''}
+                            placeholder={selectedValue.bloodGroup || 'Tất cả'}
+                            isDisabled={options.province ? false : true}
+                        />
+                    </div>
+                    <div className="flex-center mt-3">
+                        {' '}
+                        <button
+                            className="px-3 py-1.5 bg-[#386fd6] rounded hover:bg-[#1c5291] text-white w-full"
+                            onClick={handleSearch}
+                            type="button"
+                        >
                             Tìm kiếm
                         </button>
                     </div>

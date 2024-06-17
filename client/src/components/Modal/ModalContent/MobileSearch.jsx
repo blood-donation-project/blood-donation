@@ -1,13 +1,35 @@
-import { useState } from 'react';
-import { FaArrowLeftLong } from 'react-icons/fa6';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { FaArrowLeftLong, FaSpinner } from 'react-icons/fa6';
 import { IoSearchSharp } from 'react-icons/io5';
 import { IoMdSearch } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
+import { useSearchUsersMutation } from '../../../Redux/features/search/searchAPI';
+import useDebounce from '../../../hooks/useDebounce';
+import UserSearch from '../../User/UserSearch';
+import { setUsersSearch } from '../../../Redux/features/search/searchSlice';
+
 const MobileSearch = ({ hideModal }) => {
+    const dispatch = useDispatch();
+
     const [searchText, setSearchText] = useState('');
+
+    const { usersData } = useSelector((state) => state.search);
+    const [searchUsers, { isLoading }] = useSearchUsersMutation();
+
+    const debounce = useDebounce(searchText, 500);
+    useEffect(() => {
+        if (!debounce) {
+            return;
+        }
+        searchUsers({ q: debounce, limit: 5, page: 1 }).unwrap();
+    }, [debounce]);
+
     const searchInputChange = (e) => {
         const value = e.target.value;
+        if (value.length === 0) dispatch(setUsersSearch({ data: [] }));
+
         if (value.startsWith(' ')) return;
         setSearchText(value);
     };
@@ -52,33 +74,32 @@ const MobileSearch = ({ hideModal }) => {
             {/* Content */}
             <div className=" overflow-y-auto w-full h-full rounded-[10px]">
                 <div>
-                    {/* Map search result here (max 7-8 result) */}
-                    {searchText && (
-                        <Link
-                            className="flex p-1.5 hover:bg-[#ebedf0] items-center  "
-                            to={`/search/all?q=${searchText}`}
-                        >
-                            <div className="w-9 h-9 flex-center rounded-[50%] bg-[#ebedf0]">
-                                <IoMdSearch className="text-[#65676B] text-[20px]" />
+                    <div className="grid p-2">
+                        {searchText && (
+                            <Link
+                                className="flex p-1.5 hover:bg-[#ebedf0] items-center  rounded-md "
+                                to={`/search/all?q=${searchText}`}
+                            >
+                                <div className="w-9 h-9 flex-center rounded-[50%] bg-[#ebedf0]">
+                                    <IoMdSearch className="text-[#65676B] text-[20px]" />
+                                </div>
+                                <div className="ml-2">
+                                    <p className="text-[14px] leading-[14px]">{searchText}</p>
+                                </div>
+                            </Link>
+                        )}
+                        {isLoading ? (
+                            <div className="w-full py-2 flex-center ">
+                                <div className="spinner text-[#65676B]">
+                                    <FaSpinner />
+                                </div>
                             </div>
-                            <div className="ml-2">
-                                <p className="text-[14px] leading-[14px]">{searchText}</p>
-                            </div>
-                        </Link>
-                    )}
-                    <Link className="flex p-1.5 hover:bg-[#ebedf0]  rounded-md " to={'/'}>
-                        <div>
-                            <img
-                                className="w-9 h-9 rounded-[50%]"
-                                src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
-                                alt="avatar"
-                            />
-                        </div>
-                        <div className="ml-2">
-                            <p className="text-[14px] leading-[14px]">Hoa Nguyen</p>
-                            <span className="text-[12px]">Bạn bè</span>
-                        </div>
-                    </Link>
+                        ) : (
+                            usersData.map((user, index) => {
+                                return <UserSearch key={index} userData={user} />;
+                            })
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

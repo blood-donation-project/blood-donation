@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { SiPowerpages } from 'react-icons/si';
 import { BsFillPostcardHeartFill } from 'react-icons/bs';
 import { FaUserFriends } from 'react-icons/fa';
@@ -11,17 +12,58 @@ import { NavLink } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import Avatar from '../../components/Image/Avatar';
 import UserSuggestLoading from '../../components/LoadingSkeleton/User/UserSuggestLoading';
+import { resetSearchUsersData } from '../../Redux/features/search/searchSlice';
+import { useSearchUsersMutation } from '../../Redux/features/search/searchAPI';
+import UserFriendLoading from '../../components/LoadingSkeleton/User/UserFriendLoading';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import NoResult from '../../components/NoResult';
+import UserSearchDetail from '../../components/User/UserSearchDetail';
 
 const SearchUsersPage = () => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const queryValue = searchParams.get('q');
     const { pathname } = useLocation();
+    const dispatch = useDispatch();
+
+    const [page, setPage] = useState(1);
+    const [paginationUser, setPaginationUser] = useState();
+    const [hasMore, setHasMore] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const { usersData } = useSelector((state) => state.search);
+    const [searchUsers] = useSearchUsersMutation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+
+        return () => {
+            dispatch(resetSearchUsersData());
+        };
+    }, [dispatch]);
 
     useEffect(() => {
         if (queryValue === '' || queryValue === undefined || queryValue === null) {
-            // Go 404 page
+            navigate('/404');
         }
-    }, [queryValue]);
+        const fetch = async () => {
+            searchUsers({ q: queryValue, limit: 5, page: page })
+                .unwrap()
+                .then((res) => {
+                    if (isLoading) setIsLoading(false);
+                    setPaginationUser(res.pagination);
+                });
+        };
+        fetch();
+    }, [queryValue, page]);
+
+    useEffect(() => {
+        if (paginationUser?.links.next) {
+            setHasMore(true);
+        } else {
+            setHasMore(false);
+        }
+    }, [paginationUser]);
 
     const navSidebarLeftLinks = [
         {
@@ -105,63 +147,34 @@ const SearchUsersPage = () => {
                     {/* Content */}
                     <div className=" xs:w-full md:w-[calc(100vw_-_240px)] lg:w-[calc(100vw_-_360px)] min-h-screen">
                         <div className="flex-center ">
-                            <div className="md:px-2 xs:w-full md:w-full md:max-w-[680px]">
+                            <div className="xs:mt-2 md:mt-0 md:p-2 xs:w-full md:w-full md:max-w-[680px]">
                                 {/*Users*/}
-
-                                <div className="h-fit   bg-white mt-3 rounded-lg">
-                                    {/*  */}
-                                    <div className="flex justify-between p-2 rounded-lg bg-white">
-                                        <Tippy
-                                            interactive={true}
-                                            placement="bottom-start"
-                                            delay={[400, 0]}
-                                            render={(attrs) => (
-                                                <div
-                                                    className="bg-white shadow-md w-[340px] rounded-[6px] transition absolute left-[-100px] top-[-10px]"
-                                                    tabIndex="-1"
-                                                    {...attrs}
-                                                >
-                                                    <UserPreview />
-                                                </div>
-                                            )}
-                                        >
-                                            <div className="flex  items-center">
-                                                <Link className="cursor-pointer" to={'/user/123'}>
-                                                    <Avatar
-                                                        className={
-                                                            'rounded-[50%] w-[60px] h-[60px] border border-[#ccc] '
-                                                        }
-                                                        src={
-                                                            'https://scontent.fhan20-1.fna.fbcdn.net/v/t39.30808-1/429789909_2874433909365285_7173659383742414004_n.jpg?stp=cp0_dst-jpg_p60x60&_nc_cat=109&ccb=1-7&_nc_sid=5f2048&_nc_ohc=34ewEQPzElcQ7kNvgH2RU5t&_nc_ht=scontent.fhan20-1.fna&oh=00_AYAa_fvhDB3rXLfqgNKn_Yc7QarPRsHhW9pP83Lg2Qe2AQ&oe=6650C852'
-                                                        }
-                                                        alt={'avatar'}
-                                                    />
-                                                </Link>
-                                                <div className="ml-3 flex flex-col justify-center">
-                                                    <Link
-                                                        className="text-[15px] font-semibold cursor-pointer"
-                                                        to={'/user/123'}
-                                                    >
-                                                        Nguyễn Đình Tú
-                                                    </Link>
-                                                    <div className="text-[12px] text-[#65676B]">
-                                                        <span className="">Sống tại Hà Nội</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Tippy>
-                                        <div className="flex-center">
-                                            <button className="font-semibold px-2 py-0.5 bg-red-100 rounded-[4px] hover:bg-red-200 text-red-500">
-                                                Thêm bạn bè
-                                            </button>
-                                        </div>
+                                {isLoading ? (
+                                    <div className="h-fit  bg-white rounded-lg">
+                                        <UserFriendLoading />
                                     </div>
-                                    {/*  */}
-                                </div>
-                                <div className="my-2">
-                                    {/* Loading demo */}
-                                    <UserSuggestLoading className={'bg-white'} />
-                                </div>
+                                ) : (
+                                    usersData.length > 0 && (
+                                        <InfiniteScroll
+                                            dataLength={usersData.length}
+                                            next={() => {
+                                                setPage((prev) => prev + 1);
+                                            }}
+                                            hasMore={hasMore}
+                                            loader={<UserFriendLoading />}
+                                            scrollThreshold="100px"
+                                        >
+                                            {usersData.map((user, index) => {
+                                                return (
+                                                    <div className="mb-2">
+                                                        <UserSearchDetail key={index} userData={user} />
+                                                    </div>
+                                                );
+                                            })}
+                                        </InfiniteScroll>
+                                    )
+                                )}
+                                {!isLoading && usersData.length === 0 && <NoResult />}
                             </div>
                         </div>
                     </div>

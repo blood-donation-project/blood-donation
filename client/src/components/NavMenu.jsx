@@ -1,26 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Tippy from '@tippyjs/react/headless';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
 import { TiHome } from 'react-icons/ti';
 import { MdEvent, MdLogout } from 'react-icons/md';
 import { FaRegNewspaper, FaArrowLeftLong } from 'react-icons/fa6';
 import { PiUsersThree } from 'react-icons/pi';
-import { FaFacebookMessenger } from 'react-icons/fa';
+import { FaFacebookMessenger, FaSpinner } from 'react-icons/fa';
 import { FiMenu } from 'react-icons/fi';
 
+import { useSearchUsersMutation } from '../Redux/features/search/searchAPI';
+import { setUsersSearch } from '../Redux/features/search/searchSlice';
+import UserSearch from './User/UserSearch';
 import ModalWrapper from './Modal/ModalWrapper';
+import Image from './Image/Image';
 import MobileSearch from './Modal/ModalContent/MobileSearch';
 import logoWeb from '../assets/images/logo-web.jpg';
 import MobileMenu from './Modal/ModalContent/MobileMenu';
 import { useLogoutMutation } from '../Redux/features/auth/authAPI';
-import { useGetUserMutation } from '../Redux/features/user/userAPI';
+import useDebounce from '../hooks/useDebounce';
+import Avatar from './Image/Avatar';
 
 const NavMenu = () => {
     const [logOut] = useLogoutMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [searchText, setSearchText] = useState('');
     const [isShowingSearchResults, setIsShowingSearchResults] = useState(false);
@@ -29,6 +36,10 @@ const NavMenu = () => {
     const [isShowingSearchMobile, setIsShowingSearchMobile] = useState(false);
     const [isShowingMobileMenu, setIsShowingMobileMenu] = useState(false);
     const [activeId, setActiveId] = useState('1');
+
+    const { user } = useSelector((state) => state.user);
+    const { usersData } = useSelector((state) => state.search);
+    const [searchUsers, { isLoading }] = useSearchUsersMutation();
 
     const navLinks = [
         {
@@ -53,6 +64,15 @@ const NavMenu = () => {
         },
     ];
 
+    const debounce = useDebounce(searchText, 500);
+
+    useEffect(() => {
+        if (!debounce) {
+            return;
+        }
+        searchUsers({ q: debounce, limit: 5, page: 1 }).unwrap();
+    }, [debounce]);
+
     const handleDivClick = (e) => {
         const dataId = e.currentTarget.getAttribute('data-id');
         setActiveId(dataId);
@@ -60,13 +80,15 @@ const NavMenu = () => {
 
     const searchInputChange = (e) => {
         const value = e.target.value;
+        if (value.length === 0) dispatch(setUsersSearch({ data: [] }));
         if (value.startsWith(' ')) return;
+
         setSearchText(value);
     };
 
     const searchInputKeyDown = (e) => {
         if ((e.key === 'Enter' || e.keyCode === 13) && searchText.length > 0) {
-            window.location.href = `/search/all?q=${searchText}`;
+            navigate(`/search/all?q=${searchText}`);
         }
     };
 
@@ -99,14 +121,14 @@ const NavMenu = () => {
         navigate('/login');
     };
 
-    return (
-        <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-10">
+    return user ? (
+        <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-[99999]">
             {/* Nav */}
             <div className=" xs:h-[46px] items-center md:h-full md:px-[200px] lg:px-[300px]   flex xs:justify-between md:justify-center xs:border-b xs:border-b-[#ccc]">
                 {/* Logo & Search */}
                 <div className="xs:h-[46px] md:h-[56px] flex  items-center fixed top-0 left-0  pl-3">
                     <Link to={'/'}>
-                        <img className="w-10 h-10 rounded-[50%]" src={logoWeb} alt="logo web" />
+                        <Image className="w-10 h-10 rounded-[50%]" src={logoWeb} alt="logo web" />
                     </Link>
 
                     <Tippy
@@ -115,10 +137,11 @@ const NavMenu = () => {
                         onClickOutside={() => {
                             setIsShowingSearchResults(false);
                         }}
+                        zIndex={'999999'}
                         visible={isShowingSearchResults}
                         render={(attrs) => (
                             <div
-                                className="md:fixed lg:relative md:top-[-54px] md:left-[-78px] lg:top-0 lg:left-0 bg-white shadow-lg w-[280px] md:rounded-br-md  lg:rounded-b-[12px]"
+                                className="md:fixed z-[99999] lg:relative md:top-[-54px] md:left-[-78px] lg:top-0 lg:left-0 bg-white shadow-lg w-[280px] md:rounded-br-md  lg:rounded-b-[12px]"
                                 tabIndex="-1"
                                 {...attrs}
                             >
@@ -158,19 +181,17 @@ const NavMenu = () => {
                                             </div>
                                         </Link>
                                     )}
-                                    <Link className="flex p-1.5 hover:bg-[#ebedf0]  rounded-md " to={'/'}>
-                                        <div>
-                                            <img
-                                                className="w-9 h-9 rounded-[50%]"
-                                                src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
-                                                alt="avatar"
-                                            />
+                                    {isLoading ? (
+                                        <div className="w-full py-2 flex-center ">
+                                            <div className="spinner text-[#65676B]">
+                                                <FaSpinner />
+                                            </div>
                                         </div>
-                                        <div className="ml-2">
-                                            <p className="text-[14px] leading-[14px]">Hoa Nguyen</p>
-                                            <span className="text-[12px]">Bạn bè</span>
-                                        </div>
-                                    </Link>
+                                    ) : (
+                                        usersData.map((user, index) => {
+                                            return <UserSearch key={index} userData={user} />;
+                                        })
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -263,9 +284,9 @@ const NavMenu = () => {
                                     </div>
                                     {/* Map dữ liệu thông báo từ api */}
                                     <div className="grid pt-4">
-                                        <div className="flex">
+                                        {/* <div className="flex">
                                             <div>
-                                                <img
+                                                <Image
                                                     className="w-9 h-9 rounded-[50%]"
                                                     src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
                                                     alt="avatar"
@@ -277,7 +298,7 @@ const NavMenu = () => {
                                                 </p>
                                                 <span className="text-[12px]">9 Giờ trước</span>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>
@@ -296,21 +317,22 @@ const NavMenu = () => {
                         onClickOutside={() => {
                             setIsShowingAccountControl(false);
                         }}
+                        hideOnClick={true}
                         visible={isShowingAccountControl}
                         render={(attrs) => (
                             <div className="bg-white shadow-md w-[300px] rounded-[10px]" tabIndex="-1" {...attrs}>
                                 <div className="p-1">
                                     <div className="px-2 py-1 hover:bg-[#ebedf0] rounded-[6px] ">
-                                        <Link className="flex py-1.5 items-center " to={`/user/${12312}`}>
+                                        <Link className="flex py-1.5 items-center " to={`/user/${user._id}`}>
                                             <div>
-                                                <img
+                                                <Avatar
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
+                                                    src={user.avatar}
                                                     alt="avatar"
                                                 />
                                             </div>
                                             <div className="ml-2">
-                                                <p className="text-[16px] font-semibold ">Hoàng Xuân Việt</p>
+                                                <p className="text-[16px] font-semibold ">{user.username}</p>
                                             </div>
                                         </Link>
                                     </div>
@@ -334,11 +356,7 @@ const NavMenu = () => {
                         )}
                     >
                         <div onClick={toggleVisibilityAccountControl}>
-                            <img
-                                className="w-10 h-10 rounded-[50%] cursor-pointer"
-                                src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/361256160_1420481928775878_514483897564070731_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=JnEgyCSJGO0Q7kNvgGkTvWu&_nc_ht=scontent.fhan2-5.fna&oh=00_AYBkfNMc23WtT5ya7AaKej7YpsHqnqvNuxDYHg7CIe0NOQ&oe=664955EB"
-                                alt="avatar"
-                            />
+                            <Avatar className="w-10 h-10 rounded-[50%] cursor-pointer" src={user.avatar} alt="avatar" />
                         </div>
                     </Tippy>
                 </div>
@@ -386,6 +404,10 @@ const NavMenu = () => {
             <ModalWrapper isShowing={isShowingMobileMenu}>
                 <MobileMenu hideModal={hideMobileMenu} />
             </ModalWrapper>
+        </div>
+    ) : (
+        <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-[99999] flex item-center">
+            <Image src={logoWeb} alt="logo" />
         </div>
     );
 };

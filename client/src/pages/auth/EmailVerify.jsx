@@ -18,7 +18,7 @@ const EmailVerify = () => {
                     //  navigate('/login');
                 }, 5000);
             } catch (error) {
-                console.log(error);
+                // console.log(error);
                 setValidUrl(false);
             }
         };
@@ -32,8 +32,7 @@ const EmailVerify = () => {
                     <div
                         className="flex h-screen items-center justify-center bg-fixed bg-cover bg-no-repeat bg-center"
                         style={{
-                            backgroundImage:
-                                "url('https://your-background-image-url.jpg')",
+                            backgroundImage: "url('https://your-background-image-url.jpg')",
                         }}
                     >
                         <div className="bg-white bg-opacity-90 p-8 md:p-12 lg:p-16 rounded-lg shadow-xl text-center max-w-lg">
@@ -51,12 +50,9 @@ const EmailVerify = () => {
                                     />
                                 </svg>
                             </div>
-                            <h2 className="text-3xl font-bold mb-4">
-                                Xác thực thành công!
-                            </h2>
+                            <h2 className="text-3xl font-bold mb-4">Xác thực thành công!</h2>
                             <p className="mb-8">
-                                Email của bạn đã được xác thực thành công! Cảm
-                                ơn bạn đã tham gia cùng chúng tôi!
+                                Email của bạn đã được xác thực thành công! Cảm ơn bạn đã tham gia cùng chúng tôi!
                             </p>
                             <Link
                                 to="/login"

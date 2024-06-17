@@ -5,6 +5,7 @@
 
 /* :root {
    --text-black-gray:#65676B;
+   --text-blue:#386fd6;
    --primary-color:text-red-500;
    -- background-gray:#ebedf0;
    -- background-gray-hover:#d2d2d2;
@@ -27,7 +28,7 @@
 .modal-wrapper {
     position: fixed;
     inset: 0;
-    z-index: 9999;
+    z-index: 999999;
 }
 
 .modal-bgr {
@@ -58,6 +59,26 @@ html *::-webkit-scrollbar-thumb {
 html *::-webkit-scrollbar-track {
     border-radius: 0;
     background-color: rgba(0, 0, 0, 0.01);
+}
+
+.hide-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+/* Hiển thị thanh cuộn khi hover */
+.show-scrollbar-on-hover:hover {
+    scrollbar-width: auto; /* Firefox */
+}
+
+.show-scrollbar-on-hover:hover::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
 /*  */
@@ -127,4 +148,34 @@ body {
 
 .ck-editor__editable_inline {
     min-height: 500px; /* Đặt chiều cao cho vùng soạn thảo của CKEditor */
+}
+
+/* Spinner */
+.spinner {
+    -webkit-animation: loader-1-outter 0.8s infinite;
+    animation: loader-1-outter 0.8s infinite;
+}
+
+@-webkit-keyframes loader-1-outter {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loader-1-outter {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }

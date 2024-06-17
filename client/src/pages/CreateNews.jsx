@@ -13,20 +13,17 @@ const CreateNews = () => {
         const newsData = {
             title,
             content,
-            images: imageUrls,  // Pass the image URLs to backend
+            images: imageUrls, // Pass the image URLs to backend
         };
         try {
-            const response = await axios.post(
-                'http://localhost:3001/news/upload-news',
-                newsData
-            );
+            const response = await axios.post('http://localhost:3001/news/upload-news', newsData);
             if (response.status === 200) {
                 console.log('News saved:', response.data);
             } else {
                 console.log('Error saving news:');
             }
         } catch (error) {
-            console.log(error);
+            // console.log(error);
         }
     };
 
@@ -85,21 +82,24 @@ const CreateNews = () => {
                                             const formData = new FormData();
                                             formData.append('upload', file);
 
-                                            return axios.post('http://localhost:3001/news/upload-image', formData, {
-                                                headers: {
-                                                    'Content-Type': 'multipart/form-data'
-                                                }
-                                            }).then((response) => {
-                                                handleImageUploadResponse(response);
-                                                return {
-                                                    default: response.data.url
-                                                };
-                                            }).catch((error) => {
-                                                console.error(error);
-                                                throw error;
-                                            });
+                                            return axios
+                                                .post('http://localhost:3001/news/upload-image', formData, {
+                                                    headers: {
+                                                        'Content-Type': 'multipart/form-data',
+                                                    },
+                                                })
+                                                .then((response) => {
+                                                    handleImageUploadResponse(response);
+                                                    return {
+                                                        default: response.data.url,
+                                                    };
+                                                })
+                                                .catch((error) => {
+                                                    console.error(error);
+                                                    throw error;
+                                                });
                                         });
-                                    }
+                                    },
                                 };
                             };
                         }}
@@ -113,7 +113,10 @@ const CreateNews = () => {
                     >
                         Hủy
                     </button>
-                    <button type="submit" className="mt-4 outline-none mr-10 text-xl text-white text-right hover:bg-[#1c5291] rounded-lg p-4 bg-[#386fd6]">
+                    <button
+                        type="submit"
+                        className="mt-4 outline-none mr-10 text-xl text-white text-right hover:bg-[#1c5291] rounded-lg p-4 bg-[#386fd6]"
+                    >
                         Đăng bài
                     </button>
                 </div>

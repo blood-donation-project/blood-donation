@@ -4,14 +4,7 @@ import Tippy from '@tippyjs/react/headless';
 import Avatar from '../Image/Avatar';
 import UserPreview from './UserPreview';
 
-/*
--- Props data
-    {
-        image : "http://....",
-        full_name : "Hung Phi"
-    }
-*/
-const UserFriendProfile = ({ className, data }) => {
+const UserFriendProfile = ({ className, friendData }) => {
     return (
         <Link className={className}>
             <Tippy
@@ -25,18 +18,18 @@ const UserFriendProfile = ({ className, data }) => {
                         tabIndex="-1"
                         {...attrs}
                     >
-                        <UserPreview data={null} />
+                        <UserPreview userData={friendData} />
                     </div>
                 )}
             >
                 <div>
                     <Avatar
                         className="object-cover w-full h-full aspect-square rounded-[8px]"
-                        src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
+                        src={friendData.avatar}
                         alt="avatar"
                     />
                     <div>
-                        <span className="text-[12px] font-semibold">Hung Phi</span>
+                        <span className="text-[12px] font-semibold">{friendData.username}</span>
                     </div>
                 </div>
             </Tippy>

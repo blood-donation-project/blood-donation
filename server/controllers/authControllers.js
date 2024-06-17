@@ -4,10 +4,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const User = require('../models/user');
 const Token = require('../models/token');
-const {
-    sendEmailActivationEmail,
-    sendEmailForgotPassword,
-} = require('../utils/sendEmail');
+const { sendEmailActivationEmail, sendEmailForgotPassword } = require('../utils/sendEmail');
 const crypto = require('crypto');
 
 dotenv.config();
@@ -16,22 +13,8 @@ let refreshTokens = [];
 const authController = {
     register: async (req, res, next) => {
         try {
-            const {
-                name,
-                email,
-                password,
-                birthday,
-                address,
-                phoneNumber,
-                gender,
-                role,
-                bloodGroup,
-                avatar,
-            } = req.body;
-
-            if (!name || !email || !password || !birthday || !gender) {
-                return res.status(400).json({ error: 'MISSING_FIELDS' });
-            }
+            const { name, email, password, birthday, address, phoneNumber, gender, role, bloodGroup, avatar } =
+                req.body;
 
             // Check if email exists
             const checkEmail = await User.findOne({ email });
@@ -47,9 +30,7 @@ const authController = {
 
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
-            const formattedBirthday = moment(birthday, 'DD/MM/YYYY').format(
-                'DD/MM/YYYY'
-            );
+            const formattedBirthday = moment(birthday, 'DD/MM/YYYY').format('DD/MM/YYYY');
 
             // Create new User
             const newUser = new User({
@@ -86,38 +67,23 @@ const authController = {
     },
 
     generateAccessToken: (user) => {
-        return jwt.sign(
-            { id: user._id, role: user.role },
-            process.env.JWT_ACCESS_KEY,
-            { expiresIn: '1h' }
-        );
+        return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_ACCESS_KEY, { expiresIn: '1h' });
     },
 
     generateRefreshToken: (user) => {
-        return jwt.sign(
-            { id: user._id, role: user.role },
-            process.env.JWT_REFRESH_KEY,
-            { expiresIn: '30d' }
-        );
+        return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_REFRESH_KEY, { expiresIn: '30d' });
     },
 
     login: async (req, res, next) => {
         try {
             const user = await User.findOne({ email: req.body.email });
             if (!user) {
-                return res
-                    .status(404)
-                    .json({ code: 401, message: 'Wrong username' });
+                return res.status(404).json({ code: 401, message: 'Wrong username' });
             }
 
-            const validPassword = await bcrypt.compare(
-                req.body.password,
-                user.password
-            );
+            const validPassword = await bcrypt.compare(req.body.password, user.password);
             if (!validPassword) {
-                return res
-                    .status(404)
-                    .json({ code: 401, message: 'Wrong password' });
+                return res.status(404).json({ code: 401, message: 'Wrong password' });
             }
 
             if (!user.verified) {
@@ -136,9 +102,7 @@ const authController = {
                     const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`;
                     await sendEmailActivationEmail(user.email, url);
                 }
-                return res
-                    .status(403)
-                    .json({ code: 403, message: 'Email is not verified' });
+                return res.status(403).json({ code: 403, message: 'Email is not verified' });
             }
 
             const accessToken = authController.generateAccessToken(user);
@@ -198,27 +162,22 @@ const authController = {
                 return res.status(401).json("You're not authenticated");
             }
 
-            jwt.verify(
-                refreshToken,
-                process.env.JWT_REFRESH_KEY,
-                async (err, user) => {
-                    if (err) {
-                        return res.status(403).json({
-                            code: 403,
-                            message: 'RefreshToken is not valid',
-                        });
-                    }
-
-                    const dbUser = await User.findById(user.id);
-                    if (!dbUser) {
-                        return res.status(404).json('User not found');
-                    }
-
-                    const newAccessToken =
-                        authController.generateAccessToken(dbUser);
-                    res.status(200).json({ accessToken: newAccessToken });
+            jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, async (err, user) => {
+                if (err) {
+                    return res.status(403).json({
+                        code: 403,
+                        message: 'RefreshToken is not valid',
+                    });
                 }
-            );
+
+                const dbUser = await User.findById(user.id);
+                if (!dbUser) {
+                    return res.status(404).json('User not found');
+                }
+
+                const newAccessToken = authController.generateAccessToken(dbUser);
+                res.status(200).json({ accessToken: newAccessToken });
+            });
         } catch (error) {
             next(error);
         }
@@ -227,9 +186,7 @@ const authController = {
     logout: (req, res, next) => {
         try {
             res.clearCookie('refreshToken');
-            refreshTokens = refreshTokens.filter(
-                (token) => token !== req.cookies.refreshToken
-            );
+            refreshTokens = refreshTokens.filter((token) => token !== req.cookies.refreshToken);
             res.status(200).json('Logged out');
         } catch (error) {
             next(error);

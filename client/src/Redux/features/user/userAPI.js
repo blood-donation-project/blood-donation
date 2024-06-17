@@ -20,9 +20,29 @@ export const userAPI = createApi({
                 method: 'GET',
             }),
         }),
+        updateUser: builder.mutation({
+            query: (eventData) => ({
+                url: 'update-user',
+                method: 'POST',
+                body: eventData,
+            }),
+        }),
+        getUserById: builder.mutation({
+            query: (userId) => ({
+                url: `get-user-by-id/${userId}`,
+                method: 'GET',
+            }),
+        }),
+        getPhotos: builder.mutation({
+            query: ({ userId, limit, page }) => ({
+                url: `/${userId}/photos`,
+                method: 'GET',
+                params: { limit: limit, page: page },
+            }),
+        }),
     }),
 });
 
-export const { useGetUserMutation } = userAPI;
+export const { useGetUserMutation, useUpdateUserMutation, useGetUserByIdMutation, useGetPhotosMutation } = userAPI;
 
 export default userAPI;

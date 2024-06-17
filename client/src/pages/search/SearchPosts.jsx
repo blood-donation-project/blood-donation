@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { SiPowerpages } from 'react-icons/si';
 import { BsFillPostcardHeartFill } from 'react-icons/bs';
 import { FaUserFriends } from 'react-icons/fa';
@@ -9,17 +10,56 @@ import NavMenu from '../../components/NavMenu';
 import { NavLink } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import PostLoading from '../../components/LoadingSkeleton/Post/PostLoading';
+import { useSearchPostsMutation } from '../../Redux/features/search/searchAPI';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import NoResult from '../../components/NoResult';
+import { resetSearchPostsData } from '../../Redux/features/search/searchSlice';
 
 const SearchPostsPage = () => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const queryValue = searchParams.get('q');
     const { pathname } = useLocation();
+    const dispatch = useDispatch();
+
+    const [page, setPage] = useState(1);
+    const [paginationPost, setPaginationPost] = useState();
+    const [hasMore, setHasMore] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const { postsData } = useSelector((state) => state.search);
+    const [searchPosts] = useSearchPostsMutation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+
+        return () => {
+            dispatch(resetSearchPostsData());
+        };
+    }, [dispatch]);
 
     useEffect(() => {
         if (queryValue === '' || queryValue === undefined || queryValue === null) {
-            // Go 404 page
+            navigate('/404');
         }
-    }, [queryValue]);
+        const fetch = async () => {
+            searchPosts({ q: queryValue, limit: 5, page: page })
+                .unwrap()
+                .then((res) => {
+                    if (isLoading) setIsLoading(false);
+                    setPaginationPost(res.pagination);
+                });
+        };
+        fetch();
+    }, [queryValue, page]);
+
+    useEffect(() => {
+        if (paginationPost?.links.next) {
+            setHasMore(true);
+        } else {
+            setHasMore(false);
+        }
+    }, [paginationPost]);
 
     const navSidebarLeftLinks = [
         {
@@ -104,12 +144,29 @@ const SearchPostsPage = () => {
                     <div className="xs:w-full md:w-[calc(100vw_-_240px)] lg:w-[calc(100vw_-_360px)] min-h-screen">
                         <div className="flex-center md:px-2">
                             {/*Posts*/}
-                            <div className="h-fit xs:w-full md:w-full md:max-w-[680px]  mt-3">
-                                <Post />
-                                <div className="mb-2">
-                                    {/* Loading demo */}
-                                    <PostLoading className={'bg-white'} />
-                                </div>
+                            <div className="h-fit xs:w-full md:w-full md:max-w-[680px]  xs:mt-2 md:mt-0  md:p-2 ">
+                                {isLoading ? (
+                                    <div className="h-fit w-[680px] ">
+                                        <PostLoading />
+                                    </div>
+                                ) : (
+                                    postsData.length > 0 && (
+                                        <InfiniteScroll
+                                            dataLength={postsData.length}
+                                            next={() => {
+                                                setPage((prev) => prev + 1);
+                                            }}
+                                            hasMore={hasMore}
+                                            loader={<PostLoading />}
+                                            scrollThreshold="100px"
+                                        >
+                                            {postsData.map((post, index) => {
+                                                return <Post key={index} postData={post} />;
+                                            })}
+                                        </InfiniteScroll>
+                                    )
+                                )}
+                                {!isLoading && postsData.length === 0 && <NoResult />}
                             </div>
                         </div>
                     </div>

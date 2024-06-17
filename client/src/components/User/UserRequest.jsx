@@ -1,44 +1,77 @@
 import { Link } from 'react-router-dom';
-import Tippy from '@tippyjs/react/headless';
+import { useSelector } from 'react-redux';
 
 import Avatar from '../Image/Avatar';
-import UserPreview from './UserPreview';
+import {
+    useAcceptFriendRequestMutation,
+    useCancelFriendRequestMutation,
+    useRejectFriendRequestMutation,
+    useSendFriendRequestMutation,
+    useUnfriendMutation,
+} from '../../Redux/features/friend/friendAPI';
 
-/*
--- Props data
-    {
-        image : "http://....",
-        full_name : "Hung Phi"
-    }
-*/
-const UserRequest = ({ className, data }) => {
+const UserRequest = ({ className, userData }) => {
+    const { user } = useSelector((state) => state.user);
+    const [sendFriendRequest] = useSendFriendRequestMutation();
+    const [acceptFriendRequest] = useAcceptFriendRequestMutation();
+    const [rejectFriendRequest] = useRejectFriendRequestMutation();
+    const [unfriend] = useUnfriendMutation();
+
+    const handleSendFriendRequest = () => {
+        sendFriendRequest({ receiverId: userData._id }).unwrap();
+    };
+    const handleRejectFriendRequest = () => {
+        rejectFriendRequest({ requestId: userData.friendRequest._id }).unwrap();
+    };
+    const handleAcceptFriendRequest = () => {
+        if (userData.friendRequest) acceptFriendRequest({ requestId: userData.friendRequest._id }).unwrap();
+    };
+
     return (
-        <Link className={className}>
+        <div className={className}>
             <div className="bg-white rounded-[8px] overflow-hidden shadow-md">
-                <Avatar
-                    className="object-cover w-full h-full aspect-square "
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
-                    alt="avatar"
-                />
+                <Link to={`/user/${userData._id}`}>
+                    <Avatar className="object-cover w-full h-full aspect-square " src={userData.avatar} />
+                </Link>
                 <div className="p-2 shadow-sm">
-                    <span className="text-[14px] font-semibold">Hung Phi</span>
-                    <div className="flex flex-col">
-                        <button
-                            type="button"
-                            className="rounded py-1 text-[14px] hover:bg-[#1c5291] text-white font-medium bg-[#386fd6]"
-                        >
-                            Xác nhận
-                        </button>
-                        <button
-                            type="button"
-                            className="rounded py-1 text-[14px] mt-2 bg-[#ebedf0;] hover:bg-[#d2d2d2] "
-                        >
-                            Xóa
-                        </button>
-                    </div>
+                    <Link className="text-[14px] font-semibold" to={`/user/${userData._id}`}>
+                        {userData.username}
+                    </Link>
+                    {userData.friendRequest.status === 'pending' ? (
+                        <div className="flex flex-col">
+                            <button
+                                type="button"
+                                className="rounded py-1 text-[14px] hover:bg-[#1c5291] text-white font-medium bg-[#386fd6]"
+                                onClick={handleAcceptFriendRequest}
+                            >
+                                Xác nhận
+                            </button>
+                            <button
+                                type="button"
+                                className="rounded py-1 text-[14px] mt-2 bg-[#ebedf0;] hover:bg-[#d2d2d2] "
+                                onClick={handleRejectFriendRequest}
+                            >
+                                Từ chối
+                            </button>
+                        </div>
+                    ) : userData.friendRequest.status === 'rejected' ? (
+                        <div className="flex flex-col">
+                            <span className="text-[14px] text-[#65676B]">Đã gỡ lời mời </span>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col">
+                            <Link
+                                to={`/user/${userData._id}`}
+                                type="button"
+                                className="rounded py-1 text-[14px] mt-2 bg-[#ebedf0] flex-center border border-[#ccc] font-medium hover:bg-[#d2d2d2] "
+                            >
+                                Trang cá nhân
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
-        </Link>
+        </div>
     );
 };
 

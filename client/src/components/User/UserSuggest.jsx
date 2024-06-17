@@ -1,34 +1,85 @@
 import { Link } from 'react-router-dom';
-import Tippy from '@tippyjs/react/headless';
+import { useSelector } from 'react-redux';
 
 import Avatar from '../Image/Avatar';
-import UserPreview from './UserPreview';
+import {
+    useAcceptFriendRequestMutation,
+    useCancelFriendRequestMutation,
+    useSendFriendRequestMutation,
+} from '../../Redux/features/friend/friendAPI';
+import { MdBloodtype } from 'react-icons/md';
+import { LuUserPlus } from 'react-icons/lu';
+import { FaUserCheck } from 'react-icons/fa';
 
-/*
--- Props data
-    {
-        image : "http://....",
-        full_name : "Hung Phi"
-    }
-*/
-const UserSuggest = ({ className, data }) => {
+const UserSuggest = ({ className, userData }) => {
+    const { user } = useSelector((state) => state.user);
+    const [sendFriendRequest] = useSendFriendRequestMutation();
+    const [cancelFriendRequest] = useCancelFriendRequestMutation();
+    const [acceptFriendRequest] = useAcceptFriendRequestMutation();
+
+    const handleSendFriendRequest = () => {
+        sendFriendRequest({ receiverId: userData._id }).unwrap();
+    };
+    const handleCancelFriendRequest = () => {
+        cancelFriendRequest({ receiverId: userData._id }).unwrap();
+    };
+    const handleAcceptFriendRequest = () => {
+        if (userData.friendRequest) acceptFriendRequest({ requestId: userData.friendRequest._id }).unwrap();
+    };
+
     return (
         <Link className={className}>
             <div className="bg-white rounded-[8px] overflow-hidden shadow-md">
-                <Avatar
-                    className="object-cover w-full h-full aspect-square "
-                    src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
-                    alt="avatar"
-                />
+                <Avatar className="object-cover w-full h-full aspect-square " src={userData.avatar} alt="avatar" />
                 <div className="p-2 shadow-sm">
-                    <span className="text-[14px] font-semibold">Hung Phi</span>
+                    <span className="text-[14px] line-clamp-1 font-medium">{userData.username}</span>
+                    <div className="flex items-center text-[#65676B] text-[13px] py-0.5">
+                        <div className="w-[14px]">
+                            <LuUserPlus />
+                        </div>
+                        <span className="">{userData.role}</span>
+                    </div>
                     <div className="flex flex-col">
-                        <button
-                            type="button"
-                            className="rounded py-1 text-[14px] hover:bg-[#1c5291] text-white  font-medium bg-[#386fd6]"
-                        >
-                            Thêm bạn bè
-                        </button>
+                        {userData.role === 'Cơ sở y tế' ? (
+                            userData.isFollowed ? (
+                                <Link
+                                    className="flex-center text-[14px] font-medium   py-1 bg-[#f0f2f5] border border-[#ccc] rounded-[4px] hover:bg-[#d2d2d2] "
+                                    to={`/user/${userData._id}`}
+                                >
+                                    <span className="">Đang theo dõi</span>
+                                </Link>
+                            ) : (
+                                <button className="flex-center text-white  text-[14px] font-medium  py-1 bg-[#386fd6] rounded-[4px] hover:bg-[#1c5291] ">
+                                    <span className="">Theo dõi</span>
+                                </button>
+                            )
+                        ) : userData.friendRequest?.status === 'pending' ? (
+                            userData.friendRequest.senderId === user._id ? (
+                                <button
+                                    type="button"
+                                    className="rounded py-1 text-[14px] hover:bg-[#d2d2d2] text-black border border-[#ccc]  font-medium bg-[#ebedf0]"
+                                    onClick={handleCancelFriendRequest}
+                                >
+                                    Hủy yêu cầu
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleAcceptFriendRequest}
+                                    className="rounded py-1 text-[14px] hover:bg-[#1c5291] text-white  font-medium bg-[#386fd6]"
+                                >
+                                    Xác nhận
+                                </button>
+                            )
+                        ) : (
+                            <button
+                                type="button"
+                                className="rounded py-1 text-[14px] hover:bg-[#1c5291] text-white  font-medium bg-[#386fd6]"
+                                onClick={handleSendFriendRequest}
+                            >
+                                Thêm bạn bè
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

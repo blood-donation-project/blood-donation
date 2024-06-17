@@ -4,16 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import Datepicker from 'react-tailwindcss-datepicker';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-import {
-    getDistrictsByProvinceId,
-    getProvinces,
-    getWardsByDistrictId,
-} from '../../services/locationServices';
-
+import { getDistrictsByProvinceId, getProvinces, getWardsByDistrictId } from '../../services/locationServices';
+import { Spin } from 'antd';
 import { useRegisterMutation } from '../../Redux/features/auth/authAPI';
 
 const Register = () => {
     const [register] = useRegisterMutation();
+    const [isLoading, setIsLoading] = useState(false);
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -69,10 +66,10 @@ const Register = () => {
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
 
-        const province = provinces?.find((p) => p?.idProvince === provinceId);
+        const province = provinces?.data?.find((p) => p?.id === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.name || '',
+            name: province?.full_name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
@@ -82,10 +79,10 @@ const Register = () => {
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.find((d) => d?.idDistrict === districtId);
+        const district = districts?.data?.find((d) => d?.id === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.name : '',
+            name: district ? district?.full_name : '',
         });
         // Reset wards when district changes
         setWards([]);
@@ -93,8 +90,8 @@ const Register = () => {
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.find((w) => w.idCommune === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
+        const ward = wards?.data?.find((w) => w.id === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.full_name : '' });
     };
     const handlePhoneNumberChange = (e) => {
         const input = e.target.value;
@@ -102,30 +99,37 @@ const Register = () => {
         const numbersOnly = input.replace(/[^0-9]/g, '');
         setPhoneNumber(numbersOnly);
     };
+
     // Submit Form
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formatDate = moment(valueDate?.startDate).format('DD/MM/YYYY');
-        const newUser = {
-            name: name,
-            email: email,
-            phoneNumber: phoneNumber,
-            birthday: formatDate,
-            gender: gender,
-            address: {
-                province: selectedProvince.name,
-                district: selectedDistrict.name,
-                ward: selectedWards.name,
-                street: street,
-            },
-            password: password,
-            role: role,
-        };
-        if (password === rePassword) {
-            register(newUser).unwrap();
-            navigate('/login');
-        } else {
-            toast.error('Mật khẩu nhập lại không khớp');
+    const handleSubmit = async (event) => {
+        try {
+            event.preventDefault();
+            setIsLoading(true);
+
+            const newUser = {
+                name: name,
+                email: email,
+                phoneNumber: phoneNumber,
+                birthday: valueDate?.startDate,
+                gender: gender,
+                address: {
+                    province: selectedProvince.name,
+                    district: selectedDistrict.name,
+                    ward: selectedWards.name,
+                    street: street,
+                },
+                password: password,
+                role: role,
+            };
+            if (password === rePassword) {
+                await register(newUser).unwrap();
+                setIsLoading(false);
+                navigate('/login');
+            } else {
+                toast.error('Mật khẩu nhập lại không khớp');
+            }
+        } catch (error) {
+            setIsLoading(false);
         }
     };
 
@@ -134,11 +138,7 @@ const Register = () => {
             {/* Left Pane */}
             <div className="hidden lg:flex h-screen items-center justify-center flex-1 bg-white text-black">
                 <div className="w-full h-full text-center">
-                    <img
-                        className="w-full h-full bg-cover object-cover"
-                        src={imgBloodDonation}
-                        alt=""
-                    />
+                    <img className="w-full h-full bg-cover object-cover" src={imgBloodDonation} alt="" />
                 </div>
             </div>
 
@@ -146,23 +146,14 @@ const Register = () => {
             <div className="w-full h-screen bg-gray-100 lg:w-1/2 flex items-center justify-center overflow-y-scroll">
                 {/* Register */}
                 <div className={`max-w-lg w-full p-6 h-screen `}>
-                    <h1 className="text-4xl font-semibold mb-6 text-black text-center">
-                        Đăng Ký
-                    </h1>
+                    <h1 className="text-4xl font-semibold mb-6 text-black text-center">Đăng Ký</h1>
                     <h2 className="text-lg font-thin mb-6 text-gray-500 text-center">
-                        "Đăng ký tài khoản để cùng nhau kết nối với những người
-                        đang cần máu"
+                        "Đăng ký tài khoản để cùng nhau kết nối với những người đang cần máu"
                     </h2>
                     {/* Register */}
-                    <form
-                        className="space-y-4 mt-4"
-                        onSubmit={handleSubmit}
-                    >
+                    <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
                         <div className="">
-                            <label
-                                htmlFor="username"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
+                            <label htmlFor="username" className="block text-[16px] font-medium text-gray-700">
                                 Họ và Tên
                             </label>
                             <input
@@ -177,10 +168,7 @@ const Register = () => {
                         </div>
 
                         <div>
-                            <label
-                                htmlFor="email"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
+                            <label htmlFor="email" className="block text-[16px] font-medium text-gray-700">
                                 Email
                             </label>
                             <input
@@ -193,10 +181,7 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="phoneNumber"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
+                            <label htmlFor="phoneNumber" className="block text-[16px] font-medium text-gray-700">
                                 Số điện thoại
                             </label>
                             <input
@@ -209,53 +194,79 @@ const Register = () => {
                                 className="mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                             />
                         </div>
-                        {/* Date of birthday */}
-                        <div>
-                            <label htmlFor="">Ngày Sinh</label>
-                            <div
-                                aria-required
-                                className="bg-white"
+
+                        <div className=" ">
+                            <label htmlFor="role" className="block text-[16px] font-medium text-gray-700">
+                                Bạn là:
+                            </label>
+                            <select
+                                id="role"
+                                name="role"
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                             >
-                                <Datepicker
-                                    primaryColor="purple"
-                                    asSingle={true}
-                                    useRange={false}
-                                    value={valueDate}
-                                    maxDate={Date.now()}
-                                    displayFormat="DD/MM/YYYY"
-                                    onChange={(e) => setValueDate(e)}
-                                    readOnly={true}
-                                />
-                            </div>
+                                <option value={'Người hiến máu'} className="">
+                                    Người hiến máu
+                                </option>
+                                <option value={'Người cần máu'} className="p-2 mt-1">
+                                    Người cần hiến máu
+                                </option>
+                                <option value={'Cơ sở y tế'} className="p-2">
+                                    Cơ sở y tế
+                                </option>
+                            </select>
                         </div>
-                        {/* Gender */}
-                        <div>
-                            <label htmlFor="">Giới tính</label>
-                            <div className="flex  gap-4 my-4">
-                                <button
-                                    type="button"
-                                    className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
-                                        gender === 'Nam'
-                                            ? 'bg-blue-500 ring-2 ring-blue-300 border border-blue-500'
-                                            : 'bg-gray-300 hover:bg-blue-500'
-                                    }`}
-                                    onClick={() => setGender('Nam')}
-                                >
-                                    Nam
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
-                                        gender === 'Nữ'
-                                            ? 'bg-pink-500 ring-2 ring-pink-300 border border-pink-500'
-                                            : 'bg-gray-300 hover:bg-pink-500'
-                                    }`}
-                                    onClick={() => setGender('Nữ')}
-                                >
-                                    Nữ
-                                </button>
+
+                        {/* Date of birthday */}
+                        {role !== 'Cơ sở y tế' ? (
+                            <div>
+                                <div>
+                                    <label htmlFor="">Ngày Sinh</label>
+                                    <div aria-required className="bg-white">
+                                        <Datepicker
+                                            primaryColor="purple"
+                                            asSingle={true}
+                                            useRange={false}
+                                            value={valueDate}
+                                            maxDate={Date.now()}
+                                            displayFormat="DD/MM/YYYY"
+                                            onChange={(e) => setValueDate(e)}
+                                            readOnly={true}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label htmlFor="">Giới tính</label>
+                                    <div className="flex  gap-4 my-4">
+                                        <button
+                                            type="button"
+                                            className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
+                                                gender === 'Nam'
+                                                    ? 'bg-blue-500 ring-2 ring-blue-300 border border-blue-500'
+                                                    : 'bg-gray-300 hover:bg-blue-500'
+                                            }`}
+                                            onClick={() => setGender('Nam')}
+                                        >
+                                            Nam
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`px-6 py-2 text-white font-semibold rounded-full transition-all duration-300 ${
+                                                gender === 'Nữ'
+                                                    ? 'bg-pink-500 ring-2 ring-pink-300 border border-pink-500'
+                                                    : 'bg-gray-300 hover:bg-pink-500'
+                                            }`}
+                                            onClick={() => setGender('Nữ')}
+                                        >
+                                            Nữ
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            ''
+                        )}
                         {/* Address */}
                         <div>
                             <label htmlFor="">Địa Chỉ</label>
@@ -267,12 +278,9 @@ const Register = () => {
                                     onChange={handleProvinceChange}
                                 >
                                     <option value="0">Chọn tỉnh</option>
-                                    {provinces?.map((province) => (
-                                        <option
-                                            key={province.idProvince}
-                                            value={province.idProvince}
-                                        >
-                                            {province.name}
+                                    {provinces?.data?.map((province) => (
+                                        <option key={province.id} value={province.id}>
+                                            {province.full_name}
                                         </option>
                                     ))}
                                 </select>
@@ -283,12 +291,9 @@ const Register = () => {
                                     onChange={handleDistrictChange}
                                 >
                                     <option value="">Chọn quận/huyện</option>
-                                    {districts?.map((district) => (
-                                        <option
-                                            key={district.idDistrict}
-                                            value={district.idDistrict}
-                                        >
-                                            {district.name}
+                                    {districts?.data?.map((district) => (
+                                        <option key={district.id} value={district.id}>
+                                            {district.full_name}
                                         </option>
                                     ))}
                                 </select>
@@ -299,12 +304,9 @@ const Register = () => {
                                     value={selectedWards?.id}
                                 >
                                     <option value="">Chọn xã</option>
-                                    {wards?.map((ward) => (
-                                        <option
-                                            key={ward.idCommune}
-                                            value={ward.idCommune}
-                                        >
-                                            {ward.name}
+                                    {wards?.data?.map((ward) => (
+                                        <option key={ward.id} value={ward.id}>
+                                            {ward.full_name}
                                         </option>
                                     ))}
                                 </select>
@@ -322,10 +324,7 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="password"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
+                            <label htmlFor="password" className="block text-[16px] font-medium text-gray-700">
                                 Password
                             </label>
                             <input
@@ -339,10 +338,7 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label
-                                htmlFor="repassword"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
+                            <label htmlFor="repassword" className="block text-[16px] font-medium text-gray-700">
                                 Nhập lại Password
                             </label>
                             <input
@@ -355,56 +351,20 @@ const Register = () => {
                             />
                         </div>
 
-                        <div className=" ">
-                            <label
-                                htmlFor="role"
-                                className="block text-[16px] font-medium text-gray-700"
+                        <Spin spinning={isLoading} size="default">
+                            <button
+                                type="submit"
+                                className="w-full cursor-pointer bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"
                             >
-                                Bạn là:
-                            </label>
-                            <select
-                                id="role"
-                                name="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                            >
-                                <option
-                                    value={'donor'}
-                                    className=""
-                                >
-                                    Người hiến máu
-                                </option>
-                                <option
-                                    value={'blood recipient'}
-                                    className="p-2 mt-1"
-                                >
-                                    Người cần hiến máu
-                                </option>
-                                <option
-                                    value={'Medical facility'}
-                                    className="p-2"
-                                >
-                                    Cơ sở y tế
-                                </option>
-                            </select>
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full cursor-pointer bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"
-                        >
-                            Đăng Ký
-                        </button>
+                                Đăng Ký
+                            </button>
+                        </Spin>
                     </form>
 
                     <div className="mt-4 text-sm text-gray-600 text-center ">
                         <p className="">
                             Bạn đã có tài khoản?{' '}
-                            <Link
-                                className="hover:underline text-black"
-                                to="/login"
-                                relative="path"
-                            >
+                            <Link className="hover:underline text-black" to="/login" relative="path">
                                 Đăng nhập
                             </Link>
                         </p>

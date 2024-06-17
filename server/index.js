@@ -10,6 +10,9 @@ const homeRoute = require('./routes/home');
 const newsRoute = require('./routes/news');
 const eventRoute = require('./routes/event');
 const userRoute = require('./routes/user');
+const friendRoute = require('./routes/friend');
+const searchRoute = require('./routes/search');
+const postRoute = require('./routes/post');
 const errorMiddleware = require('./middleware/errorMiddleware');
 const middlewareController = require('./controllers/middlewareController');
 
@@ -20,11 +23,12 @@ connectDB();
 app.use(
     cors({
         origin: 'http://localhost:3000', // Thay thế bằng domain của client
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
-    })
+    }),
 );
+app.options('*', cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json());
@@ -34,6 +38,9 @@ app.use('/home', middlewareController.verifyToken, homeRoute);
 app.use('/news', newsRoute);
 app.use('/events', eventRoute);
 app.use('/api/user', userRoute);
+app.use('/api/posts', postRoute);
+app.use('/api/friends', friendRoute);
+app.use('/api/search', searchRoute);
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3001;

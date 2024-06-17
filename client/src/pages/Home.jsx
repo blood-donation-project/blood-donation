@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import NavMenu from '../components/NavMenu';
 import { Link } from 'react-router-dom';
-import { IoMdImages } from 'react-icons/io';
-import { MdInsertEmoticon } from 'react-icons/md';
-import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
-import { useGetUserMutation } from '../Redux/features/user/userAPI';
+import { GoPlusCircle } from 'react-icons/go';
+import { useDispatch, useSelector } from 'react-redux';
+import { PiUsersThree } from 'react-icons/pi';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { MdEvent } from 'react-icons/md';
 
+import {
+    useGetSuggestedUsersMutation,
+    useGetAllFriendsMutation,
+    useGetAllFollowedFacilitiesMutation,
+} from '../Redux/features/friend/friendAPI';
+import { useGetHomePagePostsMutation } from '../Redux/features/post/postAPI';
 import PostLoading from '../components/LoadingSkeleton/Post/PostLoading';
 import Post from '../components/Post/Post';
 import ModalWrapper from '../components/Modal/ModalWrapper';
@@ -13,187 +20,328 @@ import CreatePost from '../components/Modal/ModalContent/CreatePost';
 import Avatar from '../components/Image/Avatar';
 import UserFriendLoading from '../components/LoadingSkeleton/User/UserFriendLoading';
 import UserSuggestLoading from '../components/LoadingSkeleton/User/UserSuggestLoading';
+import getLastName from '../utils/getLastName';
+import { resetHomePagePosts } from '../Redux/features/post/postSlice';
+import { resetFollowers, resetFriends, resetSuggestedFriends } from '../Redux/features/friend/friendSlice';
+import { HiMiniUsers } from 'react-icons/hi2';
+import { BsMessenger } from 'react-icons/bs';
 
 const HomePage = () => {
+    const dispatch = useDispatch();
+
     const [isShowingModal, setIsShowingModal] = useState(false);
+    const [pagination, setPagination] = useState();
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(false);
+
+    const [getHomePagePosts] = useGetHomePagePostsMutation();
+    const [getSuggestedUsers, { isLoading: isLoadingSuggestedUsers }] = useGetSuggestedUsersMutation();
+    const [getAllFriends, { isLoading: isLoadingAllFriends }] = useGetAllFriendsMutation();
+    const [getAllFollowedFacilities, { isLoading: isLoadingAllFollowers }] = useGetAllFollowedFacilitiesMutation();
+
+    const { user } = useSelector((state) => state.user);
+    const { homePagePosts } = useSelector((state) => state.posts);
+
+    const { suggestedFriends, friends, followers } = useSelector((state) => state.friend);
+
+    const sencondaryNav = [
+        {
+            title: 'Bạn bè',
+            icon: <HiMiniUsers />,
+            path: '/friends',
+        },
+        {
+            title: 'Tin nhắn',
+            icon: <BsMessenger />,
+            path: '/messenger',
+        },
+        {
+            title: 'Người dùng gần đây',
+            icon: <PiUsersThree />,
+            path: '/surrouding-users',
+        },
+        {
+            title: 'Sự kiện',
+            icon: <MdEvent />,
+            path: '/events',
+        },
+    ];
+    // Get homepage posts
+    useEffect(() => {
+        getHomePagePosts({ limit: 5, page: page })
+            .unwrap()
+            .then((res) => {
+                setPagination(res.pagination);
+            });
+    }, [page]);
+
+    // Get suggested adnd friends
+    useEffect(() => {
+        dispatch(resetFriends());
+        dispatch(resetSuggestedFriends());
+        dispatch(resetFollowers());
+        const fetchUsersAndFriends = async () => {
+            try {
+                await getSuggestedUsers({ limit: 10, page: 1 }).unwrap();
+                await getAllFriends({ userId: user._id, limit: 10, page: 1 }).unwrap();
+                await getAllFollowedFacilities({ limit: 8, page: 1 }).unwrap();
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+            }
+        };
+
+        fetchUsersAndFriends();
+    }, [getSuggestedUsers, getAllFriends]);
+
+    useEffect(() => {
+        dispatch(resetHomePagePosts());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (pagination?.links.next) {
+            setHasMore(true);
+        } else {
+            setHasMore(false);
+        }
+    }, [pagination]);
 
     const showModal = () => {
         setIsShowingModal(true);
     };
-
     const hideModal = () => {
         setIsShowingModal(false);
     };
 
-    useAutoRefreshToken('/home/');
-    const [getUser, { data: userData }] = useGetUserMutation();
-    //  GET USER HERE!
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const result = await getUser().unwrap();
-            } catch (error) {}
-        };
-        fetchUser();
-    }, [getUser]);
-
     return (
-        <>
-            {/* Header */}
-            <NavMenu />
-            {/* Body */}
-            <div className="flex sm:justify-between xs:mt-[96px] md:mt-[50px] bg-[#f0f2f5] ">
-                {/* Sidebar left */}
-                <div className=" lg:block xs:hidden w-[360px] ">
-                    <div className="lg:block xs:hidden w-[360px] h-screen py-3 fixed left-0 top-[56px] bg-[#f0f2f5]">
-                        <div className="pl-2 grid">
-                            <Link className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-l-md" to="/">
-                                <div>
-                                    <Avatar
-                                        className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                        src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/361256160_1420481928775878_514483897564070731_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=JnEgyCSJGO0Q7kNvgGkTvWu&_nc_ht=scontent.fhan2-5.fna&oh=00_AYBkfNMc23WtT5ya7AaKej7YpsHqnqvNuxDYHg7CIe0NOQ&oe=664955EB"
-                                        alt="avatar"
-                                    />
-                                </div>
-                                <div className="ml-2">
-                                    <p className="text-[14px] font-semibold leading-[14px]">Hoàng Xuân Việt</p>
-                                </div>
-                            </Link>
-                            {/* Cần thêm gì thì thêm dưới này */}
-                            <></>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Content */}
-                <div className="w-full md:max-w-[calc(100vw_-_240px)] lg:max-w-[calc(100vw-_720px)] flex min-h-screen flex-col items-center py-3 sm:px-4  ">
-                    {/* Div đăng bài */}
-                    <div className="py-2 px-3 bg-white rounded-[8px] shadow h-fit  w-full ">
-                        <div className="flex border-b-[1px] border-b-[#ccc] pb-2">
-                            <div>
-                                <Avatar
-                                    className="w-9 h-9 rounded-[50%]"
-                                    src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/361256160_1420481928775878_514483897564070731_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=JnEgyCSJGO0Q7kNvgGkTvWu&_nc_ht=scontent.fhan2-5.fna&oh=00_AYBYsM4yz19uc41fbzydD1VTIBULdeECHmUiWi3CaucLUA&oe=6649FEAB"
-                                    alt="avatar"
-                                />
-                            </div>
-                            <div
-                                className="flex-grow ml-3 flex items-center bg-[#f0f2f5] rounded-[16px] px-3 py-1 cursor-pointer"
-                                onClick={showModal}
-                            >
-                                <span className="text-[#65676B]">Việt ơi, bạn đang nghĩ gì thế?</span>
-                            </div>
-                        </div>
-                        <div className="flex py-1">
-                            <label
-                                className="flex-center w-[50%] cursor-pointer rounded-lg hover:bg-[#f0f2f5] py-1.5"
-                                onClick={showModal}
-                                htmlFor="image"
-                            >
-                                <IoMdImages className=" text-green-400 text-[18px]" />
-                                <span className="ml-1 font-semibold text-[15px] text-[#65676B]">Ảnh/video</span>
-                            </label>
-                            <div className="flex-center w-[50%] cursor-pointer rounded-lg hover:bg-[#f0f2f5] py-1.5">
-                                <MdInsertEmoticon className=" text-orange-400 text-[20px]" />
-                                <span className="ml-1 font-semibold text-[15px] text-[#65676B]">Cảm xúc/hoạt động</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* List bài đăng */}
-                    <div className="h-fit xs:w-full lg::max-w-[590px] w-full mt-3">
-                        {/*Bài đăng  */}
-                        <Post />
-
-                        {/* Post Loading */}
-                        <PostLoading />
-                    </div>
-                </div>
-
-                {/* Sidebar right */}
-                <div className="xs:hidden md:block sm:w-[240px] lg:w-[360px]">
-                    <div className="xs:hidden sm:block sm:w-[240px] lg:w-[360px] h-screen  py-3 fixed top-[56px] right-0  bg-[#f0f2f5]">
-                        {/* List bạn bè  */}
-                        <div className="pb-1 border-b border-b-[#ccc]">
-                            <div className="pl-4">
-                                <h3 className="font-semibold text-[15px] text-[#65676B]">Bạn bè</h3>
-                            </div>
-
-                            <div className=" py-2 pl-2 grid">
-                                <Link className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md" to="/">
+        user && (
+            <>
+                {/* Header */}
+                <NavMenu />
+                {/* Body */}
+                <div className="flex sm:justify-between xs:mt-[96px] md:mt-[50px] bg-[#f0f2f5] ">
+                    {/* Sidebar left */}
+                    <div className=" lg:block xs:hidden w-[360px] ">
+                        <div className="lg:block xs:hidden w-[360px] h-screen py-3 fixed left-0 top-[56px] bg-[#f0f2f5]">
+                            <div className="pl-2 grid">
+                                <Link
+                                    className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-l-md"
+                                    to={`/user/${user._id}`}
+                                >
                                     <div>
                                         <Avatar
                                             className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                            src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/329007355_5877024832378876_105945048897552486_n.jpg?stp=dst-jpg_p111x111&_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=lX3PfZ5K7WsQ7kNvgF8tMYE&_nc_ht=scontent.fhan2-3.fna&oh=00_AYCnQUCyq4KDq4Bt3bEbopzMjdxg8nMxgBPhfHuOmOEM1Q&oe=664A370D"
+                                            src={user.avatar}
                                             alt="avatar"
                                         />
                                     </div>
                                     <div className="ml-2">
-                                        <p className="text-[14px] font-semibold leading-[14px]">Phan Tuấn</p>
+                                        <p className="text-[14px] font-semibold leading-[14px]">{user.username}</p>
                                     </div>
                                 </Link>
-                                <Link className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md" to="/">
-                                    <div>
-                                        <Avatar
-                                            className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                            src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/423237119_2076174816084793_2700967333954066592_n.jpg?stp=dst-jpg_p120x120&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=LoocIRz9v9YQ7kNvgGDx-wi&_nc_ht=scontent.fhan2-3.fna&oh=00_AYCETmRTOEr2VnRrY9F0aAV3pSkzOwflTdFUpJ7b80K3kg&oe=664A194E"
-                                            alt="avatar"
-                                        />
-                                    </div>
-                                    <div className="ml-2">
-                                        <p className="text-[14px] font-semibold leading-[14px]">Ngân Phạm</p>
-                                    </div>
-                                </Link>
-
-                                {/* User friend loading */}
+                                {sencondaryNav.map((nav, index) => {
+                                    return (
+                                        <Link
+                                            key={index}
+                                            className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-l-md"
+                                            to={nav.path}
+                                        >
+                                            <div className="w-9 h-9 rounded-[50%] flex-center text-[20px]">
+                                                {nav.icon}
+                                            </div>
+                                            <div className="ml-2">
+                                                <p className="text-[14px] font-semibold leading-[14px]">{nav.title}</p>
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                            {isLoadingAllFollowers ? (
                                 <UserFriendLoading />
+                            ) : (
+                                followers.length > 0 && (
+                                    <div className="py-2 border-t border-t-[#ccc] pl-2 grid">
+                                        <div className="pl-4">
+                                            <Link className="font-semibold text-[15px] text-[#65676B]" to={'/friends'}>
+                                                Cơ sở y tế đang theo dõi
+                                            </Link>
+                                        </div>
+
+                                        <div className=" py-2 pl-2 grid">
+                                            {followers.map((follower, index) => {
+                                                return (
+                                                    <Link
+                                                        key={index}
+                                                        className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md"
+                                                        to={`/user/${follower._id}`}
+                                                    >
+                                                        <div>
+                                                            <Avatar
+                                                                className="w-9 h-9 rounded-[50%] border border-[#ccc]"
+                                                                src={follower.avatar}
+                                                                alt="avatar"
+                                                            />
+                                                        </div>
+                                                        <div className="ml-2">
+                                                            <p className="text-[14px] font-semibold leading-[14px]">
+                                                                {follower.username}
+                                                            </p>
+                                                        </div>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="w-full md:max-w-[calc(100vw_-_240px)] lg:max-w-[calc(100vw-_720px)] flex min-h-screen flex-col items-center py-3 sm:px-4  ">
+                        {/* Div create post */}
+                        <div className="py-2 px-3 bg-white rounded-[8px] shadow h-fit  w-full ">
+                            <div className="flex border-b-[1px] border-b-[#ccc] pb-2">
+                                <div>
+                                    <Avatar className="w-9 h-9 rounded-[50%]" src={user.avatar} alt="avatar" />
+                                </div>
+                                <div
+                                    className="flex-grow ml-3 flex items-center bg-[#f0f2f5] rounded-[16px] px-3 py-1 cursor-pointer"
+                                    onClick={showModal}
+                                >
+                                    <span className="text-[#65676B]">
+                                        {getLastName(user.username) + ' ơi, bạn đang nghĩ gì thế?'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="flex py-1">
+                                <div
+                                    className="flex-center w-[100%] cursor-pointer rounded-lg hover:bg-[#f0f2f5] py-1.5"
+                                    onClick={showModal}
+                                >
+                                    <GoPlusCircle />
+                                    <span className="ml-1 font-semibold text-[15px] text-[#65676B]">
+                                        Tạo bài viết mới
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* List người dùng gợi ý */}
-                        <div className="pb-1 pt-2 ">
-                            <div className="pl-4">
-                                <h3 className="font-semibold text-[15px] text-[#65676B]">Gợi ý cho bạn</h3>
-                            </div>
-                            <div className=" py-2 pl-2 grid">
-                                <Link className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md" to="/">
-                                    <div>
-                                        <Avatar
-                                            className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                            src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/440974567_1500825014119362_8620000110901620035_n.jpg?stp=dst-jpg_p111x111&_nc_cat=107&ccb=1-7&_nc_sid=5f2048&_nc_ohc=t7jnvwT8jkUQ7kNvgE2Fnnm&_nc_ht=scontent.fhan2-5.fna&oh=00_AYD7elpmbuKg7k2JEZMdWEIxalb-BFqEKa-lhMfDxPer6A&oe=664A1665"
-                                            alt="avatar"
-                                        />
-                                    </div>
-                                    <div className="ml-2">
-                                        <p className="text-[14px] font-semibold leading-[12px]">Dương Quốc Cần</p>
-                                        <span className="text-[11px] text-[#65676B]">Gợi ý cho bạn</span>
-                                    </div>
-                                </Link>
-                                <Link className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md" to="/">
-                                    <div>
-                                        <Avatar
-                                            className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                            src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/356388448_3601714933437980_2259126593281232293_n.jpg?stp=dst-jpg_p111x111&_nc_cat=101&ccb=1-7&_nc_sid=5f2048&_nc_ohc=9qvo_P2KIWgQ7kNvgERBqC2&_nc_ht=scontent.fhan2-3.fna&oh=00_AYAdSWN7lHP-dQMxdTxQZWy_MSgm7lUTSBLkrvwnNNcCRw&oe=664A0486"
-                                            alt="avatar"
-                                        />
-                                    </div>
-                                    <div className="ml-2">
-                                        <p className="text-[14px] font-semibold leading-[12px]">Hoàng Quân</p>
-                                        <span className="text-[11px] text-[#65676B]">Gợi ý cho bạn</span>
-                                    </div>
-                                </Link>
+                        {/* List posts */}
+                        <div className="h-fit xs:w-full lg::max-w-[590px] w-full mt-3">
+                            {homePagePosts ? (
+                                <InfiniteScroll
+                                    dataLength={homePagePosts.length}
+                                    next={() => {
+                                        setPage((prev) => prev + 1);
+                                    }}
+                                    endMessage={
+                                        <div className="text-center text-[#65676B] py-4">
+                                            <b>🎉 Bạn đã xem hết tất cả các bài viết ngày hôm nay</b>
+                                        </div>
+                                    }
+                                    hasMore={hasMore}
+                                    loader={<PostLoading />}
+                                    scrollThreshold="5px"
+                                >
+                                    {homePagePosts.map((post, index) => {
+                                        return <Post key={index} postData={post} />;
+                                    })}
+                                </InfiniteScroll>
+                            ) : (
+                                <PostLoading />
+                            )}
+                        </div>
+                    </div>
 
-                                {/* User suggest loading */}
-                                <UserSuggestLoading />
+                    {/* Sidebar right */}
+                    <div className="xs:hidden h-screen  md:block sm:w-[240px] lg:w-[360px]">
+                        <div className="xs:hidden sm:block sm:w-[240px] lg:w-[360px] hide-scrollbar  show-scrollbar-on-hover overflow-y-scroll h-screen  py-3 fixed top-[56px] right-0  bg-[#f0f2f5]">
+                            {/* List người dùng gợi ý */}
+                            <div className="pb-1 pt-2 ">
+                                <div className="pl-4">
+                                    <Link className="font-semibold text-[15px] text-[#65676B]" to={'/friends/suggests'}>
+                                        Gợi ý cho bạn
+                                    </Link>
+                                </div>
+                                <div className=" py-2 pl-2 grid">
+                                    {isLoadingSuggestedUsers ? (
+                                        <UserSuggestLoading />
+                                    ) : (
+                                        suggestedFriends.map((suggestedFriend, index) => {
+                                            return (
+                                                <Link
+                                                    className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md"
+                                                    key={index}
+                                                    to={`/user/${suggestedFriend._id}`}
+                                                >
+                                                    <div>
+                                                        <Avatar
+                                                            className="w-9 h-9 rounded-[50%] border border-[#ccc]"
+                                                            src={suggestedFriend.avatar}
+                                                            alt="avatar"
+                                                        />
+                                                    </div>
+                                                    <div className="ml-2">
+                                                        <p className="text-[14px] font-semibold leading-[12px]">
+                                                            {suggestedFriend.username}
+                                                        </p>
+                                                        <span className="text-[11px] text-[#65676B]">
+                                                            Gợi ý cho bạn
+                                                        </span>
+                                                    </div>
+                                                </Link>
+                                            );
+                                        })
+                                    )}
+                                </div>
                             </div>
+                            {/* List bạn bè  */}
+
+                            {isLoadingAllFriends ? (
+                                <UserFriendLoading />
+                            ) : (
+                                friends.length > 0 && (
+                                    <div className="py-2 border-t border-t-[#ccc]">
+                                        <div className="pl-4">
+                                            <Link className="font-semibold text-[15px] text-[#65676B]" to={'/friends'}>
+                                                Bạn bè
+                                            </Link>
+                                        </div>
+
+                                        <div className=" py-2 pl-2 grid">
+                                            {friends.map((friend, index) => {
+                                                return (
+                                                    <Link
+                                                        className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md"
+                                                        to={`/user/${friend._id}`}
+                                                    >
+                                                        <div>
+                                                            <Avatar
+                                                                className="w-9 h-9 rounded-[50%] border border-[#ccc]"
+                                                                src={friend.avatar}
+                                                                alt="avatar"
+                                                            />
+                                                        </div>
+                                                        <div className="ml-2">
+                                                            <p className="text-[14px] font-semibold leading-[14px]">
+                                                                {friend.username}
+                                                            </p>
+                                                        </div>
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )
+                            )}
                         </div>
                     </div>
                 </div>
-            </div>
-            <ModalWrapper isShowing={isShowingModal}>
-                <CreatePost hideModal={hideModal} />
-            </ModalWrapper>
-        </>
+                <ModalWrapper isShowing={isShowingModal}>
+                    <CreatePost hideModal={hideModal} />
+                </ModalWrapper>
+            </>
+        )
     );
 };
 

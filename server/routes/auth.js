@@ -21,11 +21,10 @@ router.post('/forgotpassword', authController.forgotPass);
 // Change Password using token
 router.patch('/:id/forgotpass/:token', authController.changePass);
 // Check invalid change password token
-router.get(
-    '/:id/checkChangePassToken/:token',
-    authController.checkChangePassToken
-);
+router.get('/:id/checkChangePassToken/:token', authController.checkChangePassToken);
 // Verify Account
+router.get('/:id/verify/:token', authController.verify);
+
 router.get('/:id/verify/:token', authController.verify);
 
 module.exports = router;

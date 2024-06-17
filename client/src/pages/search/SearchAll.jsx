@@ -1,27 +1,86 @@
 import { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { SiPowerpages } from 'react-icons/si';
 import { BsFillPostcardHeartFill } from 'react-icons/bs';
 import { FaUserFriends } from 'react-icons/fa';
 import Tippy from '@tippyjs/react/headless';
+import { useNavigate } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
+import { useSearchPostsMutation, useSearchUsersMutation } from '../../Redux/features/search/searchAPI';
 import UserPreview from '../../components/User/UserPreview';
 import NoResult from '../../components/NoResult';
 import NavMenu from '../../components/NavMenu';
 import { NavLink } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import Avatar from '../../components/Image/Avatar';
+import UserSearchDetail from '../../components/User/UserSearchDetail';
+import UserFriendLoading from '../../components/LoadingSkeleton/User/UserFriendLoading';
+import PostLoading from '../../components/LoadingSkeleton/Post/PostLoading';
+import { resetSearchPostsData, resetSearchUsersData } from '../../Redux/features/search/searchSlice';
 
 const SearchAllPage = () => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const queryValue = searchParams.get('q');
     const { pathname } = useLocation();
+    const dispatch = useDispatch();
+
+    const [page, setPage] = useState(1);
+    const [paginationPost, setPaginationPost] = useState();
+    const [hasMore, setHasMore] = useState(false);
+    const [searched, setSearched] = useState(false);
+    const [isLoadingSearchPosts, setIsLoadingSearchPosts] = useState(true);
+
+    const { usersData, postsData } = useSelector((state) => state.search);
+    const [searchPosts] = useSearchPostsMutation();
+    const [searchUsers, { isLoading: isLoadingSearchUsers }] = useSearchUsersMutation();
 
     useEffect(() => {
         if (queryValue === '' || queryValue === undefined || queryValue === null) {
-            // Go 404 page
+            navigate('/404');
         }
-    }, [queryValue]);
+
+        const fetch = async () => {
+            if (!searched) {
+                await searchUsers({ q: queryValue, limit: 5, page: page })
+                    .unwrap()
+                    .then(() => {
+                        setSearched(true);
+                    });
+            }
+
+            await searchPosts({ q: queryValue, limit: 5, page: page })
+                .unwrap()
+                .then((res) => {
+                    setIsLoadingSearchPosts(false);
+                    setPaginationPost(res.pagination);
+                })
+                .catch(() => {
+                    setIsLoadingSearchPosts(false);
+                });
+        };
+
+        fetch();
+    }, [queryValue, page]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+
+        return () => {
+            dispatch(resetSearchUsersData());
+            dispatch(resetSearchPostsData());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (paginationPost?.links.next) {
+            setHasMore(true);
+        } else {
+            setHasMore(false);
+        }
+    }, [paginationPost]);
 
     const navSidebarLeftLinks = [
         {
@@ -81,7 +140,7 @@ const SearchAllPage = () => {
                         </div>
                     </div>
 
-                    {/* Sencondary nav */}
+                    {/* Sencondary nav mobile  */}
                     <div className="md:hidden w-full  bg-white mt-2 py-1 ">
                         <div className="flex items-center ">
                             {navSidebarLeftLinks.map((nav, i) => {
@@ -104,65 +163,56 @@ const SearchAllPage = () => {
 
                     {/* Content */}
                     <div className="xs:w-full md:w-[calc(100vw_-_240px)] lg:w-[calc(100vw_-_360px)] min-h-screen">
-                        {/* <div className="flex-center">
-                            <div>
-                              
-                                <div className="h-fit w-[680px] bg-white mt-3 rounded-lg">
-                                    <div className="p-2">
-                                        <h3 className="font-bold ">Mọi người</h3>
+                        <div className="flex-center">
+                            <div className="xs:mt-2 md:mt-0 w-full md:max-w-[680px] md:p-2 ">
+                                {/* User */}
+                                {isLoadingSearchUsers ? (
+                                    <div className="h-fit   bg-white rounded-lg">
+                                        <UserFriendLoading />
                                     </div>
-                                    <div>
-                                        <div className="flex justify-between p-2 rounded-lg bg-white">
-                                            <Tippy
-                                                interactive={true}
-                                                placement="bottom-start"
-                                                delay={[400, 0]}
-                                                render={(attrs) => (
-                                                    <div
-                                                        className="bg-white shadow-md w-[340px] rounded-[6px] transition absolute left-[-100px] top-[-10px]"
-                                                        tabIndex="-1"
-                                                        {...attrs}
-                                                    >
-                                                        <UserPreview />
-                                                    </div>
-                                                )}
-                                            >
-                                                <Link className="flex cursor-pointer items-center" to={'/user/123'}>
-                                                    <Avatar
-                                                        className={
-                                                            'rounded-[50%] w-[60px] h-[60px] border border-[#ccc] '
-                                                        }
-                                                        src={
-                                                            'https://scontent.fhan20-1.fna.fbcdn.net/v/t39.30808-1/429789909_2874433909365285_7173659383742414004_n.jpg?stp=cp0_dst-jpg_p60x60&_nc_cat=109&ccb=1-7&_nc_sid=5f2048&_nc_ohc=34ewEQPzElcQ7kNvgH2RU5t&_nc_ht=scontent.fhan20-1.fna&oh=00_AYAa_fvhDB3rXLfqgNKn_Yc7QarPRsHhW9pP83Lg2Qe2AQ&oe=6650C852'
-                                                        }
-                                                        alt={'avatar'}
-                                                    />
-                                                    <div className="ml-3 flex flex-col justify-center">
-                                                        <h4 className="text-[15px] font-semibold">Nguyễn Đình Tú</h4>
-                                                        <div className="text-[12px] text-[#65676B]">
-                                                            <span className="">Sống tại Hà Nội</span>
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </Tippy>
-                                            <div className="flex-center">
-                                                <button className="font-semibold px-2 py-0.5 bg-red-100 rounded-[4px] hover:bg-red-200 text-red-500">
-                                                    Thêm bạn bè
-                                                </button>
+                                ) : (
+                                    usersData.length > 0 && (
+                                        <div className="h-fit p-2  bg-white  rounded-lg">
+                                            <div className="">
+                                                <h3 className="font-bold ">Mọi người</h3>
+                                            </div>
+                                            <div>
+                                                {usersData.map((user, index) => {
+                                                    return <UserSearchDetail key={index} userData={user} />;
+                                                })}
                                             </div>
                                         </div>
+                                    )
+                                )}
+                                {/* Post */}
+                                {isLoadingSearchPosts ? (
+                                    <div className="h-fit mt-3 ">
+                                        <PostLoading />
                                     </div>
-                                </div>
-
-                          
-                                <div className="h-fit w-[680px] mt-3">
-                                    <Post />
-                                </div>
+                                ) : (
+                                    postsData.length > 0 && (
+                                        <InfiniteScroll
+                                            dataLength={postsData.length}
+                                            next={() => {
+                                                setPage((prev) => prev + 1);
+                                            }}
+                                            hasMore={hasMore}
+                                            loader={<PostLoading />}
+                                            scrollThreshold="100px"
+                                        >
+                                            {postsData.map((post, index) => {
+                                                return <Post key={index} postData={post} />;
+                                            })}
+                                        </InfiniteScroll>
+                                    )
+                                )}
                             </div>
-                        </div> */}
+                        </div>
 
-                        {/* No result example */}
-                        <NoResult />
+                        {!isLoadingSearchPosts &&
+                            !isLoadingSearchUsers &&
+                            postsData.length === 0 &&
+                            usersData.length === 0 && <NoResult />}
                     </div>
                 </div>
             </div>
