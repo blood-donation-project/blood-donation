@@ -22,6 +22,7 @@ import {
     useCheckRegisEventMutation,
     useDeleteEventMutation,
     useGetEventByIdEventQuery,
+    useJoinEventMutation,
 } from '../../Redux/features/events/eventAPI';
 import JoinEvent from './JoinEvent';
 import { useGetUserMutation } from '../../Redux/features/user/userAPI';
@@ -53,9 +54,9 @@ const DetailEvent = () => {
         ? dayjs(data.donationTime, 'YYYY/MM/DD').date()
         : 'N/A';
     // Open Popup
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isUpdateOpen, setIsUpdateOpen] = useState(false);
     const [isOpenDetail, setOpenDetail] = useState(false);
+    const [joinEvent] = useJoinEventMutation();
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -89,17 +90,6 @@ const DetailEvent = () => {
         };
         fetchEventByID();
     }, [checkRegisterEvent, isCheckJoin, params.id]);
-
-    console.log(data);
-
-    // Open Join
-    const openPopup = () => {
-        setIsPopupOpen(true);
-    };
-
-    const closePopup = () => {
-        setIsPopupOpen(false);
-    };
 
     // Open Update
     const openPopupUpdate = () => {
@@ -154,6 +144,16 @@ const DetailEvent = () => {
 
     const handleCancelDel = () => {
         setOpenConfirmDel(false);
+    };
+
+    const handleJoinEvent = async (e) => {
+        try {
+            e.preventDefault();
+            await joinEvent(params.id).unwrap();
+            navigate(0);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -220,7 +220,7 @@ const DetailEvent = () => {
                                 </Popconfirm>
                             ) : (
                                 <button
-                                    onClick={openPopup}
+                                    onClick={handleJoinEvent}
                                     className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center bg-gray-200"
                                 >
                                     <IoIosCheckmarkCircleOutline className="w-6 h-6" />
@@ -228,7 +228,6 @@ const DetailEvent = () => {
                                 </button>
                             )}
                         </div>
-                        {isPopupOpen && <JoinEvent onClose={closePopup} />}
                         <div
                             className={`${
                                 userData?.role !== 'Cơ sở y tế' ? '' : 'hidden'
