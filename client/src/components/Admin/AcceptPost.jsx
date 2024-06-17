@@ -3,6 +3,7 @@ import Menu from './Menu';
 import { IoSearchOutline, IoFilter } from 'react-icons/io5';
 import Datepicker from 'react-tailwindcss-datepicker';
 import { Image } from 'antd';
+import { Link } from 'react-router-dom';
 const AcceptPost = () => {
     const [input, setInput] = useState('');
     const [isOpenFilter, setOpenFilter] = useState(false);
@@ -96,43 +97,12 @@ const AcceptPost = () => {
                                         alt=""
                                     />
                                     <div className="flex flex-col ">
-                                        <span className="leading-none">
+                                        <Link
+                                            to={'/user/'}
+                                            className="leading-none hover:underline"
+                                        >
                                             Nguyễn Văn Quang
-                                        </span>
-                                        <p className="text-sm text-gray-500">
-                                            1 giờ{' '}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="mb-2">
-                                    <p>Đây là nội dung của bài viết này</p>
-                                </div>
-                                <div className="flex items-center justify-center mb-2">
-                                    <Image
-                                        className="max-h-96"
-                                        src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717834042/news_images/sge4pmekvd7ncz9tdwvr.jpg"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-center gap-2">
-                                    <button className="px-6 w-[25%] py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg">
-                                        Phê Duyệt
-                                    </button>
-                                    <button className="px-6 w-[25%] py-2 bg-gray-300 hover:bg-slate-400 rounded-lg">
-                                        Từ Chối
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="bg-gray-100 rounded-2xl mb-4 p-4">
-                                <div className="flex items-center gap-2 md:mb-4 mb-2 md:ml-4 ">
-                                    <img
-                                        className="w-10 h-10 rounded-full"
-                                        src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717860215/news_images/yelzul3f8fofpghnwmig.jpg"
-                                        alt=""
-                                    />
-                                    <div className="flex flex-col ">
-                                        <span className="leading-none">
-                                            Nguyễn Văn Quang
-                                        </span>
+                                        </Link>
                                         <p className="text-sm text-gray-500">
                                             1 giờ{' '}
                                         </p>
