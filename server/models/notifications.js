@@ -7,8 +7,9 @@ const notificationSchema = new mongoose.Schema({
         require: true,
     },
     content: {
-        type: String,
-        require: true,
+        text: { type: String, require: true },
+        link: { type: String },
+        image: { type: String },
     },
     type: {
         type: String,

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { MdManageAccounts } from 'react-icons/md';
 import { TbCalendarEvent } from 'react-icons/tb';
 import { BsFilePost } from 'react-icons/bs';
-import { IoNotifications } from 'react-icons/io5';
-const Menu = ({ onMenuItemClick, activeComponent }) => {
+import { IoNotifications, IoArrowBackSharp } from 'react-icons/io5';
+const Menu = ({ activeComponent }) => {
     return (
         <div class="flex flex-col items-center lg:justify-between z-30 shadow-md border-r lg:w-48 w-16 h-full overflow-hidden text-gray-700 bg-gray-100 rounded transition-all duration-300">
             <div>
@@ -70,7 +70,7 @@ const Menu = ({ onMenuItemClick, activeComponent }) => {
                                     ? 'bg-gray-300 text-gray-800'
                                     : ''
                             } flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-300`}
-                            to={'/v1/admin/manage-posts'}
+                            to={'/v1/admin/manage-post'}
                         >
                             <BsFilePost className="w-6 h-6" />
                             <span class="ml-2 hidden lg:block text-sm font-medium">
@@ -98,7 +98,7 @@ const Menu = ({ onMenuItemClick, activeComponent }) => {
                                     ? 'bg-gray-300 text-gray-800'
                                     : ''
                             } flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-300`}
-                            onClick={() => onMenuItemClick('notification')}
+                            to={'/v1/admin/notification'}
                         >
                             <IoNotifications className="w-6 h-6" />
                             <span class="ml-2 hidden lg:block text-sm font-medium">
@@ -111,24 +111,11 @@ const Menu = ({ onMenuItemClick, activeComponent }) => {
             <div className="w-full">
                 <Link
                     class="flex items-center justify-center w-full h-12 lg:h-16  bg-gray-200 hover:bg-gray-300"
-                    href="#"
+                    to={'/'}
                 >
-                    <svg
-                        class="w-6 h-6 stroke-current"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                    </svg>
+                    <IoArrowBackSharp className="w-6 h-6" />
                     <span class="ml-2 hidden lg:block text-sm font-medium">
-                        Tài khoản
+                        Quay lại Blood Donation
                     </span>
                 </Link>
             </div>

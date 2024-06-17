@@ -228,7 +228,10 @@ const ManageUser = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full overflow-auto h-[500px]">
+                        <div
+                            style={{ overflowX: 'auto', overflowY: 'auto' }}
+                            className="w-full h-[500px]"
+                        >
                             <table className="border w-full ">
                                 <tr className="sticky -top-1 bg-white shadow-sm">
                                     <td className="w-[35%] text-start py-2 font-medium">

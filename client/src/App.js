@@ -30,6 +30,8 @@ import FriendsSuggest from './pages/friends/FriendsSuggest';
 import HomeAdmin from './components/Admin/HomeAdmin';
 import ManageUser from './components/Admin/ManageUser';
 import ManageEventAd from './components/Admin/ManageEventAd';
+import NotificationAdmin from './components/Admin/NotificationAdmin';
+import ManagePost from './components/Admin/ManagePost';
 function App() {
     return (
         <div>
@@ -61,6 +63,15 @@ function App() {
                     path="/v1/admin/manage-events"
                     element={<ManageEventAd />}
                 />
+                <Route
+                    path="/v1/admin/notification"
+                    element={<NotificationAdmin />}
+                />
+                <Route
+                    path="/v1/admin/manage-post"
+                    element={<ManagePost />}
+                />
+
                 {/* End Admin Page */}
                 <Route
                     path="/postnews"
