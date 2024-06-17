@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdManageAccounts } from 'react-icons/md';
 import { TbCalendarEvent } from 'react-icons/tb';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 import { BsFilePost } from 'react-icons/bs';
 import { IoNotifications, IoArrowBackSharp } from 'react-icons/io5';
 const Menu = ({ activeComponent }) => {
+    const [isOpenPost, setIsOpenPost] = useState(false);
+
     return (
         <div class="flex flex-col items-center lg:justify-between z-30 shadow-md border-r lg:w-48 w-16 h-full overflow-hidden text-gray-700 bg-gray-100 rounded transition-all duration-300">
             <div>
@@ -71,10 +74,28 @@ const Menu = ({ activeComponent }) => {
                                     : ''
                             } flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-300`}
                             to={'/v1/admin/manage-post'}
+                            onClick={() => setIsOpenPost(!isOpenPost)}
                         >
                             <BsFilePost className="w-6 h-6" />
-                            <span class="ml-2 hidden lg:block text-sm font-medium">
+                            <span class="ml-2 flex-1 hidden lg:flex items-center justify-between text-sm font-medium">
                                 Bài Đăng
+                                {isOpenPost ? <FaAngleUp /> : <FaAngleDown />}
+                            </span>
+                        </Link>
+                        {/* Dropdown Menu Post */}
+                        <Link
+                            class={`${
+                                activeComponent === 'browse'
+                                    ? 'bg-gray-300 text-gray-800'
+                                    : ''
+                            } ${
+                                isOpenPost ? 'flex' : 'hidden'
+                            } items-center w-full ml-5 h-12 px-3 mt-1 rounded hover:bg-gray-300`}
+                            to={'/v1/admin/manage-post'}
+                        >
+                            <MdManageAccounts className="w-6 h-6" />
+                            <span class="ml-2 hidden lg:block text-sm font-medium">
+                                Chờ duyệt bài
                             </span>
                         </Link>
                         <Link
