@@ -111,17 +111,17 @@ const AcceptPost = () => {
                                 <div className="mb-2">
                                     <p>Đây là nội dung của bài viết này</p>
                                 </div>
-                                <div className="flex items-center justify-center mb-2">
+                                <div className="flex items-center justify-center mb-4">
                                     <Image
                                         className="max-h-96"
                                         src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717834042/news_images/sge4pmekvd7ncz9tdwvr.jpg"
                                     />
                                 </div>
                                 <div className="flex items-center justify-center gap-2">
-                                    <button className="px-6 w-[25%] py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg">
+                                    <button className="px-1 md:px-6 md:w-[25%] w-1/2 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg">
                                         Phê Duyệt
                                     </button>
-                                    <button className="px-6 w-[25%] py-2 bg-gray-300 hover:bg-slate-400 rounded-lg">
+                                    <button className="px-6 md:w-[25%] w-1/2 py-2 bg-gray-300 hover:bg-slate-400 rounded-lg">
                                         Từ Chối
                                     </button>
                                 </div>
