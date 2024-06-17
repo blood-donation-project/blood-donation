@@ -50,7 +50,7 @@ const DetailEvent = () => {
     const [cancelJoin] = useCancelJoinMutation();
     const { data, error } = useGetEventByIdEventQuery(params.id);
     const day = data?.donationTime
-        ? dayjs(data.donationTime, 'DD/MM/YYYY').date()
+        ? dayjs(data.donationTime, 'YYYY/MM/DD').date()
         : 'N/A';
     // Open Popup
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -89,6 +89,8 @@ const DetailEvent = () => {
         };
         fetchEventByID();
     }, [checkRegisterEvent, isCheckJoin, params.id]);
+
+    console.log(data);
 
     // Open Join
     const openPopup = () => {
@@ -323,7 +325,7 @@ const DetailEvent = () => {
                                                     <p>
                                                         Sự kiện của{' '}
                                                         <Link
-                                                            to={`/user/${data?._id}`}
+                                                            to={`/user/${data?.userId}`}
                                                             className="font-bold hover:underline"
                                                         >
                                                             {data?.username}{' '}
@@ -543,7 +545,7 @@ const DetailEvent = () => {
                                                                     </h1>
                                                                 </div>
                                                                 <Link
-                                                                    to={`/message/${userData?._id}`}
+                                                                    to={`/message/${data?.userId}`}
                                                                     className="w-full py-2 bg-gray-300 flex items-center justify-center gap-3 hover:bg-gray-400 rounded-lg"
                                                                 >
                                                                     <FaRegMessage className="w-6 h-6" />

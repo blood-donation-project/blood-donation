@@ -389,7 +389,7 @@ const eventController = {
         try {
             const eventId = req.params.id;
             const eventData = req.body.eventData; // Lấy toàn bộ eventData
-
+            console.log(req.body);
             const authHeader = req.headers.authorization;
             if (!authHeader) {
                 return res

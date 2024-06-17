@@ -1,28 +1,23 @@
 import React from 'react';
 import { parse } from 'date-fns';
+import moment from 'moment';
 import ListEvent from '../ListEvent';
 import schedule from '../../../assets/img/schedule.png';
 const SearchOrganizeEvent = ({ eventDataById, title, tab, role }) => {
     const filteredData = eventDataById?.events?.filter((item) => {
-        const donationTimeDate = parse(
-            item?.donationTime,
-            'dd/MM/yyyy',
-            new Date()
+        const donationTimeDate = moment(item?.donationTime).format(
+            'YYYY/MM/DD'
         );
-        const todayDate = new Date();
-        return donationTimeDate instanceof Date && donationTimeDate < todayDate;
+        const todayDate = moment().format('YYYY/MM/DD');
+        return donationTimeDate < todayDate;
     });
     console.log(filteredData);
     const filterData = eventDataById?.events?.filter((item) => {
-        const donationTimeDate = parse(
-            item?.donationTime,
-            'dd/MM/yyyy',
-            new Date()
+        const donationTimeDate = moment(item?.donationTime).format(
+            'YYYY/MM/DD'
         );
-        const todayDate = new Date();
-        return (
-            donationTimeDate instanceof Date && donationTimeDate >= todayDate
-        );
+        const todayDate = moment().format('YYYY/MM/DD');
+        return donationTimeDate >= todayDate;
     });
     console.log(filteredData);
     return (
