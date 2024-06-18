@@ -15,10 +15,7 @@ import {
 } from '../../services/socket';
 import { useGetMessageMutation } from '../../Redux/features/message/messageAPI';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    messageReceived,
-    setMessages,
-} from '../../Redux/features/message/messageSlice';
+import { messageReceived, setMessages } from '../../Redux/features/message/messageSlice';
 
 const ChatSection = () => {
     const [input, setInput] = useState('');
@@ -85,18 +82,14 @@ const ChatSection = () => {
                 setInput('');
             }
         },
-        [input, receiverId, userId]
+        [input, receiverId, userId],
     );
 
     return (
-        <section className="flex h-screen flex-col flex-auto border-l border-gray-200">
+        <section className="flex flex-col flex-1 border-l border-gray-200">
             <ChatHeader />
             <ChatBody messages={messages} />
-            <ChatFooter
-                input={input}
-                setInput={setInput}
-                handleSendMessage={handleSendMessage}
-            />
+            <ChatFooter input={input} setInput={setInput} handleSendMessage={handleSendMessage} />
         </section>
     );
 };

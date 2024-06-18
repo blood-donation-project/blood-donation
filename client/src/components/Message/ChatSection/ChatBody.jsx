@@ -41,33 +41,30 @@ const ChatBody = ({ messages }) => {
     }, [getUserById, params.id]);
 
     return (
-        <div>
+        <div className="h-[80%]">
             {messages?.length > 0 ? (
-                <div
-                    ref={chatContainerRef}
-                    className="chat-body w-full h-[80vh] p-4 flex-1 overflow-y-scroll bg-white "
-                >
+                <div ref={chatContainerRef} className="chat-body  w-full p-4 overflow-y-scroll bg-white ">
                     {messages.map((message, index) => (
                         <div
                             key={index}
                             className={`flex ${
-                                message.senderId._id === userData._id ? 'justify-end' : 'justify-start'
+                                message?.senderId?._id === userData?._id ? 'justify-end' : 'justify-start'
                             } break-words`}
                         >
                             <div
                                 className={`px-3 py-2 rounded-3xl my-1 max-w-xs ${
-                                    message.senderId._id === userData._id
+                                    message?.senderId._id === userData?._id
                                         ? 'bg-blue-500 text-white'
                                         : 'bg-gray-200 text-black'
                                 }`}
                             >
-                                {message.content}
+                                {message?.content}
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="flex h-[80vh] items-center flex-col">
+                <div className="flex flex-1 items-center flex-col">
                     <Skeleton loading={false}>
                         <div className="flex flex-col items-center">
                             <div className="h-10"></div>
