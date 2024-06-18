@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { FaLocationDot, FaFacebookMessenger, FaHeartCircleCheck, FaHeartCirclePlus } from 'react-icons/fa6';
 import { FaUser, FaUserCheck, FaUserTimes } from 'react-icons/fa';
+
 import { IoMdPersonAdd } from 'react-icons/io';
 import { MdBloodtype } from 'react-icons/md';
 import { LuUserPlus } from 'react-icons/lu';
 
 import Avatar from '../Image/Avatar';
+
 import {
     useCancelFriendRequestMutation,
     useFollowMutation,
@@ -50,7 +53,7 @@ const UserPreview = ({ userData }) => {
     return (
         <div className="p-4">
             <div className="flex">
-                <Link to={'/user/123'}>
+                <Link to={`/user/${userData._id}`}>
                     <Avatar
                         className=" w-20  h-20 rounded-[50%] border border-[#ccc]"
                         src={userData.avatar}
@@ -58,7 +61,7 @@ const UserPreview = ({ userData }) => {
                     />
                 </Link>
                 <div className="ml-2">
-                    <Link className="text-[18px] font-bold " to={'/user/123'}>
+                    <Link className="text-[18px] font-bold " to={`/user/${userData._id}`}>
                         {userData.username}
                     </Link>
                     <div className="flex items-center text-[#65676B] text-[15px]">

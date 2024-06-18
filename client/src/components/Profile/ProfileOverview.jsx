@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
+
 import { FaPen, FaUserCheck, FaUserTimes } from 'react-icons/fa';
 import { FaFacebookMessenger } from 'react-icons/fa6';
 import { IoPersonAdd } from 'react-icons/io5';
 import { FaHeartCircleMinus, FaHeartCirclePlus, FaHeartCircleCheck } from 'react-icons/fa6';
+
 import Image from '../Image/Image';
 import Avatar from '../Image/Avatar';
 import ModalWrapper from '../Modal/ModalWrapper';
 import ViewPhoto from '../Modal/ModalContent/ViewPhoto';
 import UpdateProfile from '../Modal/ModalContent/UpdateProfile';
 import { useGetUserByIdMutation } from '../../Redux/features/user/userAPI';
+
 import { resetFriends } from '../../Redux/features/friend/friendSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -75,6 +78,7 @@ const ProfileOverview = () => {
         const fetchUserData = async () => {
             try {
                 await getUserById(userId).unwrap();
+
                 setIsLoadingOtherUser(false);
             } catch (error) {
                 setIsLoadingOtherUser(false);
@@ -83,7 +87,6 @@ const ProfileOverview = () => {
         };
         fetchUserData();
     }, [getUserById, params.id]);
-
     const handleAcceptFriend = () => {
         acceptFriendRequest({ requestId: otherUser.friendRequest._id })
             .unwrap()
@@ -142,6 +145,7 @@ const ProfileOverview = () => {
 
     const showViewImageModal = (img) => {
         setImage(img);
+
         setIsShowingViewImageAVTModal(true);
     };
 
@@ -160,11 +164,13 @@ const ProfileOverview = () => {
     const navProfileLinks = [
         {
             path: `/user/${otherUser?._id}/`,
+
             title: 'Bài viết',
             lastPath: '',
         },
         {
             path: `/user/${otherUser?._id}/about`,
+
             title: 'Giới thiệu',
             lastPath: 'about',
         },
@@ -175,6 +181,7 @@ const ProfileOverview = () => {
         },
         {
             path: `/user/${otherUser?._id}/photos`,
+
             title: 'Ảnh',
             lastPath: 'photos',
         },
@@ -287,10 +294,13 @@ const ProfileOverview = () => {
                             ) : (
                                 <></>
                             )}
-                            <button className="flex-center px-2 py-1 bg-[#386fd6] rounded-[4px] text-white hover:bg-[#1c5291]">
+                            <Link
+                                className="flex-center px-2 py-1 bg-[#386fd6] rounded-[4px] text-white hover:bg-[#1c5291]"
+                                to={`/message/${otherUser?._id}`}
+                            >
                                 <FaFacebookMessenger />
                                 <span className="ml-2">Nhắn tin</span>
-                            </button>
+                            </Link>
                         </div>
                     ) : (
                         <div className="xs:mt-3 xs:justify-center md:justify-start md:mt-0 flex items-center">
@@ -384,10 +394,13 @@ const ProfileOverview = () => {
                                     )}
                                 </div>
                             )}
-                            <button className="flex-center px-2 py-1 bg-[#386fd6] rounded-[4px] text-white hover:bg-[#1c5291]">
+                            <Link
+                                className="flex-center px-2 py-1 bg-[#386fd6] rounded-[4px] text-white hover:bg-[#1c5291]"
+                                to={`/message/${otherUser?._id}`}
+                            >
                                 <FaFacebookMessenger />
                                 <span className="ml-2">Nhắn tin</span>
-                            </button>
+                            </Link>
                         </div>
                     )}
                 </div>

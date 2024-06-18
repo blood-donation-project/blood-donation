@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 
 import Tippy from '@tippyjs/react/headless';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate, useActionData } from 'react-router-dom';
+
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
 import { TiHome } from 'react-icons/ti';
 import { MdEvent, MdLogout } from 'react-icons/md';
@@ -18,17 +19,25 @@ import UserSearch from './User/UserSearch';
 import ModalWrapper from './Modal/ModalWrapper';
 import Image from './Image/Image';
 import MobileSearch from './Modal/ModalContent/MobileSearch';
+
 import logoWeb from '../assets/images/logo-web.jpg';
 import MobileMenu from './Modal/ModalContent/MobileMenu';
 import { useLogoutMutation } from '../Redux/features/auth/authAPI';
 import useDebounce from '../hooks/useDebounce';
 import Avatar from './Image/Avatar';
 
+import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
+import { useGetReceiverMutation } from '../Redux/features/message/messageAPI';
+import { MdOutlineAdminPanelSettings } from 'react-icons/md';
+import { useParams } from 'react-router-dom';
+import { useGetAllNotifiMutation } from '../Redux/features/notification/notifiAPI';
+import moment from 'moment';
 const NavMenu = () => {
+    useAutoRefreshToken('/api/user/get-user');
     const [logOut] = useLogoutMutation();
+    const [getNotification, { data: notifiData }] = useGetAllNotifiMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -45,6 +54,30 @@ const NavMenu = () => {
     const { user } = useSelector((state) => state.user);
     const { usersData } = useSelector((state) => state.search);
     const [searchUsers, { isLoading }] = useSearchUsersMutation();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getNotification(user?._id).unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getNotification, user?._id]);
+
+    const [getReceiver, { data: receiverMessage }] = useGetReceiverMutation();
+    const params = useParams();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getReceiver().unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getReceiver, params.id]);
 
     const navLinks = [
         {
@@ -122,10 +155,8 @@ const NavMenu = () => {
     };
 
     const handleLogout = async () => {
-        try {
-            await logOut().unwrap();
-            navigate('/login');
-        } catch (error) {}
+        await logOut().unwrap();
+        navigate('/login');
     };
 
     return user ? (
@@ -258,14 +289,10 @@ const NavMenu = () => {
                     {/* Message */}
                     <Link
                         className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 "
-                        to="/message"
+                        to={`/message/${receiverMessage?.[0]?.latestMessage?.receiverId || user?._id}`}
                     >
-                        <FiMenu />
-                        <div className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 ">
-                            <FaFacebookMessenger className="text-[20px]" />
-                        </div>
+                        <FaFacebookMessenger className="text-[20px]" />
                     </Link>
-
                     {/* Notifications*/}
                     <Tippy
                         interactive={true}
@@ -294,29 +321,36 @@ const NavMenu = () => {
                                         </div>
                                     </div>
                                     {/* Map dữ liệu thông báo từ api */}
-                                    <div className="grid pt-4">
-                                        {/* <div className="flex">
-                                            <div>
-                                                <Image
-                                                    className="w-9 h-9 rounded-[50%]"
-                                                    src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/434757841_395354200092792_2139257770690806498_n.jpg?stp=cp0_dst-jpg_p80x80&_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=YY8lMEJqW1sQ7kNvgG3k6WG&_nc_ht=scontent.fhan2-3.fna&oh=00_AYA_6rUZKprqrqSjicyaPOwMxHsCsjirnFsn_zO-cG5IMA&oe=66494E8C"
-                                                    alt="avatar"
-                                                />
+
+                                    {notifiData?.map((item, index) => (
+                                        <div key={index} className="grid pt-4">
+                                            <div className="flex">
+                                                {item?.avatar && (
+                                                    <div>
+                                                        <img
+                                                            className="w-9 h-9 rounded-[50%]"
+                                                            src={item?.avatar}
+                                                            alt="avatar"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="ml-2">
+                                                    <p className="text-[14px] leading-[14px]">{item?.content}</p>
+                                                    <span className="text-[12px]">
+                                                        {moment(item?.createAt).fromNow()}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className="ml-2">
-                                                <p className="text-[14px] leading-[14px]">
-                                                    Thông báo cái gì đó chưa nghiên cứu
-                                                </p>
-                                                <span className="text-[12px]">9 Giờ trước</span>
-                                            </div>
-                                        </div> */}
-                                    </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
                     >
                         <div
-                            className={`w-10 h-10  cursor-pointer rounded-[50%] bg-[#e4e6eb] flex-center mr-2 transition ${isShowingNotify && 'text-[#386fd6]'}`}
+                            className={`w-10 h-10  cursor-pointer rounded-[50%] bg-[#e4e6eb] flex-center mr-2 transition ${
+                                isShowingNotify && 'text-[#386fd6]'
+                            }`}
                             onClick={toggleVisibilityNotify}
                         >
                             <IoMdNotifications className="text-[20px]" />
@@ -328,7 +362,6 @@ const NavMenu = () => {
                         onClickOutside={() => {
                             setIsShowingAccountControl(false);
                         }}
-                        hideOnClick={true}
                         visible={isShowingAccountControl}
                         render={(attrs) => (
                             <div className="bg-white shadow-md w-[300px] rounded-[10px]" tabIndex="-1" {...attrs}>
@@ -348,6 +381,18 @@ const NavMenu = () => {
                                         </Link>
                                     </div>
                                     <div className="w-full h-[2px] my-1  bg-[#ccc]"></div>
+                                    {user?.role === 'admin' && (
+                                        <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
+                                            <Link className="flex py-1.5 items-center " to={'/v1/admin'}>
+                                                <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
+                                                    <MdOutlineAdminPanelSettings className="text-[20px]" />
+                                                </div>
+                                                <div className="ml-2">
+                                                    <p className="text-[14px] font-semibold ">Chuyển đến Admin</p>
+                                                </div>
+                                            </Link>
+                                        </div>
+                                    )}
                                     <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
                                         <Link
                                             className="flex py-1.5 items-center "

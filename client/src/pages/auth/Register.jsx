@@ -4,15 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Datepicker from 'react-tailwindcss-datepicker';
 import moment from 'moment';
 import { toast } from 'react-toastify';
-<<<<<<< HEAD
 import { getDistrictsByProvinceId, getProvinces, getWardsByDistrictId } from '../../services/locationServices';
-=======
-import {
-    getDistrictsByProvinceId,
-    getProvinces,
-    getWardsByDistrictId,
-} from '../../services/locationServices';
->>>>>>> quangbranch
 import { Spin } from 'antd';
 import { useRegisterMutation } from '../../Redux/features/auth/authAPI';
 
@@ -46,7 +38,6 @@ const Register = () => {
     const [rePassword, setRepassword] = useState('');
     const [role, setRole] = useState('Người hiến máu');
     const navigate = useNavigate();
-
     useEffect(() => {
         getProvinces().then(setProvinces);
     }, []);
@@ -107,28 +98,19 @@ const Register = () => {
         const numbersOnly = input.replace(/[^0-9]/g, '');
         setPhoneNumber(numbersOnly);
     };
+    // handle dateOfBirth
 
     // Submit Form
     const handleSubmit = async (event) => {
         try {
             event.preventDefault();
             setIsLoading(true);
-<<<<<<< HEAD
 
-=======
-            const formatDate = moment(valueDate?.startDate).format(
-                'DD/MM/YYYY'
-            );
->>>>>>> quangbranch
             const newUser = {
                 name: name,
                 email: email,
                 phoneNumber: phoneNumber,
-<<<<<<< HEAD
                 birthday: valueDate?.startDate,
-=======
-                birthday: formatDate,
->>>>>>> quangbranch
                 gender: gender,
                 address: {
                     province: selectedProvince.name,
@@ -214,7 +196,6 @@ const Register = () => {
                         </div>
 
                         <div className=" ">
-<<<<<<< HEAD
                             <label htmlFor="role" className="block text-[16px] font-medium text-gray-700">
                                 Bạn là:
                             </label>
@@ -232,59 +213,17 @@ const Register = () => {
                                     Người cần hiến máu
                                 </option>
                                 <option value={'Cơ sở y tế'} className="p-2">
-=======
-                            <label
-                                htmlFor="role"
-                                className="block text-[16px] font-medium text-gray-700"
-                            >
-                                Bạn là:
-                            </label>
-                            <select
-                                id="role"
-                                name="role"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                className=" mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                            >
-                                <option
-                                    value={'donor'}
-                                    className=""
-                                >
-                                    Người hiến máu
-                                </option>
-                                <option
-                                    value={'blood recipient'}
-                                    className="p-2 mt-1"
-                                >
-                                    Người cần hiến máu
-                                </option>
-                                <option
-                                    value={'Medical facility'}
-                                    className="p-2"
-                                >
->>>>>>> quangbranch
                                     Cơ sở y tế
                                 </option>
                             </select>
                         </div>
 
                         {/* Date of birthday */}
-<<<<<<< HEAD
                         {role !== 'Cơ sở y tế' ? (
                             <div>
                                 <div>
                                     <label htmlFor="">Ngày Sinh</label>
                                     <div aria-required className="bg-white">
-=======
-                        {role !== 'Medical facility' ? (
-                            <div>
-                                <div>
-                                    <label htmlFor="">Ngày Sinh</label>
-                                    <div
-                                        aria-required
-                                        className="bg-white"
-                                    >
->>>>>>> quangbranch
                                         <Datepicker
                                             primaryColor="purple"
                                             asSingle={true}
@@ -412,14 +351,7 @@ const Register = () => {
                             />
                         </div>
 
-<<<<<<< HEAD
                         <Spin spinning={isLoading} size="default">
-=======
-                        <Spin
-                            spinning={isLoading}
-                            size="default"
-                        >
->>>>>>> quangbranch
                             <button
                                 type="submit"
                                 className="w-full cursor-pointer bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"

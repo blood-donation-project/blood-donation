@@ -106,7 +106,7 @@ const PostDetails = ({ postId, hideModal }) => {
     };
 
     return (
-        <div className=" xs:w-full xs:h-screen z-[9] md:w-[700px] md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow md:shadow-[rgba(0,0,0,0.5)]  relative">
+        <div className="z-[999999] xs:w-full xs:h-screen  md:w-[700px] md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow md:shadow-[rgba(0,0,0,0.5)]  relative">
             <div className=" overflow-y-auto w-full h-full md:rounded-[10px]">
                 {/* Header Tblet & PC */}
                 <div className=" xs:hidden md:flex justify-center items-center rounded-t-[10px] h-[44px] border-b boder-b-[#ccc] absolute bg-white left-0 right-0 top-0">

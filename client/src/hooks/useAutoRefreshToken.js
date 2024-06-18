@@ -24,11 +24,11 @@ export const useAutoRefreshToken = (endpoint) => {
                             },
                         }
                     );
+
                     if (response.status === 403) {
                         // Access Token expired
                         await refreshToken().unwrap();
                     } else {
-                        // Handle successful response if needed
                         const data = await response.text();
                         console.log(data);
                     }

@@ -13,10 +13,11 @@ const ForgotPass = () => {
         try {
             event.preventDefault();
             setIsLoading(true);
-            setEmail('');
+
             // Handle the form data here
             await forgotPass(email).unwrap();
             setIsLoading(false);
+            setEmail('');
         } catch (error) {
             setIsLoading(false);
             console.log(error);
@@ -63,6 +64,7 @@ const ForgotPass = () => {
                                 <input
                                     type="email"
                                     id="email"
+                                    value={email}
                                     name="email"
                                     onChange={(e) => setEmail(e.target.value)}
                                     required

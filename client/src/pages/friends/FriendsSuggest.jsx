@@ -9,6 +9,7 @@ import { NavLink } from 'react-router-dom';
 import { RiUserShared2Fill } from 'react-icons/ri';
 import UserSuggest from '../../components/User/UserSuggest';
 import UserFriendProfileLoading from '../../components/LoadingSkeleton/User/UserFriendProfileLoading';
+
 import { useGetSuggestedUsersMutation } from '../../Redux/features/friend/friendAPI';
 import { resetSuggestedFriends } from '../../Redux/features/friend/friendSlice';
 import InfiniteScroll from 'react-infinite-scroll-component';

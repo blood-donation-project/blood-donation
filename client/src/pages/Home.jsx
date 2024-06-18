@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavMenu from '../components/NavMenu';
 import { Link } from 'react-router-dom';
+
 import { GoPlusCircle } from 'react-icons/go';
 import { useDispatch, useSelector } from 'react-redux';
 import { PiUsersThree } from 'react-icons/pi';
@@ -13,6 +14,7 @@ import {
     useGetAllFollowedFacilitiesMutation,
 } from '../Redux/features/friend/friendAPI';
 import { useGetHomePagePostsMutation } from '../Redux/features/post/postAPI';
+
 import PostLoading from '../components/LoadingSkeleton/Post/PostLoading';
 import Post from '../components/Post/Post';
 import ModalWrapper from '../components/Modal/ModalWrapper';
@@ -53,12 +55,12 @@ const HomePage = () => {
         {
             title: 'Tin nhắn',
             icon: <BsMessenger />,
-            path: '/messenger',
+            path: '/message',
         },
         {
             title: 'Người dùng gần đây',
             icon: <PiUsersThree />,
-            path: '/surrouding-users',
+            path: '/surrounding-users',
         },
         {
             title: 'Sự kiện',
@@ -67,6 +69,7 @@ const HomePage = () => {
         },
     ];
     // Get homepage posts
+
     useEffect(() => {
         getHomePagePosts({ limit: 5, page: page })
             .unwrap()
@@ -314,6 +317,7 @@ const HomePage = () => {
                                                     <Link
                                                         className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md"
                                                         to={`/user/${friend._id}`}
+                                                        key={index}
                                                     >
                                                         <div>
                                                             <Avatar

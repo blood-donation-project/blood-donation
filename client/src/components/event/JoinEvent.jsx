@@ -32,9 +32,6 @@ const JoinEvent = ({ onClose }) => {
     const handleSubmit = async (e) => {
         try {
             e.preventDefault();
-            // Xử lý gửi dữ liệu
-            console.log(formData);
-            console.log(params);
             await joinEvent(params.id).unwrap();
             
         } catch (error) {}

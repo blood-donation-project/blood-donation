@@ -82,10 +82,11 @@ const CreateEvent = ({ isOpen, onClose }) => {
 
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
-        const province = provinces?.find((p) => p?.idProvince === provinceId);
+
+        const province = provinces?.data?.find((p) => p?.id === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.name || '',
+            name: province?.full_name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
@@ -95,10 +96,10 @@ const CreateEvent = ({ isOpen, onClose }) => {
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.find((d) => d?.idDistrict === districtId);
+        const district = districts?.data?.find((d) => d?.id === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.name : '',
+            name: district ? district?.full_name : '',
         });
         // Reset wards when district changes
         setWards([]);
@@ -106,8 +107,8 @@ const CreateEvent = ({ isOpen, onClose }) => {
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.find((w) => w.idCommune === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
+        const ward = wards?.data?.find((w) => w.id === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.full_name : '' });
     };
     const handleDateValueChange = (newValue) => {
         setDateValue(newValue);
@@ -268,18 +269,16 @@ const CreateEvent = ({ isOpen, onClose }) => {
                                                 <option value="">
                                                     Chọn Tỉnh/Thành Phố
                                                 </option>
-                                                {provinces?.map((province) => (
-                                                    <option
-                                                        key={
-                                                            province.idProvince
-                                                        }
-                                                        value={
-                                                            province.idProvince
-                                                        }
-                                                    >
-                                                        {province.name}
-                                                    </option>
-                                                ))}
+                                                {provinces?.data?.map(
+                                                    (province) => (
+                                                        <option
+                                                            key={province.id}
+                                                            value={province.id}
+                                                        >
+                                                            {province.full_name}
+                                                        </option>
+                                                    )
+                                                )}
                                             </select>
                                         </div>
                                         <div className="my-2">
@@ -299,18 +298,16 @@ const CreateEvent = ({ isOpen, onClose }) => {
                                                 <option value="">
                                                     Chọn Quận/Huyện
                                                 </option>
-                                                {districts?.map((district) => (
-                                                    <option
-                                                        key={
-                                                            district.idDistrict
-                                                        }
-                                                        value={
-                                                            district.idDistrict
-                                                        }
-                                                    >
-                                                        {district.name}
-                                                    </option>
-                                                ))}
+                                                {districts?.data?.map(
+                                                    (district) => (
+                                                        <option
+                                                            key={district.id}
+                                                            value={district.id}
+                                                        >
+                                                            {district.full_name}
+                                                        </option>
+                                                    )
+                                                )}
                                             </select>
                                         </div>
                                         <div className="my-2 ">
@@ -330,12 +327,12 @@ const CreateEvent = ({ isOpen, onClose }) => {
                                                 <option value="">
                                                     Chọn Xã/Phường
                                                 </option>
-                                                {wards?.map((ward) => (
+                                                {wards?.data?.map((ward) => (
                                                     <option
-                                                        key={ward.idCommune}
-                                                        value={ward.idCommune}
+                                                        key={ward.id}
+                                                        value={ward.id}
                                                     >
-                                                        {ward.name}
+                                                        {ward.full_name}
                                                     </option>
                                                 ))}
                                             </select>
@@ -391,7 +388,6 @@ const CreateEvent = ({ isOpen, onClose }) => {
                                     <input
                                         type="file"
                                         name="image"
-                                        required
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         onChange={handleImageChange}
                                     />

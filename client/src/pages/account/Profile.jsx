@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+
 import UserProfileFriend from '../../components/User/UserFriendProfile';
 import { MdInsertEmoticon } from 'react-icons/md';
 import { IoMdImages } from 'react-icons/io';
@@ -13,6 +14,7 @@ import CreatePost from '../../components/Modal/ModalContent/CreatePost';
 import Post from '../../components/Post/Post';
 import ViewPhoto from '../../components/Modal/ModalContent/ViewPhoto';
 import PostLoading from '../../components/LoadingSkeleton/Post/PostLoading';
+
 import { resetProfilePosts } from '../../Redux/features/post/postSlice';
 import { useGetPostsByUserIdMutation } from '../../Redux/features/post/postAPI';
 import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI';
@@ -35,6 +37,7 @@ const ProfilePage = () => {
     const [isShowingViewImageModal, setIsShowingViewImageModal] = useState(false);
 
     const [divHeight, setDivHeight] = useState(0);
+
     const [pagination, setPagination] = useState();
     const [hasMore, setHasMore] = useState(false);
     const [image, setImage] = useState('');
@@ -92,6 +95,7 @@ const ProfilePage = () => {
 
     const showViewImageModal = (img) => {
         setImage(img);
+
         setIsShowingViewImageModal(true);
     };
 

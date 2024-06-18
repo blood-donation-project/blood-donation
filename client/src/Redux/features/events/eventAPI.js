@@ -72,6 +72,33 @@ export const eventAPI = createApi({
                 body: eventId,
             }),
         }),
+        getUserRegister: builder.mutation({
+            query: (eventId) => ({
+                url: `get-user-register-event/${eventId}`,
+                method: 'POST',
+                body: eventId,
+            }),
+        }),
+        getEventByMonths: builder.query({
+            query: () => ({
+                url: `get-events-by-month`,
+                method: 'GET',
+            }),
+        }),
+        getAllEvents: builder.mutation({
+            query: (searchTerm) => ({
+                url: `get-all-events`,
+                method: 'POST',
+                body: { searchTerm },
+            }),
+        }),
+        deleteEventByAdmin: builder.mutation({
+            query: (eventId) => ({
+                url: `delete-event-by-admin`,
+                method: 'POST',
+                body: { eventId },
+            }),
+        }),
     }),
 });
 
@@ -84,6 +111,10 @@ export const {
     useCancelJoinMutation,
     useCheckRegisEventMutation,
     useDeleteEventMutation,
+    useGetUserRegisterMutation,
+    useGetEventByMonthsQuery,
+    useGetAllEventsMutation,
+    useDeleteEventByAdminMutation,
 } = eventAPI;
 
 export default eventAPI;

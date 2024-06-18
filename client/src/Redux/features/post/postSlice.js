@@ -76,14 +76,16 @@ const postSlice = createSlice({
         });
         builder.addMatcher(postAPI.endpoints.createComment.matchFulfilled, (state, action) => {
             const commentData = action.payload;
-            const findIndex = state.homePagePosts.findIndex((post) => post._id === commentData.post._id);
+            const indexHomePagePost = state.homePagePosts.findIndex((post) => post._id === commentData.post._id);
+            const indexProfilePost = state.profilePosts.findIndex((post) => post._id === commentData.post._id);
             const newPostData = {
                 ...commentData.post,
-                author: state.homePagePosts[findIndex].author,
+                author: state.homePagePosts[indexHomePagePost].author,
             };
-            state.homePagePosts[findIndex] = newPostData;
 
-            delete commentData.author;
+            state.homePagePosts[indexHomePagePost] = newPostData;
+            state.profilePosts[indexProfilePost] = newPostData;
+
             delete commentData.post;
             state.comments = [{ ...commentData }, ...state.comments];
         });

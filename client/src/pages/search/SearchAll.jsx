@@ -1,20 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
+
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { SiPowerpages } from 'react-icons/si';
 import { BsFillPostcardHeartFill } from 'react-icons/bs';
 import { FaUserFriends } from 'react-icons/fa';
 import Tippy from '@tippyjs/react/headless';
+
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { useSearchPostsMutation, useSearchUsersMutation } from '../../Redux/features/search/searchAPI';
+
 import UserPreview from '../../components/User/UserPreview';
 import NoResult from '../../components/NoResult';
 import NavMenu from '../../components/NavMenu';
 import { NavLink } from 'react-router-dom';
 import Post from '../../components/Post/Post';
 import Avatar from '../../components/Image/Avatar';
+
 import UserSearchDetail from '../../components/User/UserSearchDetail';
 import UserFriendLoading from '../../components/LoadingSkeleton/User/UserFriendLoading';
 import PostLoading from '../../components/LoadingSkeleton/Post/PostLoading';
@@ -141,6 +146,7 @@ const SearchAllPage = () => {
                     </div>
 
                     {/* Sencondary nav mobile  */}
+
                     <div className="md:hidden w-full  bg-white mt-2 py-1 ">
                         <div className="flex items-center ">
                             {navSidebarLeftLinks.map((nav, i) => {

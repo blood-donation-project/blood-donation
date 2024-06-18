@@ -123,7 +123,7 @@ const UserRoundingFilter = ({ hideModal, isShowing, setPagination }) => {
     };
 
     return (
-        <div className=" z-[9] xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
+        <div className=" z-[999999] xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
             <div className={`box-zoom-in   h-[100%]  `}>
                 <div className="  md:flex-center xs:flex   h-[50px] border-b border-b-[#ccc]">
                     <span

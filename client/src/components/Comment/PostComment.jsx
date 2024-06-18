@@ -25,7 +25,7 @@ const PostComment = ({ commentData }) => {
                             </div>
                         )}
                     >
-                        <Link to={'/'}>
+                        <Link to={`/user/${commentData.user._id}`}>
                             <Avatar
                                 className="w-9 h-9 rounded-[50%] border border-[#ccc]"
                                 src={commentData.user.avatar}

@@ -2,13 +2,23 @@ const Event = require('../models/event');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const User = require('../models/user');
+const Notification = require('../models/notifications');
 const EventRegistration = require('../models/eventRagistrations');
+const mongoose = require('mongoose');
 
 const eventController = {
     createEvent: async (req, res) => {
         try {
-            const { eventName, address, donationTime, operationTime, startTime, endTime, image, description } =
-                req.body;
+            const {
+                eventName,
+                address,
+                donationTime,
+                operationTime,
+                startTime,
+                endTime,
+                image,
+                description,
+            } = req.body;
             console.log(req.body);
             const authHeader = req.headers.authorization;
             if (!authHeader) {
@@ -19,8 +29,9 @@ const eventController = {
             token = authHeader.split(' ')[1];
             const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
             const dataUser = await User.findById(user.id).select('-password');
-            const formattedDay = moment(donationTime, 'YYYY/MM/DD').format('DD/MM/YYYY');
-            console.log(donationTime);
+            const formattedDay = moment(donationTime, 'YYYY/MM/DD').format(
+                'DD/MM/YYYY'
+            );
 
             const newEvent = new Event({
                 eventName,
@@ -39,7 +50,8 @@ const eventController = {
         }
     },
     getEvent: async (req, res) => {
-        const { eventName, startDate, endDate, province, district, ward } = req.body;
+        const { eventName, startDate, endDate, province, district, ward } =
+            req.body;
         let query = {};
 
         if (eventName) {
@@ -93,7 +105,9 @@ const eventController = {
             const authHeader = req.headers.authorization;
 
             if (!authHeader) {
-                return res.status(401).json({ message: 'Authorization header missing' });
+                return res
+                    .status(401)
+                    .json({ message: 'Authorization header missing' });
             }
 
             const token = authHeader.split(' ')[1];
@@ -109,9 +123,11 @@ const eventController = {
                 userId: user.id,
             });
             console.log(getEventRegis);
-            if (user.role !== 'Medical facility') {
+            if (user.role !== 'Cơ sở y tế') {
                 if (getEventRegis.length > 0) {
-                    const eventIds = getEventRegis.map((item) => item.eventId.toString()); // Lấy danh sách các eventId
+                    const eventIds = getEventRegis.map((item) =>
+                        item.eventId.toString()
+                    ); // Lấy danh sách các eventId
                     query._id = { $in: eventIds };
                 } else {
                     return res.status(404).json({ message: '' });
@@ -119,14 +135,13 @@ const eventController = {
             }
 
             const getUserIdEvent = await Event.find({ userId: user.id });
-            if (user.role === 'Medical facility') {
+            if (user.role === 'Cơ sở y tế') {
                 if (getUserIdEvent.length > 0) {
                     query.userId = user.id;
                 } else {
                     return res.status(404).json({ message: '' });
                 }
             }
-            console.log(getUserIdEvent);
 
             if (startDate && endDate) {
                 query.donationTime = {
@@ -142,11 +157,10 @@ const eventController = {
                     $lte: moment(endDate).format('DD/MM/YYYY'),
                 };
             }
-
             const events = await Event.find(query); // Lấy danh sách events trước
 
             // Tối ưu populate: chỉ populate khi cần thiết
-            if (user.role === 'Medical facility') {
+            if (user.role === 'Cơ sở y tế') {
                 await Event.populate(events, {
                     path: 'userId',
                     select: 'username avatar introduce',
@@ -173,15 +187,17 @@ const eventController = {
                     select: 'username avatar introduce',
                 })
                 .exec(); // Thực thi populate
-
             if (!event) {
                 return res.status(400).send({ message: 'Invalid link ID' });
+            }
+            if (!event.userId) {
+                return res.status(400).send({ message: 'Invalid userId' });
             }
 
             // Customize the returned data if needed:
             const customizedEvent = {
                 ...event._doc,
-                userId: event.userId._id,
+                userId: event.userId?._id,
                 username: event.userId.username,
                 avatar: event.userId.avatar,
                 introduce: event.userId.introduce,
@@ -202,7 +218,6 @@ const eventController = {
         const token = authHeader.split(' ')[1];
         const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
         const eventId = req.params.id;
-
         const evenRegisExist = await EventRegistration.find({
             userId: user.id,
             eventId: eventId,
@@ -237,8 +252,6 @@ const eventController = {
             userId: user.id,
             eventId: eventId,
         });
-        console.log(eventId);
-        console.log(user.id);
         if (evenRegisExist.length > 0) {
             await EventRegistration.deleteOne({
                 userId: user.id,
@@ -265,9 +278,15 @@ const eventController = {
             const eventRegistered = await EventRegistration.find({
                 userId: user.id,
                 eventId: eventId,
-            });
+            })
+                .populate({
+                    path: 'userId',
+                    select: 'username avatar',
+                })
+                .lean()
+                .exec();
             if (eventRegistered.length > 0) {
-                res.status(200).json({ message: 'Registered' });
+                res.status(200).json(eventRegistered);
             } else {
                 res.status(404).json({ message: 'unregistered' });
             }
@@ -295,26 +314,88 @@ const eventController = {
                         eventId: req.params.id,
                     });
                 }
-                return res.status(200).json({ code: 200, message: 'Delete Successfully' });
+                return res
+                    .status(200)
+                    .json({ code: 200, message: 'Delete Successfully' });
             } else {
-                return res.status(403).json({ code: 403, message: 'You are owner' });
+                return res
+                    .status(403)
+                    .json({ code: 403, message: 'You are owner' });
             }
         } catch (error) {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
 
+    deleteEventByAdmin: async (req, res) => {
+        try {
+            const { eventId } = req.body;
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                res.status(401).json({
+                    message: 'Authorization header missing',
+                });
+            }
+            const token = authHeader.split(' ')[1];
+            const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+            const event = await Event.findById(eventId);
+
+            const eventRegis = await EventRegistration.find({
+                eventId: event._id,
+            });
+            if (!event)
+                return res.status(404).json({ message: 'not found Event' });
+            if (user.role !== 'admin')
+                return res.status(403).json({ message: 'You are not Admin' });
+            if (eventRegis.length === 0) {
+                await Event.findByIdAndDelete(event._id);
+                const newNotification = new Notification({
+                    userId: event.userId,
+                    content: `Admin đã xóa sự kiện: ${event.eventName} của bạn`,
+                    type: 'Hủy sự kiện',
+                });
+                newNotification.save();
+            }
+            const userIds = eventRegis.map(
+                (registration) => registration.userId
+            );
+            userIds.push(event.userId);
+            for (const userId of userIds) {
+                const newNotification = new Notification({
+                    userId,
+                    content: `Admin đã xóa sự kiện "${
+                        event.eventName
+                    }" (diễn ra vào ngày ${moment(event.startDate).format(
+                        'DD/MM/YYYY'
+                    )}) mà bạn đã đăng ký.`,
+                    type: 'Hủy sự kiện',
+                });
+                await newNotification.save();
+            }
+
+            await Promise.all([
+                Event.findByIdAndDelete(eventId),
+                EventRegistration.deleteMany({ eventId }),
+            ]);
+
+            res.status(200).json({
+                message: 'Đã xóa sự kiện và gửi thông báo thành công',
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    },
     updateEvent: async (req, res) => {
         try {
             const eventId = req.params.id;
             const eventData = req.body.eventData; // Lấy toàn bộ eventData
-
+            console.log(req.body);
             const authHeader = req.headers.authorization;
             if (!authHeader) {
-                return res.status(401).json({ message: 'Authorization header missing' });
+                return res
+                    .status(401)
+                    .json({ message: 'Authorization header missing' });
             }
-            console.log(req.body);
-            console.log(eventId);
             const token = authHeader.split(' ')[1];
             const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
 
@@ -332,7 +413,7 @@ const eventController = {
             const updatedEvent = await Event.findByIdAndUpdate(
                 eventId,
                 eventData, // Sử dụng eventData để cập nhật
-                { new: true },
+                { new: true }
             );
 
             res.status(200).json({
@@ -345,6 +426,109 @@ const eventController = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
-};
+    getUserRegisterEvent: async (req, res) => {
+        try {
+            const result = await EventRegistration.find({
+                eventId: req.params.id,
+            })
+                .populate({
+                    path: 'userId',
+                    select: 'username avatar',
+                })
+                .lean()
+                .exec();
 
+            if (result.length > 0) {
+                const count = result.length;
+                return res
+                    .status(200)
+                    .json({ message: 'Success', data: { count, result } });
+            } else {
+                res.status(200).json({
+                    data: [],
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching event registrations:', error); // Log the error
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    getEventByMonths: async (req, res) => {
+        try {
+            const allMonths = Array.from({ length: 12 }, (_, i) =>
+                new Date(0, i).toLocaleString('en-US', { month: 'long' })
+            );
+            const currentYear = new Date().getFullYear();
+
+            const result = await Event.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: new Date(`${currentYear}-01-01`),
+                            $lt: new Date(`${currentYear + 1}-01-01`),
+                        },
+                    },
+                },
+                {
+                    $facet: {
+                        eventsByMonth: [
+                            {
+                                $group: {
+                                    _id: { $month: '$createdAt' },
+                                    count: { $sum: 1 },
+                                },
+                            },
+                            { $sort: { _id: 1 } },
+                        ],
+                        totalEvents: [{ $count: 'count' }],
+                    },
+                },
+            ]);
+
+            const eventsByMonth = fillMissingMonths(
+                result[0].eventsByMonth,
+                allMonths
+            );
+            const totalEvents = result[0].totalEvents[0]?.count || 0;
+
+            res.status(200).json({
+                eventsByMonth,
+                totalEvents,
+            });
+        } catch (error) {
+            console.error('Error in getEventByMonths:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    getAllEvent: async (req, res) => {
+        try {
+            const { searchTerm } = req.body;
+            console.log(req.body);
+            let query = {};
+            if (searchTerm) {
+                const isObjectId = mongoose.Types.ObjectId.isValid(searchTerm);
+                if (isObjectId) {
+                    query._id = searchTerm;
+                } else {
+                    query.eventName = { $regex: searchTerm, $options: 'i' };
+                }
+            }
+            const events = await Event.find(query).populate({
+                path: 'userId',
+                select: 'username avatar introduce',
+            });
+            res.status(200).json(events);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+};
+const fillMissingMonths = (data, allMonths) => {
+    const monthCountMap = new Map(data.map((item) => [item._id, item.count]));
+    return allMonths.map((month) => ({
+        month,
+        count: monthCountMap.get(allMonths.indexOf(month) + 1) || 0,
+    }));
+};
 module.exports = eventController;

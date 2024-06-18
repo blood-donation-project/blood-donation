@@ -95,39 +95,36 @@ const Event = () => {
     }, [selectedDistrict?.id]);
 
     // Handle Change
+
     const handleProvinceChange = (e) => {
         const provinceId = e.target.value;
 
-        const province = provinces?.find((p) => p?.idProvince === provinceId);
+        const province = provinces?.data?.find((p) => p?.id === provinceId);
         setSelectedProvince({
             id: provinceId,
-            name: province?.name || '',
+            name: province?.full_name || '',
         });
         // Reset districts and wards when province changes
         setSelectedDistrict({ id: '', name: '' });
         // Fetch districts for the new province
         getDistrictsByProvinceId(provinceId).then(setDistricts);
-        setDistricts([]);
-        setSelectedDistrict([]);
-        setSelectedWards([]);
     };
 
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
-        const district = districts?.find((d) => d?.idDistrict === districtId);
+        const district = districts?.data?.find((d) => d?.id === districtId);
         setSelectedDistrict({
             id: districtId,
-            name: district ? district?.name : '',
+            name: district ? district?.full_name : '',
         });
         // Reset wards when district changes
-        setSelectedWards([]);
         setWards([]);
     };
 
     const handleWardChange = (e) => {
         const wardId = e.target.value;
-        const ward = wards?.find((w) => w.idCommune === wardId);
-        setSelectedWards({ id: wardId, name: ward ? ward.name : '' });
+        const ward = wards?.data?.find((w) => w.id === wardId);
+        setSelectedWards({ id: wardId, name: ward ? ward.full_name : '' });
     };
     const handleDateValueChange = (newValue) => {
         setDateValue(newValue);
@@ -231,14 +228,16 @@ const Event = () => {
                                             <option value="">
                                                 Chọn Tỉnh/Thành Phố
                                             </option>
-                                            {provinces?.map((province) => (
-                                                <option
-                                                    key={province.idProvince}
-                                                    value={province.idProvince}
-                                                >
-                                                    {province.name}
-                                                </option>
-                                            ))}
+                                            {provinces?.data?.map(
+                                                (province) => (
+                                                    <option
+                                                        key={province.id}
+                                                        value={province.id}
+                                                    >
+                                                        {province.full_name}
+                                                    </option>
+                                                )
+                                            )}
                                         </select>
                                     </div>
                                     <div className="my-2 text-lg">
@@ -258,14 +257,16 @@ const Event = () => {
                                             <option value="">
                                                 Chọn Quận/Huyện
                                             </option>
-                                            {districts?.map((district) => (
-                                                <option
-                                                    key={district.idDistrict}
-                                                    value={district.idDistrict}
-                                                >
-                                                    {district.name}
-                                                </option>
-                                            ))}
+                                            {districts?.data?.map(
+                                                (district) => (
+                                                    <option
+                                                        key={district.id}
+                                                        value={district.id}
+                                                    >
+                                                        {district.full_name}
+                                                    </option>
+                                                )
+                                            )}
                                         </select>
                                     </div>
                                     <div className="my-2 text-lg">
@@ -285,12 +286,12 @@ const Event = () => {
                                             <option value="">
                                                 Chọn Xã/Phường
                                             </option>
-                                            {wards?.map((ward) => (
+                                            {wards?.data?.map((ward) => (
                                                 <option
-                                                    key={ward.idCommune}
-                                                    value={ward.idCommune}
+                                                    key={ward.id}
+                                                    value={ward.id}
                                                 >
-                                                    {ward.name}
+                                                    {ward.full_name}
                                                 </option>
                                             ))}
                                         </select>

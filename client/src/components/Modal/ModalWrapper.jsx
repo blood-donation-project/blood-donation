@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 const ModalWrapper = ({ children, isShowing, hideModal, bgrColor = 'bg-[rgba(255,255,255,0.55)]' }) => {
     useEffect(() => {

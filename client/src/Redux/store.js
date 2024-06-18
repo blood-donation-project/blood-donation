@@ -12,6 +12,12 @@ import postAPI from './features/post/postAPI';
 import friendAPI from './features/friend/friendAPI';
 import searchAPI from './features/search/searchAPI';
 
+import messageReducer from './features/message/messageSlice';
+import notifiReducer from './features/notification/notifiSlice';
+import notifiAPI from './features/notification/notifiAPI';
+
+import { messageAPI } from './features/message/messageAPI';
+
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -26,13 +32,24 @@ export const store = configureStore({
         [postAPI.reducerPath]: postAPI.reducer,
         [friendAPI.reducerPath]: friendAPI.reducer,
         [searchAPI.reducerPath]: searchAPI.reducer,
+
+        message: messageReducer,
+        notification: notifiReducer,
+        [authAPI.reducerPath]: authAPI.reducer,
+        [userAPI.reducerPath]: userAPI.reducer,
+        [eventAPI.reducerPath]: eventAPI.reducer,
+        [messageAPI.reducerPath]: messageAPI.reducer,
+        [notifiAPI.reducerPath]: notifiAPI.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
             .concat(authAPI.middleware)
             .concat(userAPI.middleware)
             .concat(eventAPI.middleware)
+
             .concat(postAPI.middleware)
             .concat(friendAPI.middleware)
-            .concat(searchAPI.middleware),
+            .concat(searchAPI.middleware)
+            .concat(messageAPI.middleware)
+            .concat(notifiAPI.middleware), // Trả về mảng middleware
 });

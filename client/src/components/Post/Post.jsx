@@ -56,6 +56,7 @@ const Post = ({ postData }) => {
     const showModal = () => {
         if (isShowingModal === false) {
             setPostId(postData._id);
+
             setIsShowingModal(true);
         }
     };

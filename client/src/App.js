@@ -11,6 +11,7 @@ import SearchUsersPage from './pages/search/SearchUsers';
 import SearchPostsPage from './pages/search/SearchPosts';
 import Notification from './pages/notification/Notifications';
 import SurroundingUsers from './pages/surroundingUsers/SurroundingUsers';
+
 import EmailVerify from './pages/auth/EmailVerify';
 import Login from './pages/auth/Login';
 import NotFoundPage from './pages/auth/NotFoundPage';
@@ -27,11 +28,19 @@ import DetailEvent from './components/event/DetailEvent';
 import FriendsPage from './pages/friends/Friends';
 import FriendsRequestsPage from './pages/friends/FriendsRequests';
 import FriendsSuggest from './pages/friends/FriendsSuggest';
+
 import { useGetUserMutation } from './Redux/features/user/userAPI';
 import { useEffect } from 'react';
 import { useAutoRefreshToken } from './hooks/useAutoRefreshToken';
 import FriendLayout from './layouts/FriendLayout';
 import FollowedFacilities from './pages/friends/FollowedFacilities';
+
+import HomeAdmin from './components/Admin/HomeAdmin';
+import ManageUser from './components/Admin/ManageUser';
+import ManageEventAd from './components/Admin/ManageEventAd';
+import NotificationAdmin from './components/Admin/NotificationAdmin';
+import ManagePost from './components/Admin/ManagePost';
+import AcceptPost from './components/Admin/AcceptPost';
 
 function App() {
     const [loading, setLoading] = useState(true);
@@ -76,6 +85,7 @@ function App() {
                     <Route path="/events" exact element={<Event />} />
                     <Route path="/events/detail-event/:id" element={<DetailEvent />} />
                     <Route path="/message" exact element={<Message />} />
+                    <Route path="/message/:id" exact element={<Message />} />
                     <Route path="/login" exact element={<Login />} />
                     <Route path="/register" exact element={<Register />} />
                     <Route path="users/:id/verify/:token" element={<EmailVerify />} />
@@ -117,6 +127,15 @@ function App() {
                             </FriendLayout>
                         }
                     />
+
+                    {/* Admin Page */}
+                    <Route path="/v1/admin/" element={<HomeAdmin />} />
+                    <Route path="/v1/admin/manage-users" element={<ManageUser />} />
+                    <Route path="/v1/admin/manage-events" element={<ManageEventAd />} />
+                    <Route path="/v1/admin/notification" element={<NotificationAdmin />} />
+                    <Route path="/v1/admin/manage-post" element={<ManagePost />} />
+                    <Route path="/v1/admin/manage-post/accept-post" element={<AcceptPost />} />
+                    {/* End Admin Page */}
 
                     <Route path="/user/:id" element={<ProfilePage />} />
                     <Route path="/user/:id/about" element={<AboutPage />} />

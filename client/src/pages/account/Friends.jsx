@@ -6,6 +6,7 @@ import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
 import { IoMdSearch } from 'react-icons/io';
 import UserProfileFriend from '../../components/User/UserFriendProfile';
+
 import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI';
 import UserFriendProfileLoading from '../../components/LoadingSkeleton/User/UserFriendProfileLoading';
 import { resetFriends } from '../../Redux/features/friend/friendSlice';

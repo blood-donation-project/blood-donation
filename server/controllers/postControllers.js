@@ -364,13 +364,6 @@ const postControllers = {
 
             //
             const user = await User.findById(id).select('-password');
-            const author = await User.findById(post.userId).select('-password');
-            const friendship = await Friends.findOne({
-                $or: [
-                    { userId1: id, userId2: author._id },
-                    { userId1: author._id, userId2: id },
-                ],
-            });
 
             return res.status(201).json({
                 ...dbCommentData._doc,
@@ -379,10 +372,6 @@ const postControllers = {
                     commentCount,
                     likeCount,
                     liked: liked ? true : false,
-                },
-                author: {
-                    ...author._doc,
-                    isFriend: friendship ? true : false,
                 },
                 user,
             });

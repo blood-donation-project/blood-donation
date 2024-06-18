@@ -33,6 +33,7 @@ export const userAPI = createApi({
                 method: 'GET',
             }),
         }),
+
         getPhotos: builder.mutation({
             query: ({ userId, limit, page }) => ({
                 url: `/${userId}/photos`,
@@ -40,9 +41,37 @@ export const userAPI = createApi({
                 params: { limit: limit, page: page },
             }),
         }),
+        getUserByMonths: builder.query({
+            query: () => ({
+                url: 'get-user-by-months',
+                method: 'GET',
+            }),
+        }),
+        getAllUser: builder.mutation({
+            query: (content) => ({
+                url: 'get-all-users',
+                method: 'POST',
+                body: content,
+            }),
+        }),
+        lockorUnlockUser: builder.mutation({
+            query: (userId) => ({
+                url: 'lock-or-unlock-user',
+                method: 'PUT',
+                body: { userId },
+            }),
+        }),
     }),
 });
 
-export const { useGetUserMutation, useUpdateUserMutation, useGetUserByIdMutation, useGetPhotosMutation } = userAPI;
+export const {
+    useGetUserMutation,
+    useUpdateUserMutation,
+    useGetUserByIdMutation,
+    useGetUserByMonthsQuery,
+    useGetAllUserMutation,
+    useLockorUnlockUserMutation,
+    useGetPhotosMutation,
+} = userAPI;
 
 export default userAPI;

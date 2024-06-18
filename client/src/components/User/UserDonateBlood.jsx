@@ -6,12 +6,6 @@ import { MdLocationPin, MdBloodtype } from 'react-icons/md';
 import UserPreview from './UserPreview';
 import Avatar from '../Image/Avatar';
 
-/*
-    {
-        // Data user (name,email,....)
-    }
-*/
-
 const UserDonateBlood = ({ className, userData }) => {
     const sendRequestHelp = () => {
         //

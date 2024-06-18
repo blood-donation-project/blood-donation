@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { format, parse } from 'date-fns';
+import moment from 'moment';
 import ListEvent from '../ListEvent';
 import schedule from '../../../assets/img/schedule.png';
 import { useGetEventByIdMutation } from '../../../Redux/features/events/eventAPI';
@@ -16,25 +17,21 @@ const OrganizeEvent = ({ tab, title }) => {
     }, [getEventById]);
 
     const filteredData = eventDataById?.events?.filter((item) => {
-        const donationTimeDate = parse(
-            item?.donationTime,
-            'dd/MM/yyyy',
-            new Date()
+        const donationTimeDate = moment(item?.donationTime).format(
+            'YYYY/MM/DD'
         );
-        const todayDate = new Date();
-        return donationTimeDate instanceof Date && donationTimeDate < todayDate;
+        const todayDate = moment().format('YYYY/MM/DD');
+        return donationTimeDate < todayDate;
     });
+    console.log(filteredData);
     const filterData = eventDataById?.events?.filter((item) => {
-        const donationTimeDate = parse(
-            item?.donationTime,
-            'dd/MM/yyyy',
-            new Date()
+        const donationTimeDate = moment(item?.donationTime).format(
+            'YYYY/MM/DD'
         );
-        const todayDate = new Date();
-        return (
-            donationTimeDate instanceof Date && donationTimeDate >= todayDate
-        );
+        const todayDate = moment().format('YYYY/MM/DD');
+        return donationTimeDate >= todayDate;
     });
+    console.log(filterData);
     return (
         <>
             <>

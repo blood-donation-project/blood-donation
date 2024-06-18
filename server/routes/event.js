@@ -12,11 +12,19 @@ router.post('/cancel-join/:id', middlewareController.verifyToken, eventControlle
 
 router.post('/check-register/:id', middlewareController.verifyToken, eventController.checkRegisEvent);
 
+router.post('/get-user-register-event/:id', middlewareController.verifyToken, eventController.getUserRegisterEvent);
+
 router.post('/delete-event/:id', middlewareController.verifyToken, eventController.deleteEvent);
 
 router.put('/update-event/:id', middlewareController.verifyToken, eventController.updateEvent);
 
+router.get('/get-events-by-month', eventController.getEventByMonths);
+
 router.get('/detail-event/:id', middlewareController.verifyToken, eventController.getEventByIdEven);
+
+router.post('/get-all-events', middlewareController.verifyTokenAndAdmin, eventController.getAllEvent);
+
+router.post('/delete-event-by-admin', middlewareController.verifyTokenAndAdmin, eventController.deleteEventByAdmin);
 
 router.post('/', middlewareController.verifyToken, eventController.getEvent);
 

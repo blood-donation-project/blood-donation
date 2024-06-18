@@ -51,6 +51,7 @@ const PhotosPage = () => {
 
     const showViewImageModal = (img) => {
         setImage(img);
+
         setIsShowingViewImageModal(true);
     };
 

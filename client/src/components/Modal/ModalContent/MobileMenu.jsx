@@ -1,16 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaArrowLeftLong } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BsMessenger } from 'react-icons/bs';
 import { HiMiniUsers } from 'react-icons/hi2';
 import { FaBell } from 'react-icons/fa';
-import { MdEvent } from 'react-icons/md';
+import { MdEvent, MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { LuLogOut } from 'react-icons/lu';
-
 import Avatar from '../../Image/Avatar';
 
+import { useLogoutMutation } from '../../../Redux/features/auth/authAPI';
+import { useSelector } from 'react-redux';
+
 const MobileMenu = ({ hideModal }) => {
+    const { user } = useSelector((state) => state.user);
     const [searchText, setSearchText] = useState('');
+
+    const [logOut] = useLogoutMutation();
+    const navigate = useNavigate();
     const searchInputChange = (e) => {
         const value = e.target.value;
         if (value.startsWith(' ')) return;
@@ -23,6 +29,10 @@ const MobileMenu = ({ hideModal }) => {
         }
     };
 
+    const handleLogout = async () => {
+        await logOut().unwrap();
+        navigate('/login');
+    };
     return (
         <div className=" z-[9] w-full h-full bg-[#ebedf0] relative">
             {/* Header */}
@@ -38,16 +48,19 @@ const MobileMenu = ({ hideModal }) => {
             <div className=" overflow-y-auto w-full h-full rounded-[10px] p-2">
                 {/* Link profile */}
                 <div className="bg-white rounded-lg shadow  mb-2">
-                    <Link className="flex items-center py-2.5 px-2 hover:bg-[#ebedf0]   rounded-md" to="/user/123">
+                    <Link
+                        className="flex items-center py-2.5 px-2 hover:bg-[#ebedf0]   rounded-md"
+                        to={`/user/${user?._id}`}
+                    >
                         <div>
-                            {/* <Avatar
+                            <Avatar
                                 className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/329007355_5877024832378876_105945048897552486_n.jpg?stp=dst-jpg_p111x111&_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=lX3PfZ5K7WsQ7kNvgF8tMYE&_nc_ht=scontent.fhan2-3.fna&oh=00_AYCnQUCyq4KDq4Bt3bEbopzMjdxg8nMxgBPhfHuOmOEM1Q&oe=664A370D"
+                                src={user.avatar}
                                 alt="avatar"
-                            /> */}
+                            />
                         </div>
                         <div className="ml-2">
-                            <p className="text-[14px] font-semibold leading-[14px]">Hoàng Xuân Việt</p>
+                            <p className="text-[14px] font-semibold leading-[14px] line-clamp-1">{user.username}</p>
                             <span className="text-[14px] text-[#65676B]">Xem trang cá nhân của bạn</span>
                         </div>
                     </Link>
@@ -57,7 +70,7 @@ const MobileMenu = ({ hideModal }) => {
                     <div className=" bg-white rounded-lg shadow">
                         <Link
                             className="flex flex-col  py-2.5 px-2  justify-center hover:bg-[#ebedf0] pl-2  rounded-md"
-                            to="/message"
+                            to={`/message/${user._id}`}
                         >
                             <div className="text-[20px]">
                                 <BsMessenger />
@@ -109,9 +122,22 @@ const MobileMenu = ({ hideModal }) => {
                 </div>
                 {/* Log out */}
                 <div className="bg-white rounded-lg shadow  mb-2">
-                    <Link className="flex items-center hover:bg-[#ebedf0] py-2.5 px-2 rounded-md" to="/">
+                    <Link to={'/v1/admin'} className="flex items-center hover:bg-[#ebedf0] py-2.5 px-2 rounded-md">
                         <div className="h-9 w-9 flex-center">
-                            <LuLogOut />
+                            <MdOutlineAdminPanelSettings className="w-6 h-6" />
+                        </div>
+                        <div className="ml-2">
+                            <p className="text-[14px] font-semibold leading-[14px]">Chuyển tới trang Admin</p>
+                        </div>
+                    </Link>
+                </div>
+                <div className="bg-white rounded-lg shadow  mb-2">
+                    <Link
+                        onClick={handleLogout}
+                        className="flex items-center hover:bg-[#ebedf0] py-2.5 px-2 rounded-md"
+                    >
+                        <div className="h-9 w-9 flex-center">
+                            <LuLogOut className="w-6 h-6" />
                         </div>
                         <div className="ml-2">
                             <p className="text-[14px] font-semibold leading-[14px]">Đăng xuất</p>

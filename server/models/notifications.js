@@ -1,14 +1,19 @@
 const mongoose = require('mongoose');
 
-const notificationSchema = mongoose.Schema({
+
+const notificationSchema = new mongoose.Schema({
+
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         require: true,
     },
     content: {
-        type: String,
-        require: true,
+
+        text: { type: String, require: true },
+        link: { type: String },
+        image: { type: String },
+
     },
     type: {
         type: String,

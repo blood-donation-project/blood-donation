@@ -2,16 +2,17 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { IoMdClose } from 'react-icons/io';
-
 import { FaPen, FaSpinner } from 'react-icons/fa';
+
 import Select from 'react-select';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 
 import Image from '../../Image/Image';
 import Avatar from '../../Image/Avatar';
+
 import { getDistrictsByProvinceId, getProvinces, getWardsByDistrictId } from '../../../services/locationServices';
 import axios from 'axios';
-import { useGetUserMutation, useUpdateUserMutation } from '../../../Redux/features/user/userAPI';
+import { useUpdateUserMutation } from '../../../Redux/features/user/userAPI';
 import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
 import { useNavigate } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
@@ -25,9 +26,9 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         reset,
     } = useForm({});
     const navigate = useNavigate();
-    // const {user} = useSelector((state) => state.user)
+
+    const { user } = useSelector((state) => state.user);
     const [updateUser] = useUpdateUserMutation();
-    const [getUser, { data: userData }] = useGetUserMutation();
 
     const [loading, setLoading] = useState(false);
     const [avatarURL, setAvatarURL] = useState('');
@@ -38,15 +39,6 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         wards: null,
     });
     useAutoRefreshToken('/home/');
-
-    useEffect(() => {
-        try {
-            const fetchData = async () => {
-                await getUser().unwrap();
-            };
-            fetchData();
-        } catch (error) {}
-    }, [getUser]);
 
     const [profileData, setProfileData] = useState({
         fullName: '',
@@ -59,7 +51,6 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
             ward: '', // Store the selected ward object
         },
         street: '',
-
         phone: '',
         bloodType: '',
         role: '',
@@ -68,21 +59,21 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     useEffect(() => {
         setProfileData((prevProfileData) => ({
             ...prevProfileData,
-            fullName: userData?.username,
-            identification: userData?.identification,
-            avatar: userData?.avatar,
-            backgroundImage: userData?.backgroundImage,
+            fullName: user?.username,
+            identification: user?.identification,
+            avatar: user?.avatar,
+            backgroundImage: user?.backgroundImage,
             address: {
-                province: userData?.address?.province, // Store the selected province object
-                district: userData?.address?.district, // Store the selected district object
-                ward: userData?.ward, // Store the selected ward object
+                province: user?.address?.province, // Store the selected province object
+                district: user?.address?.district, // Store the selected district object
+                ward: user?.ward, // Store the selected ward object
             },
-            street: userData?.address?.street,
-            phone: userData?.phoneNumber,
-            bloodType: userData?.bloodGroup,
-            role: userData?.role,
+            street: user?.address?.street,
+            phone: user?.phoneNumber,
+            bloodType: user?.bloodGroup,
+            role: user?.role,
         }));
-    }, [userData]);
+    }, [user]);
 
     const [options, setOptions] = useState({
         province: undefined,
@@ -166,6 +157,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     }, [selectedValue.district]);
     useEffect(() => {
         // Kiểm tra xem selectedValue đã có đầy đủ thông tin hay chưa
+
         if (selectedValue.province || selectedValue.district || selectedValue.wards) {
             setProfileData((prev) => ({
                 ...prev,
@@ -193,7 +185,6 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
             return {
                 ...prev,
                 district: selectValue,
-
                 wards: '',
             };
         });
@@ -212,11 +203,9 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         if (e.target.files) {
             const imageFile = e.target.files[0];
             setAvatarURL(URL.createObjectURL(imageFile));
-
             setProfileData((prev) => ({ ...prev, avatar: imageFile }));
         }
     };
-
     const handleBackgroundChange = (e) => {
         if (e.target.files) {
             const imageFile = e.target.files[0];
@@ -268,14 +257,14 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
             await updateUser(updateUserr).unwrap();
             navigate(0);
         } catch (error) {
-            // console.log(error);
+            console.log(error);
         }
     };
 
     return (
-        <div className="  xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
+        <div className=" z-[999999] xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
             <ToastContainer
-                className={'z-[999]'}
+                className={'z-[999999]'}
                 position="top-right"
                 autoClose={2000}
                 transition={Slide}
@@ -288,7 +277,6 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                 pauseOnHover
                 theme="light"
             />
-
             <div className={`box-zoom-in   h-[100%]  `}>
                 <div className="  md:flex-center xs:flex   h-[50px] border-b border-b-[#ccc]">
                     <span
@@ -321,7 +309,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <label htmlFor="avatar" className=" cursor-pointer contents">
                                         <Avatar
                                             className="w-[120px] h-[120px] rounded-[50%] object-cover"
-                                            src={avatarURL || userData?.avatar}
+                                            src={avatarURL || user?.avatar}
                                             alt=""
                                         />
                                     </label>
@@ -352,7 +340,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <label htmlFor="backgroundImage" className=" cursor-pointer contents">
                                         <Image
                                             className="w-full h-full object-cover"
-                                            src={backgroundImageURL || userData?.backgroundImage}
+                                            src={backgroundImageURL || user?.backgroundImage}
                                             alt=""
                                         />
                                     </label>
@@ -387,7 +375,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                         minLength: 1,
                                     })}
                                     onChange={handleInputChange}
-                                    defaultValue={userData?.username}
+                                    defaultValue={user?.username}
                                     placeholder="Nhập họ và tên"
                                 />
                             </div>
@@ -403,7 +391,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                         pattern: /^[0-9]{9}$|^[0-9]{12}$/,
                                     })}
                                     onChange={handleInputChange}
-                                    defaultValue={userData?.identification}
+                                    defaultValue={user?.identification}
                                     placeholder="Nhập căn cước công dân"
                                 />
                             </div>
@@ -422,7 +410,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                         pattern: /^(0|\+84)[3|5|7|8|9][0-9]{8}$/,
                                     })}
                                     onChange={handleInputChange}
-                                    defaultValue={userData?.phoneNumber}
+                                    defaultValue={user?.phoneNumber}
                                     placeholder="Nhập số điện thoại"
                                 />
                             </div>
@@ -437,7 +425,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                             type="text"
                                             {...register('street', {})}
                                             placeholder="Số nhà, đường, v.v*"
-                                            defaultValue={userData?.address?.street}
+                                            defaultValue={user?.address?.street}
                                             onChange={handleInputChange}
                                         />
                                     </div>
@@ -453,8 +441,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <Select
                                         onChange={changeProvince}
                                         options={options.province}
-                                        value={selectedValue.province || userData?.address?.province}
-                                        placeholder={userData?.address?.province || 'Chọn Tỉnh/Thành Phố'}
+                                        value={selectedValue.province || user?.address?.province}
+                                        placeholder={user?.address?.province || 'Chọn Tỉnh/Thành Phố'}
                                         isDisabled={options.province ? false : true}
                                     />
                                 </div>
@@ -463,8 +451,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <Select
                                         options={options.district}
                                         onChange={changeDistrict}
-                                        value={selectedValue.district || userData?.address?.district}
-                                        placeholder={userData?.address?.district || 'Chọn Quận/Huyện'}
+                                        value={selectedValue.district || user?.address?.district}
+                                        placeholder={user?.address?.district || 'Chọn Quận/Huyện'}
                                         isDisabled={options.district ? false : true}
                                     />
                                 </div>
@@ -473,8 +461,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     <Select
                                         onChange={changeWards}
                                         options={options.wards}
-                                        value={selectedValue.wards || userData?.address?.ward}
-                                        placeholder={userData?.address?.ward || 'Chọn Xã/Phường'}
+                                        value={selectedValue.wards || user?.address?.ward}
+                                        placeholder={user?.address?.ward || 'Chọn Xã/Phường'}
                                         isDisabled={options.wards ? false : true}
                                     />
                                 </div>
@@ -488,10 +476,10 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 <select
                                     className="block w-full outline-none border border-[#ccc] py-[2px] mt-[2px]"
                                     {...register('role')}
-                                    defaultValue={userData?.role}
+                                    defaultValue={user?.role}
                                     onChange={handleInputChange}
                                 >
-                                    <option value={userData?.role}>{userData?.role}</option>
+                                    <option value={user?.role}>{user?.role}</option>
                                     <option defaultChecked={true} value="Người hiến máu">
                                         Người hiến máu
                                     </option>
@@ -506,8 +494,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     defaultValue={profileData.bloodType}
                                     onChange={handleInputChange}
                                 >
-                                    {userData?.bloodGroup ? (
-                                        <option value={userData?.bloodGroup}>{userData?.bloodGroup}</option>
+                                    {user?.bloodGroup ? (
+                                        <option value={user?.bloodGroup}>{user?.bloodGroup}</option>
                                     ) : (
                                         <option value="Null">Không xác định</option>
                                     )}

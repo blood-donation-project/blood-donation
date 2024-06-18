@@ -6,10 +6,12 @@ import { FaUserNurse } from 'react-icons/fa6';
 
 import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
+
 import { useSelector } from 'react-redux';
 
 const AboutPage = () => {
     const { user } = useSelector((state) => state.user);
+
     return (
         <>
             <NavMenu />
