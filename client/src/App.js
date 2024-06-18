@@ -45,7 +45,6 @@ import AcceptPost from './components/Admin/AcceptPost';
 function App() {
     const [loading, setLoading] = useState(true);
     const [getUser] = useGetUserMutation();
-    useAutoRefreshToken('/home/');
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         if (token) {
