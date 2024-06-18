@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
 import { Skeleton } from 'antd';
-import {
-    useGetUserByIdMutation,
-    useGetUserMutation,
-} from '../../../Redux/features/user/userAPI';
+import { useGetUserByIdMutation, useGetUserMutation } from '../../../Redux/features/user/userAPI';
 import { useParams } from 'react-router-dom';
 
 const ChatBody = ({ messages }) => {
@@ -16,8 +13,7 @@ const ChatBody = ({ messages }) => {
 
     useEffect(() => {
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop =
-                chatContainerRef.current.scrollHeight;
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
     }, [messages]);
 
@@ -55,9 +51,7 @@ const ChatBody = ({ messages }) => {
                         <div
                             key={index}
                             className={`flex ${
-                                message.senderId._id === userData._id
-                                    ? 'justify-end'
-                                    : 'justify-start'
+                                message.senderId._id === userData._id ? 'justify-end' : 'justify-start'
                             } break-words`}
                         >
                             <div
@@ -77,17 +71,9 @@ const ChatBody = ({ messages }) => {
                     <Skeleton loading={false}>
                         <div className="flex flex-col items-center">
                             <div className="h-10"></div>
-                            <img
-                                className="rounded-full mb-3 w-20 h-20"
-                                src={userDataById?.user?.avatar}
-                                alt=""
-                            />
-                            <p className="text-lg">
-                                {userDataById?.user?.username}
-                            </p>
-                            <p className="text-sm text-[#65676B]">
-                                Sống tại {userDataById?.user?.address?.province}
-                            </p>
+                            <img className="rounded-full mb-3 w-20 h-20" src={userDataById?.avatar} alt="" />
+                            <p className="text-lg">{userDataById?.username}</p>
+                            <p className="text-sm text-[#65676B]">Sống tại {userDataById?.address?.province}</p>
                         </div>
                         <div></div>
                     </Skeleton>
