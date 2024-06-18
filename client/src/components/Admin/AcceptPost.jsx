@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Menu from './Menu';
 import { IoSearchOutline, IoFilter } from 'react-icons/io5';
 import Datepicker from 'react-tailwindcss-datepicker';
@@ -9,7 +9,7 @@ import moment from 'moment';
 import { toast } from 'react-toastify';
 
 const AcceptPost = () => {
-    const { data: dataUnpublishPost } = useGetAllUnPublishPostsQuery();
+    const { data: dataUnpublishPost, refetch } = useGetAllUnPublishPostsQuery();
     const [publishPosts] = usePublishPostMutation();
     const [input, setInput] = useState('');
     const [isOpenFilter, setOpenFilter] = useState(false);
@@ -18,9 +18,14 @@ const AcceptPost = () => {
         endDate: null,
     });
 
-    const [postId, setPostID] = useState('');
+    const [unpublishedPosts, setUnpublishedPosts] = useState([]);
 
-    console.log(dataUnpublishPost);
+    useEffect(() => {
+        if (dataUnpublishPost) {
+            setUnpublishedPosts(dataUnpublishPost);
+        }
+    }, [dataUnpublishPost]);
+
     const handleDateValueChange = (newValue) => {
         setDateValue(newValue);
     };
@@ -32,6 +37,8 @@ const AcceptPost = () => {
     const handlePublish = async (id) => {
         try {
             await publishPosts(id).unwrap();
+            setUnpublishedPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+            refetch();
             toast.success('Phê duyệt thành công');
         } catch (error) {}
     };
@@ -98,7 +105,7 @@ const AcceptPost = () => {
                         </div>
                         <div className="max-w-3xl max-h-[500px] mx-auto   rounded-2xl overflow-auto">
                             {/* Map here */}
-                            {dataUnpublishPost?.map((item, index) => (
+                            {unpublishedPosts?.map((item, index) => (
                                 <div className="bg-gray-100 rounded-2xl mb-4 p-4">
                                     <div className="flex items-center gap-2 md:mb-4 mb-2 md:ml-4 ">
                                         <img className="w-10 h-10 rounded-full" src={item?.userId?.avatar} alt="" />
