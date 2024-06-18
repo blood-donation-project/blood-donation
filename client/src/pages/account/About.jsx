@@ -6,11 +6,23 @@ import { FaUserNurse } from 'react-icons/fa6';
 
 import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
-
-import { useSelector } from 'react-redux';
+import { useGetUserByIdMutation } from '../../Redux/features/user/userAPI';
+import { useParams } from 'react-router-dom';
 
 const AboutPage = () => {
-    const { user } = useSelector((state) => state.user);
+    const [getUserById, { data: userData }] = useGetUserByIdMutation();
+
+    const params = useParams();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getUserById(params.id).unwrap;
+            } catch (error) {
+                console.log(Error);
+            }
+        };
+        fetchData();
+    }, [getUserById, params.id]);
 
     return (
         <>
@@ -23,7 +35,7 @@ const AboutPage = () => {
                 <div className="bg-gray-200 pt-4 pb-10 min-h-[calc(100vh_-_636px)] ">
                     <div className="max-w-[1150px] mx-auto md:px-4">
                         <div className="bg-white p-4 md:rounded-lg overflow-hidden">
-                            <div className="grid md:grid-cols-7">
+                            <div className="grid md:grid-cols-2 gap-2">
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                     <div className="flex md:flex-col xs:flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
@@ -32,7 +44,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Email</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">{user.email}</span>
+                                        <span className=" word-wrap">{userData?.email}</span>
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
@@ -43,7 +55,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Ngày sinh</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                        {user.birthday}
+                                        {userData?.dateOfBirth}
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -54,7 +66,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Giới tính</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                        {user.gender}
+                                        {userData?.gender}
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -65,13 +77,13 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Địa chỉ</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        {user.address.street +
+                                        {userData?.address.street +
                                             ', ' +
-                                            user.address.ward +
+                                            userData?.address.ward +
                                             ', ' +
-                                            user.address.district +
+                                            userData?.address.district +
                                             ', ' +
-                                            user.address.province}
+                                            userData?.address.province}
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -82,7 +94,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Liên hệ</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                        {user.phoneNumber}
+                                        {userData?.phoneNumber}
                                     </div>
                                 </div>
 
@@ -94,7 +106,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Nhóm máu</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">{user.bloodGroup || 'Không xác định'}</span>
+                                        <span className=" word-wrap">{userData?.bloodGroup || 'Không xác định'}</span>
                                     </div>
                                 </div>
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
@@ -105,7 +117,7 @@ const AboutPage = () => {
                                         <div className="text-[#65676B] text-[14px]">Vai trò</div>
                                     </div>
                                     <div className="text-[14px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                        <span className=" word-wrap">{user.role}</span>
+                                        <span className=" word-wrap">{userData?.role}</span>
                                     </div>
                                 </div>
                             </div>
