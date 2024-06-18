@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import bg_hienmau from '../../assets/img/bg_hienmau3.jpg';
-import { useDispatch } from 'react-redux';
-import {useForgotPasswordMutation } from '../../Redux/features/auth/authAPI';
+import { useForgotPasswordMutation } from '../../Redux/features/auth/authAPI';
+import { Spin } from 'antd';
 
 const ForgotPass = () => {
-    const [forgotPass] = useForgotPasswordMutation()
+    const [forgotPass] = useForgotPasswordMutation();
     const [email, setEmail] = useState('');
-    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        // Handle the form data here
-        const forgotPassword = {
-            email: email,
-        };
-        await forgotPass(email);
+        try {
+            event.preventDefault();
+            setIsLoading(true);
+            setEmail('');
+            // Handle the form data here
+            await forgotPass(email).unwrap();
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            console.log(error);
+        }
     };
     return (
         <div>
@@ -64,12 +69,17 @@ const ForgotPass = () => {
                                     className="mt-1 p-2 w-full border rounded-md focus:border-[#0866ff] focus:outline-none  focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                                 />
                             </div>
-                            <button
-                                type="submit"
-                                className="w-full bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"
+                            <Spin
+                                spinning={isLoading}
+                                size="default"
                             >
-                                Gửi email xác thực
-                            </button>
+                                <button
+                                    type="submit"
+                                    className="w-full bg-[#0866ff] text-white p-2 rounded-md hover:bg-[#1877f2] focus:outline-none focus:bg-black transition-colors duration-300"
+                                >
+                                    Gửi email xác thực
+                                </button>
+                            </Spin>
                         </form>
 
                         <div className="flex justify-between mt-4 text-sm text-gray-600 text-center">

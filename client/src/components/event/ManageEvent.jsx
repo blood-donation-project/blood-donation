@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import schedule from '../../assets/img/schedule.png';
 import { IoCreateOutline } from 'react-icons/io5';
 import CreateEvent from './CreateEvent';
 import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi';
@@ -15,12 +14,16 @@ import { Link } from 'react-router-dom';
 import { useGetEventByIdMutation } from '../../Redux/features/events/eventAPI';
 import OrganizeEvent from './yourEvent/OrganizeEvent';
 import SearchOrganizeEvent from './yourEvent/SearchOrganizeEvent';
+import { IoSearchOutline } from 'react-icons/io5';
+import { HiXMark } from 'react-icons/hi2';
+import { FloatButton } from 'antd';
 const ManageEvent = () => {
     useVerifyToken('/events/manage-events');
     const [getUser, { data: userData }] = useGetUserMutation();
     const [getEventById, { data: eventDataById }] = useGetEventByIdMutation();
     const [isSearch, setIsSearch] = useState(false);
     const [optionComponent, setOptionComponent] = useState('join');
+    const [isOpenMenu, setOpenMenu] = useState(false);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isMyEventOpen, setIsMyEventOpen] = useState(false);
@@ -44,6 +47,8 @@ const ManageEvent = () => {
         const fetchData = async () => {
             try {
                 const result = await getUser().unwrap();
+                console.log(result?.role);
+                console.log(optionComponent);
                 result?.role === 'Medical facility'
                     ? setOptionComponent('organize')
                     : setOptionComponent('join');
@@ -61,24 +66,31 @@ const ManageEvent = () => {
     };
     // Handle Form
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const searchParams = {
-            eventName,
-            startDate: dateValue.startDate,
-            endDate: dateValue.endDate,
-        };
-        await getEventById(searchParams).unwrap();
-        setIsSearch(true);
+        try {
+            e.preventDefault();
+            const searchParams = {
+                eventName,
+                startDate: dateValue.startDate,
+                endDate: dateValue.endDate,
+            };
+            await getEventById(searchParams).unwrap();
+            setOpenMenu(false);
+            setIsSearch(true);
+        } catch (error) {}
     };
 
     return (
         <>
             <NavMenu />
-            <div className="mt-[65px]">
-                <div className="flex">
+            <div className="md:mt-[65px] xs:mt-[99px]">
+                <div className="lg:flex">
                     {/* SideBar */}
-                    <div className="hidden lg:block lg:w-[360px] ">
-                        <div className="fixed h-[calc(h-screen_-_56px)] left-0 top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
+                    <div
+                        className={`${
+                            isOpenMenu ? 'bg-white z-40 ' : 'hidden '
+                        } lg:block  lg:w-[360px] `}
+                    >
+                        <div className="fixed h-[calc(h-screen_-_56px)] bg-white left-0 top-[96px] ssm:top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
                             <div className="py-1">
                                 <h2 className="text-2xl font-semibold">
                                     Sự kiện của bạn
@@ -284,7 +296,7 @@ const ManageEvent = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="h-full lg:w-[calc(100%_-_360px)]">
+                    <div className="h-full w-full lg:w-[calc(100%_-_360px)]">
                         {userData?.role === 'Medical facility' ? (
                             <div className=" flex justify-end">
                                 <button
@@ -305,18 +317,49 @@ const ManageEvent = () => {
                                 onClose={handleClosePopup}
                             />
                         </div>
-                        {isSearch ? (
+                        {userData?.role === 'Medical facility' ? (
+                            isSearch ? (
+                                <SearchOrganizeEvent
+                                    eventDataById={eventDataById}
+                                    title={`Sự kiện bạn đang tổ chức`}
+                                    tab={optionComponent}
+                                    role={userData?.role}
+                                />
+                            ) : (
+                                <OrganizeEvent
+                                    title={'Sự kiện đang tổ chức'}
+                                    tab={optionComponent}
+                                />
+                            )
+                        ) : isSearch ? (
                             <SearchOrganizeEvent
                                 eventDataById={eventDataById}
-                                title={`Sự kiện bạn đang tổ chức`}
+                                title={`Sự kiện sẽ tham gia`}
                                 tab={optionComponent}
                                 role={userData?.role}
                             />
                         ) : (
-                            <OrganizeEvent tab={optionComponent} />
+                            <OrganizeEvent
+                                title={'Sự kiện sẽ tham gia'}
+                                tab={optionComponent}
+                            />
                         )}
                     </div>
                 </div>
+                <FloatButton
+                    onClick={() => setOpenMenu(!isOpenMenu)}
+                    className=" lg:hidden "
+                    type="primary"
+                    shape="square"
+                    icon={
+                        isOpenMenu ? (
+                            <HiXMark className="w-6 h-6" />
+                        ) : (
+                            <IoSearchOutline className="w-6 h-6" />
+                        )
+                    }
+                    style={{ width: '50px', right: '10px', height: '50px' }}
+                />
             </div>
         </>
     );

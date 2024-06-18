@@ -5,6 +5,7 @@ import Tippy from '@tippyjs/react/headless';
 import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
 import { IoMdClose } from 'react-icons/io';
 import { FaRegComment, FaSpinner } from 'react-icons/fa';
+
 import { Link } from 'react-router-dom';
 import { MdOutlineEmojiEmotions } from 'react-icons/md';
 import { IoCameraOutline } from 'react-icons/io5';
@@ -28,6 +29,7 @@ import { updateOneSearchPostData } from '../../../Redux/features/search/searchSl
 
 const PostDetails = ({ postId, hideModal }) => {
     const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.user);
 
     const [commentContent, setCommentContent] = useState('');
     const [commentLength, setCommentLength] = useState(0);
@@ -109,6 +111,7 @@ const PostDetails = ({ postId, hideModal }) => {
                 {/* Header Tblet & PC */}
                 <div className=" xs:hidden md:flex justify-center items-center rounded-t-[10px] h-[44px] border-b boder-b-[#ccc] absolute bg-white left-0 right-0 top-0">
                     <h3 className="font-bold text-[20px]">Bài viết của {postDetail.author.username}</h3>
+
                     <div
                         className="w-8 h-8 bg-[#e1e2e4] rounded-[50%] flex-center cursor-pointer absolute right-2 top-2"
                         onClick={hideModal}
@@ -120,6 +123,7 @@ const PostDetails = ({ postId, hideModal }) => {
 
                 <div className=" md:hidden  rounded-t-[10px] h-[44px] flex-center border-b boder-b-[#ccc] absolute bg-white left-0 right-0 top-0">
                     <h3 className="font-semibold text-[18px]">Bài viết của {postDetail.author.username}</h3>
+
                     <div
                         className="w-[44px] h-[44px] hover:bg-[#e1e2e4]  flex-center cursor-pointer absolute left-0 top-0"
                         onClick={hideModal}
@@ -131,6 +135,7 @@ const PostDetails = ({ postId, hideModal }) => {
                 {/* Post detail */}
                 <div className="mt-11 mb-[120px]">
                     {/*  */}
+
                     <div className=" border-b boder-b-[#ccc] ">
                         <div className=" bg-white rounded-[8px] shadow mb-3  ">
                             <div className="px-2 py-3 ">
@@ -155,7 +160,7 @@ const PostDetails = ({ postId, hideModal }) => {
                                             <Link to={'/'}>
                                                 <Avatar
                                                     className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                                    src="https://scontent.fhan20-1.fna.fbcdn.net/v/t39.30808-1/441185472_859553369550576_4197182993968662181_n.png?stp=dst-png_p120x120&_nc_cat=1&ccb=1-7&_nc_sid=5f2048&_nc_ohc=4FR8PvJr70sQ7kNvgH0CKF-&_nc_ht=scontent.fhan20-1.fna&oh=00_AYC5XrkeyvJ_TzA89BxoTt2ENAlVvOu0ufQ7WRq8Uu9t_w&oe=664A21C6"
+                                                    src={postDetail.author.avatar}
                                                     alt="avatar"
                                                 />
                                             </Link>
@@ -210,6 +215,7 @@ const PostDetails = ({ postId, hideModal }) => {
                                             <span className=" text-[15px]  ml-1 font-semibold ">Thích</span>
                                         </div>
                                     )}
+
                                     <div className="cursor-pointer flex-center py-1.5 w-[50%] rounded-md hover:bg-[#f0f2f5]">
                                         <FaRegComment />
                                         <span className=" text-[15px]  ml-1 font-semibold text-[#65676B]">
@@ -256,11 +262,7 @@ const PostDetails = ({ postId, hideModal }) => {
                 {/* My comment */}
                 <div className=" rounded-b-[10px] h-[120px] text-center border-t flex boder-t-[#ababab] absolute bg-white left-0 right-0 bottom-0 py-2">
                     <div className="w-[10%] flex justify-center">
-                        <Avatar
-                            className="w-9 h-9 rounded-[50%]"
-                            src="https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-1/361256160_1420481928775878_514483897564070731_n.jpg?stp=dst-jpg_p120x120&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=JnEgyCSJGO0Q7kNvgGkTvWu&_nc_ht=scontent.fhan2-5.fna&oh=00_AYAvNlSlTsqJZn-csYFA6NFE8ahRD9jX5Rfd7f22UhH_dg&oe=664A6F2B"
-                            alt=""
-                        />
+                        <Avatar className="w-9 h-9 rounded-[50%]" src={user.avatar} alt="" />
                     </div>
                     <div className="  h-full  pr-3 w-[90%] ">
                         <div className="py-3 max-h-full  bg-[#f0f2f5] rounded-[10px]">
@@ -268,11 +270,12 @@ const PostDetails = ({ postId, hideModal }) => {
                                 <TextareaAutosize
                                     value={commentContent}
                                     className="w-full bg-transparent px-3 py-1 outline-none resize-none text-[14px]"
-                                    placeholder="Bình luận với vai trò Hoàng Xuân Việt"
+                                    placeholder={`Bình luận với vai trò ${user.username}`}
                                     onChange={onChangeComment}
                                     onKeyDown={onKeyDownPostComments}
                                 />
                             </div>
+
                             <div className="flex items-center justify-between px-3">
                                 <div className="flex ">
                                     <i className=" cursor-pointer text-[#65676B] text-[18px] mr-2">

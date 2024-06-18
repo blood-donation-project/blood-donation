@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
     },
     avatar: {
         type: String,
-        default: '',
+        default: 'https://res.cloudinary.com/dkjwdmndq/image/upload/v1717860215/news_images/yelzul3f8fofpghnwmig.jpg',
     },
     backgroundImage: {
         type: String,

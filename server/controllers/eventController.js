@@ -7,16 +7,8 @@ const EventRegistration = require('../models/eventRagistrations');
 const eventController = {
     createEvent: async (req, res) => {
         try {
-            const {
-                eventName,
-                address,
-                donationTime,
-                operationTime,
-                startTime,
-                endTime,
-                image,
-                description,
-            } = req.body;
+            const { eventName, address, donationTime, operationTime, startTime, endTime, image, description } =
+                req.body;
             console.log(req.body);
             const authHeader = req.headers.authorization;
             if (!authHeader) {
@@ -27,9 +19,7 @@ const eventController = {
             token = authHeader.split(' ')[1];
             const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
             const dataUser = await User.findById(user.id).select('-password');
-            const formattedDay = moment(donationTime, 'YYYY/MM/DD').format(
-                'DD/MM/YYYY'
-            );
+            const formattedDay = moment(donationTime, 'YYYY/MM/DD').format('DD/MM/YYYY');
             console.log(donationTime);
 
             const newEvent = new Event({
@@ -49,8 +39,7 @@ const eventController = {
         }
     },
     getEvent: async (req, res) => {
-        const { eventName, startDate, endDate, province, district, ward } =
-            req.body;
+        const { eventName, startDate, endDate, province, district, ward } = req.body;
         let query = {};
 
         if (eventName) {
@@ -104,9 +93,7 @@ const eventController = {
             const authHeader = req.headers.authorization;
 
             if (!authHeader) {
-                return res
-                    .status(401)
-                    .json({ message: 'Authorization header missing' });
+                return res.status(401).json({ message: 'Authorization header missing' });
             }
 
             const token = authHeader.split(' ')[1];
@@ -124,9 +111,7 @@ const eventController = {
             console.log(getEventRegis);
             if (user.role !== 'Medical facility') {
                 if (getEventRegis.length > 0) {
-                    const eventIds = getEventRegis.map((item) =>
-                        item.eventId.toString()
-                    ); // Lấy danh sách các eventId
+                    const eventIds = getEventRegis.map((item) => item.eventId.toString()); // Lấy danh sách các eventId
                     query._id = { $in: eventIds };
                 } else {
                     return res.status(404).json({ message: '' });
@@ -157,8 +142,7 @@ const eventController = {
                     $lte: moment(endDate).format('DD/MM/YYYY'),
                 };
             }
-            console.log('Query: ', query);
-            console.log('query: ', query);
+
             const events = await Event.find(query); // Lấy danh sách events trước
 
             // Tối ưu populate: chỉ populate khi cần thiết
@@ -218,7 +202,7 @@ const eventController = {
         const token = authHeader.split(' ')[1];
         const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
         const eventId = req.params.id;
-        console.log(user.id);
+
         const evenRegisExist = await EventRegistration.find({
             userId: user.id,
             eventId: eventId,
@@ -311,18 +295,15 @@ const eventController = {
                         eventId: req.params.id,
                     });
                 }
-                return res
-                    .status(200)
-                    .json({ code: 200, message: 'Delete Successfully' });
+                return res.status(200).json({ code: 200, message: 'Delete Successfully' });
             } else {
-                return res
-                    .status(403)
-                    .json({ code: 403, message: 'You are owner' });
+                return res.status(403).json({ code: 403, message: 'You are owner' });
             }
         } catch (error) {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
+
     updateEvent: async (req, res) => {
         try {
             const eventId = req.params.id;
@@ -330,9 +311,7 @@ const eventController = {
 
             const authHeader = req.headers.authorization;
             if (!authHeader) {
-                return res
-                    .status(401)
-                    .json({ message: 'Authorization header missing' });
+                return res.status(401).json({ message: 'Authorization header missing' });
             }
             console.log(req.body);
             console.log(eventId);
@@ -353,7 +332,7 @@ const eventController = {
             const updatedEvent = await Event.findByIdAndUpdate(
                 eventId,
                 eventData, // Sử dụng eventData để cập nhật
-                { new: true }
+                { new: true },
             );
 
             res.status(200).json({

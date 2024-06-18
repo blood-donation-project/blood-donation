@@ -40,14 +40,16 @@ const SearchOrganizeEvent = ({ eventDataById, title, tab, role }) => {
                             <ListEvent
                                 key={item?._id}
                                 image={item?.image}
+                                avatar={item?.userId?.avatar}
                                 eventName={item?.eventName}
-                                centerName={item?.centerName}
+                                centerName={item?.userId?.username}
                                 street={item?.address?.street}
                                 ward={item?.address?.ward}
                                 district={item?.address?.district}
                                 province={item?.address?.province}
                                 donationTime={item?.donationTime}
-                                operationTime={item?.operationTime}
+                                startTime={item?.startTime}
+                                endTime={item?.endTime}
                                 eventId={item?._id}
                                 buttonName={'Xem Chi Tiết'}
                             />
@@ -57,7 +59,7 @@ const SearchOrganizeEvent = ({ eventDataById, title, tab, role }) => {
             ) : (
                 <div className="mt-5 max-w-7xl m-auto">
                     <h1 className="mb-4 ml-10 font-semibold text-xl">
-                        Sự kiện bạn tổ chức
+                        {title}
                     </h1>
                     <div className=" flex flex-col justify-center items-center my-20">
                         <div>
@@ -81,20 +83,21 @@ const SearchOrganizeEvent = ({ eventDataById, title, tab, role }) => {
                     <div className="mb-10 w-full">
                         {filteredData?.map((item, index) => (
                             <ListEvent
-                                key={item?.id}
+                                key={item?._id}
                                 image={item?.image}
+                                avatar={item?.userId?.avatar}
                                 eventName={item?.eventName}
-                                centerName={item?.centerName}
+                                centerName={item?.userId?.username}
                                 street={item?.address?.street}
                                 ward={item?.address?.ward}
                                 district={item?.address?.district}
                                 province={item?.address?.province}
                                 donationTime={item?.donationTime}
-                                operationTime={item?.operationTime}
+                                startTime={item?.startTime}
+                                endTime={item?.endTime}
                                 eventId={item?._id}
                                 buttonName={'Xem Chi Tiết'}
                             />
-                            
                         ))}
                     </div>
                 </div>

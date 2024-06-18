@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { IoMdClose } from 'react-icons/io';
-import { FaPen } from 'react-icons/fa';
+
+import { FaPen, FaSpinner } from 'react-icons/fa';
 import Select from 'react-select';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 
@@ -58,6 +59,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
             ward: '', // Store the selected ward object
         },
         street: '',
+
         phone: '',
         bloodType: '',
         role: '',
@@ -88,6 +90,11 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         wards: undefined,
     });
 
+    const [submitError, setSubmitError] = useState({
+        status: false,
+        message: '',
+    });
+
     useEffect(() => {
         getProvinces()
             .then((res) => {
@@ -106,7 +113,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                 });
             })
             .catch((err) => {
-                // console.log(err);
+                console.log(err);
             });
     }, []);
 
@@ -129,7 +136,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                     });
                 })
                 .catch((err) => {
-                    // console.log(err);
+                    console.log(err);
                 });
         }
     }, [selectedValue.province]);
@@ -186,6 +193,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
             return {
                 ...prev,
                 district: selectValue,
+
                 wards: '',
             };
         });
@@ -204,9 +212,11 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         if (e.target.files) {
             const imageFile = e.target.files[0];
             setAvatarURL(URL.createObjectURL(imageFile));
+
             setProfileData((prev) => ({ ...prev, avatar: imageFile }));
         }
     };
+
     const handleBackgroundChange = (e) => {
         if (e.target.files) {
             const imageFile = e.target.files[0];
@@ -278,6 +288,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                 pauseOnHover
                 theme="light"
             />
+
             <div className={`box-zoom-in   h-[100%]  `}>
                 <div className="  md:flex-center xs:flex   h-[50px] border-b border-b-[#ccc]">
                     <span
@@ -500,6 +511,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     ) : (
                                         <option value="Null">Không xác định</option>
                                     )}
+
                                     <option defaultChecked={true} value="A+">
                                         A+
                                     </option>

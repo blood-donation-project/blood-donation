@@ -1,40 +1,141 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavMenu from '../NavMenu';
 import BlurBackgroundImage from '../BlurBackgroundImage';
-import { IoIosCheckmarkCircleOutline, IoMdMail } from 'react-icons/io';
+import {
+    IoIosCheckmarkCircleOutline,
+    IoMdMail,
+    IoIosArrowUp,
+} from 'react-icons/io';
 import {
     HiOutlinePencilSquare,
     HiUsers,
     HiOutlineXMark,
 } from 'react-icons/hi2';
+import dayjs from 'dayjs';
+import { Popconfirm } from 'antd';
 import { FaUser } from 'react-icons/fa';
 import { FaLocationDot, FaRegMessage } from 'react-icons/fa6';
 import { IoTimeSharp } from 'react-icons/io5';
-import { Link, useParams } from 'react-router-dom';
-import { useGetEventByIdEventQuery } from '../../Redux/features/events/eventAPI';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+    useCancelJoinMutation,
+    useCheckRegisEventMutation,
+    useDeleteEventMutation,
+    useGetEventByIdEventQuery,
+} from '../../Redux/features/events/eventAPI';
+import JoinEvent from './JoinEvent';
+import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 
 const DetailEvent = () => {
     const [showMore, setShowMore] = useState(false);
     const params = useParams();
-    const { data } = useGetEventByIdEventQuery(params.id);
+    const navigate = useNavigate();
+    const [openConfirmDel, setOpenConfirmDel] = useState(false);
+    const [openConfirmCancel, setOpenConfirmCancel] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [isCheckJoin, setIsCheckJoin] = useState(false);
+    const [getUser, { data: userData }] = useGetUserMutation();
+    const [checkRegisterEvent, { data: checkRegis }] =
+        useCheckRegisEventMutation();
+    const [deleteEvent] = useDeleteEventMutation();
+    const [cancelJoin] = useCancelJoinMutation();
+    const { data, error } = useGetEventByIdEventQuery(params.id);
+    const day = dayjs(data?.donationTime, 'DD/MM/YYYY').date();
 
-    const day = new Date(data?.donationTime).getDate();
+    console.log(userData?.role);
     console.log(data);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const result = await getUser().unwrap();
+            } catch (error) {}
+        };
+        fetchUser();
+    }, [getUser]);
+
+    useEffect(() => {
+        const fetchEventByID = async () => {
+            try {
+                const result = await checkRegisterEvent(params.id).unwrap();
+                if (result) {
+                    setIsCheckJoin(true);
+                } else {
+                    setIsCheckJoin(false);
+                }
+
+                console.log(isCheckJoin);
+                console.log(typeof params.id);
+
+                console.log();
+            } catch (error) {}
+        };
+        fetchEventByID();
+    }, [checkRegisterEvent, isCheckJoin, params.id]);
+
+    const openPopup = () => {
+        setIsPopupOpen(true);
+    };
+
+    const closePopup = () => {
+        setIsPopupOpen(false);
+    };
+    useEffect(() => {
+        if (error?.status === 400) {
+            navigate(-1);
+        }
+    });
+
+    const showPopconfirm = () => {
+        setOpenConfirmCancel(true);
+    };
+    const showPopconfirmDel = () => {
+        setOpenConfirmDel(true);
+    };
+    const handleOkCanCel = async () => {
+        try {
+            setConfirmLoading(true);
+            await cancelJoin(params.id).unwrap();
+            navigate(0);
+            setOpenConfirmDel(false);
+            setConfirmLoading(false);
+        } catch (error) {
+            setOpenConfirmDel(false);
+            setConfirmLoading(false);
+        }
+    };
+    // Del Event
+    const handleOk = async () => {
+        setConfirmLoading(true);
+        await deleteEvent(params.id).unwrap();
+        navigate(-1);
+        setOpenConfirmDel(false);
+        setConfirmLoading(false);
+    };
+    const handleCancel = () => {
+        setOpenConfirmCancel(false);
+    };
+
+    const handleCancelDel = () => {
+        setOpenConfirmDel(false);
+    };
+
     return (
         <div className="">
             <NavMenu />
-            <div className="mt-[56px] bg-gray-100">
+            <div className="md:mt-[56px] xs:mt-[96px] bg-gray-100">
                 {/* Header */}
                 <div className="lg:max-w-6xl m-auto bg-white shadow-custom-bottom rounded-b-lg z-50">
                     <div className="relative flex justify-center">
                         <div className="relative image-container">
                             <BlurBackgroundImage
-                                className="max-w-3xl h-auto"
-                                src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717512306/news_images/a1rn1dslnhulqziocds3.jpg"
+                                className="max-w-3xl"
+                                src={data?.image}
                                 alt=""
                             />
                         </div>
-                        <div className="absolute hidden md:flex z-50 -bottom-5 left-4 w-20 h-20  flex-col rounded-2xl shadow-lg ">
+                        <div className="absolute hidden md:flex z-30 -bottom-5 left-4 w-20 h-20  flex-col rounded-2xl shadow-lg ">
                             <div className="bg-red-500 w-full rounded-t-2xl h-5"></div>
                             <div className="bg-white h-[60px] rounded-b-2xl flex items-center justify-center">
                                 <h1 className="text-4xl font-semibold ">
@@ -45,7 +146,7 @@ const DetailEvent = () => {
                     </div>
                     <div className="py-4 mt-4 ml-4 flex flex-col border-b">
                         <div className="text-red-600 text-lg font-semibold">
-                            NGÀY {data?.donationTime} LÚC 21:00
+                            NGÀY {data?.donationTime} LÚC {data?.startTime}
                         </div>
                         <div className="text-2xl font-bold">
                             <h1>{data?.eventName}</h1>
@@ -56,29 +157,94 @@ const DetailEvent = () => {
                         </div>
                     </div>
                     <div className="flex gap-1 items-center justify-center ssm:justify-end h-16 ">
-                        <div className="p-1 hidden ssm:block">
-                            <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center bg-gray-200">
-                                <IoIosCheckmarkCircleOutline className="w-6 h-6" />
-                                <p>Tham gia</p>
-                            </button>
+                        <div
+                            className={`${
+                                userData?.role === 'Medical facility'
+                                    ? 'hidden'
+                                    : ''
+                            } p-1`}
+                        >
+                            {isCheckJoin ? (
+                                <Popconfirm
+                                    title={'Hủy tham gia sự kiện'}
+                                    description={
+                                        'Bạn có chắc chắn muốn hủy tham gia sự kiện này không?'
+                                    }
+                                    open={openConfirmCancel}
+                                    onConfirm={handleOkCanCel}
+                                    okButtonProps={{ loading: confirmLoading }}
+                                    onCancel={handleCancel}
+                                >
+                                    <button
+                                        onClick={showPopconfirm}
+                                        className="px-3 py-2 rounded-lg outline-none hover:bg-blue-200 
+                                flex items-center text-blue-500 justify-between gap-2 bg-blue-100"
+                                    >
+                                        <IoIosCheckmarkCircleOutline className="w-6 h-6" />
+                                        <p>Đã tham gia</p>
+                                        <IoIosArrowUp />
+                                    </button>
+                                </Popconfirm>
+                            ) : (
+                                <button
+                                    onClick={openPopup}
+                                    className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center bg-gray-200"
+                                >
+                                    <IoIosCheckmarkCircleOutline className="w-6 h-6" />
+                                    <p>Tham gia</p>
+                                </button>
+                            )}
                         </div>
+                        {isPopupOpen && <JoinEvent onClose={closePopup} />}
                         <div className="p-1">
                             <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
                                 <IoMdMail className="w-6 h-6" />
                                 <p>Mời</p>
                             </button>
                         </div>
-                        <div className="p-1 ">
+                        <div
+                            className={`${
+                                userData?.role === 'Medical facility'
+                                    ? ''
+                                    : 'hidden'
+                            } p-1`}
+                        >
                             <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
                                 <HiOutlinePencilSquare className="w-6 h-6" />
                                 <p>Chỉnh sửa</p>
                             </button>
                         </div>
-                        <div className="p-1">
-                            <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
-                                <HiOutlineXMark className="w-6 h-6" />
-                                <p>Hủy sự kiện</p>
-                            </button>
+                        <div
+                            className={`${
+                                userData?.role === 'Medical facility'
+                                    ? ''
+                                    : 'hidden'
+                            } p-1`}
+                        >
+                            <Popconfirm
+                                title={'Hủy sự kiện'}
+                                description={
+                                    'Bạn có chắc chắn muốn hủy sự kiện này không?'
+                                }
+                                open={openConfirmDel}
+                                onConfirm={handleOk}
+                                okButtonProps={{ loading: confirmLoading }}
+                                onCancel={handleCancelDel}
+                                className={`${
+                                    userData?.role === 'Medical facility'
+                                        ? ''
+                                        : 'hidden'
+                                }`}
+                            >
+                                <button
+                                    onClick={showPopconfirmDel}
+                                    className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 
+                                flex items-center justify-center gap-2 bg-gray-200"
+                                >
+                                    <HiOutlineXMark className="w-6 h-6" />
+                                    <p>Hủy sự kiện</p>
+                                </button>
+                            </Popconfirm>
                         </div>
                     </div>
                 </div>
@@ -108,7 +274,7 @@ const DetailEvent = () => {
                                                     <p>
                                                         Sự kiện của{' '}
                                                         <span className="font-bold">
-                                                            {data?.centerName}{' '}
+                                                            {data?.username}{' '}
                                                         </span>
                                                     </p>
                                                 </div>
@@ -134,8 +300,9 @@ const DetailEvent = () => {
                                                 <IoTimeSharp className="w-5 h-5 text-gray-500" />
                                                 <div>
                                                     <p>
-                                                        Khoảng thời gian: 7h -
-                                                        11h30
+                                                        Khoảng thời gian:{' '}
+                                                        {data?.startTime} -{' '}
+                                                        {data?.endTime}
                                                     </p>
                                                 </div>
                                             </div>
@@ -143,26 +310,10 @@ const DetailEvent = () => {
                                                 <div
                                                     className={`${
                                                         !showMore &&
-                                                        'line-clamp-2'
+                                                        'line-clamp-1'
                                                     } `}
                                                 >
-                                                    <p>
-                                                        💙 CHƯƠNG TRÌNH HIẾN MÁU
-                                                        MÙA HÈ NHÂN ÁI 2024 💙 🪻
-                                                        Cùng đi hiến máu, làm
-                                                        việc tốt, xua tan cái oi
-                                                        bức của mùa hạ bằng
-                                                        những điều thiện lành.
-                                                        ------------------------------------------------------
-                                                        💙 SỰ KIỆN HIẾN MÁU MÙA
-                                                        HÈ NHÂN ÁI 2024 💙 🗓
-                                                        Thời gian: 7h30 - 16h30
-                                                        | Từ 03/6 - 9/6/2024
-                                                        📍Địa điểm: Viện Huyết
-                                                        học - Truyền máu TW
-                                                        (Phạm Văn Bạch, Cầu
-                                                        Giấy, Hà Nội)
-                                                    </p>
+                                                    <p>{data?.description}</p>
                                                 </div>
                                                 <button
                                                     onClick={() =>
@@ -286,32 +437,25 @@ const DetailEvent = () => {
                                                                 <div className="flex justify-center items-center ">
                                                                     <img
                                                                         className="w-40 h-40 rounded-full"
-                                                                        src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717266368/news_images/gh9z05vmpjwh0yrskfcp.jpg"
+                                                                        src={
+                                                                            data?.avatar
+                                                                        }
                                                                         alt=""
                                                                     />
                                                                 </div>
                                                                 <div className="text-center p-1 font-bold">
                                                                     <h1 className="text-xl">
-                                                                        Viện
-                                                                        Huyết
-                                                                        học -
-                                                                        Truyền
-                                                                        máu
-                                                                        Trung
-                                                                        ương
+                                                                        {
+                                                                            data?.username
+                                                                        }
                                                                     </h1>
                                                                 </div>
                                                                 <div className="border-b my-2"></div>
                                                                 <div className="text-center pb-2">
                                                                     <h1 className="text-[16px] h-11">
-                                                                        Viện
-                                                                        chuyên
-                                                                        khoa đầu
-                                                                        ngành về
-                                                                        Huyết
-                                                                        học và
-                                                                        Truyền
-                                                                        máu.
+                                                                        {
+                                                                            data?.introduce
+                                                                        }
                                                                     </h1>
                                                                 </div>
                                                                 <button className="w-full py-2 bg-gray-300 flex items-center justify-center gap-3 hover:bg-gray-400 rounded-lg">

@@ -1,6 +1,6 @@
 // src/components/BlurBackgroundImage.js
 import React from 'react';
-
+import { Image } from 'antd';
 const BlurBackgroundImage = ({ src, alt }) => {
     return (
         <div className="relative w-full max-w-4xl mx-auto rounded-xl">
@@ -36,8 +36,7 @@ const BlurBackgroundImage = ({ src, alt }) => {
 
             {/* Ảnh gốc */}
             <div className="relative z-10">
-                <img
-                
+                <Image
                     src={src}
                     alt={alt}
                     className="w-full h-auto rounded-xl"

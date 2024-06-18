@@ -11,6 +11,17 @@ import Avatar from '../../Image/Avatar';
 
 const MobileMenu = ({ hideModal }) => {
     const [searchText, setSearchText] = useState('');
+    const searchInputChange = (e) => {
+        const value = e.target.value;
+        if (value.startsWith(' ')) return;
+        setSearchText(value);
+    };
+
+    const searchInputKeyDown = (e) => {
+        if ((e.key === 'Enter' || e.keyCode === 13) && searchText.length > 0) {
+            window.location.href = `/search/all?q=${searchText}`;
+        }
+    };
 
     return (
         <div className=" z-[9] w-full h-full bg-[#ebedf0] relative">
@@ -29,11 +40,11 @@ const MobileMenu = ({ hideModal }) => {
                 <div className="bg-white rounded-lg shadow  mb-2">
                     <Link className="flex items-center py-2.5 px-2 hover:bg-[#ebedf0]   rounded-md" to="/user/123">
                         <div>
-                            <Avatar
+                            {/* <Avatar
                                 className="w-9 h-9 rounded-[50%] border border-[#ccc]"
                                 src="https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-1/329007355_5877024832378876_105945048897552486_n.jpg?stp=dst-jpg_p111x111&_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=lX3PfZ5K7WsQ7kNvgF8tMYE&_nc_ht=scontent.fhan2-3.fna&oh=00_AYCnQUCyq4KDq4Bt3bEbopzMjdxg8nMxgBPhfHuOmOEM1Q&oe=664A370D"
                                 alt="avatar"
-                            />
+                            /> */}
                         </div>
                         <div className="ml-2">
                             <p className="text-[14px] font-semibold leading-[14px]">Hoàng Xuân Việt</p>

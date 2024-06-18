@@ -8,10 +8,12 @@ import {
     getWardsByDistrictId,
 } from '../services/locationServices';
 import SearchEvent from '../components/event/SearchEvent';
-import ManageEvent from '../components/event/ManageEvent';
+import { IoSearchOutline } from 'react-icons/io5';
+import { HiXMark } from 'react-icons/hi2';
 import { useVerifyToken } from '../hooks/useAutoRefreshToken';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
 import { useGetEventMutation } from '../Redux/features/events/eventAPI';
+import { FloatButton } from 'antd';
 
 const Event = () => {
     // Redux
@@ -19,6 +21,7 @@ const Event = () => {
     const [getUser, { data: userData }] = useGetUserMutation();
     const [getEvent, { data: eventData }] = useGetEventMutation();
     const [isCheck, setCheck] = useState(true);
+    const [isOpenMenu, setOpenMenu] = useState(false);
     const [eventName, setEventName] = useState('');
     const [dateValue, setDateValue] = useState({
         startDate: null,
@@ -109,10 +112,6 @@ const Event = () => {
         setSelectedWards([]);
     };
 
-    console.log(selectedDistrict);
-    console.log(selectedProvince);
-    console.log(selectedWards);
-
     const handleDistrictChange = (e) => {
         const districtId = e.target.value;
         const district = districts?.find((d) => d?.idDistrict === districtId);
@@ -158,11 +157,15 @@ const Event = () => {
         <>
             {/* Menu */}
             <NavMenu userData={userData} />
-            <div className="mt-[56px]">
-                <div className="flex">
+            <div className=" xs:mt-[96px] md:mt-[56px]">
+                <div className="lg:flex">
                     {/* Sidebar left */}
-                    <div className="hidden lg:block lg:w-[360px] ">
-                        <div className="fixed h-[calc(h-screen_-_56px)] left-0 top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
+                    <div
+                        className={`${
+                            isOpenMenu ? '' : 'hidden'
+                        } lg:block lg:w-[360px] bg-black `}
+                    >
+                        <div className="fixed h-[calc(h-screen_-_56px)] bg-white z-40  left-0 top-[96px] ssm:top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
                             <div className="py-2 border-b border-[#ccc]">
                                 <h2 className="text-2xl font-semibold">
                                     Sự kiện
@@ -328,6 +331,20 @@ const Event = () => {
                         )}
                     </div>
                 </div>
+                <FloatButton
+                    onClick={() => setOpenMenu(!isOpenMenu)}
+                    className=" lg:hidden "
+                    type="primary"
+                    shape="square"
+                    icon={
+                        isOpenMenu ? (
+                            <HiXMark className="w-6 h-6" />
+                        ) : (
+                            <IoSearchOutline className="w-6 h-6" />
+                        )
+                    }
+                    style={{ width: '50px', right: '10px', height: '50px' }}
+                />
             </div>
         </>
     );

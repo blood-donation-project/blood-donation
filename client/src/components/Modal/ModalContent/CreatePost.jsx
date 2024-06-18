@@ -1,10 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
+
 import { IoMdClose } from 'react-icons/io';
 import { TiWorld } from 'react-icons/ti';
 import { IoMdImages } from 'react-icons/io';
 import { MdInsertEmoticon } from 'react-icons/md';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import TextareaAutosize from 'react-textarea-autosize';
+
 import { useSelector } from 'react-redux';
 
 import { useCreatePostMutation } from '../../../Redux/features/post/postAPI';
@@ -140,6 +142,7 @@ const CreatePost = ({ hideModal }) => {
                             </div>
                         )}
                         {/* {imageURls.length > 0 && (
+
                             <div className="px-2 pt-2 relative">
                                 <div
                                     className="w-7 h-7 bg-white rounded-[50%] flex-center cursor-pointer absolute right-6 top-6"
@@ -153,6 +156,7 @@ const CreatePost = ({ hideModal }) => {
                                     })}
                                 </div>
                             </div>
+
                         )} */}
                     </div>
                 </div>

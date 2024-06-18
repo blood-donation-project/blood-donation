@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import Tippy from '@tippyjs/react/headless';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { TiHome } from 'react-icons/ti';
 import { MdEvent, MdLogout } from 'react-icons/md';
 import { FaRegNewspaper, FaArrowLeftLong } from 'react-icons/fa6';
 import { PiUsersThree } from 'react-icons/pi';
+
 import { FaFacebookMessenger, FaSpinner } from 'react-icons/fa';
 import { FiMenu } from 'react-icons/fi';
 
@@ -26,13 +28,16 @@ const NavMenu = () => {
     const [logOut] = useLogoutMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const [searchText, setSearchText] = useState('');
     const [isShowingSearchResults, setIsShowingSearchResults] = useState(false);
     const [isShowingNotify, setIsShowingNotify] = useState(false);
+
     const [isShowingAccountControl, setIsShowingAccountControl] = useState(false);
+
     const [isShowingSearchMobile, setIsShowingSearchMobile] = useState(false);
     const [isShowingMobileMenu, setIsShowingMobileMenu] = useState(false);
     const [activeId, setActiveId] = useState('1');
@@ -117,8 +122,10 @@ const NavMenu = () => {
     };
 
     const handleLogout = async () => {
-        await logOut().unwrap();
-        navigate('/login');
+        try {
+            await logOut().unwrap();
+            navigate('/login');
+        } catch (error) {}
     };
 
     return user ? (
@@ -253,8 +260,12 @@ const NavMenu = () => {
                         className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 "
                         to="/message"
                     >
-                        <FaFacebookMessenger className="text-[20px]" />
+                        <FiMenu />
+                        <div className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 ">
+                            <FaFacebookMessenger className="text-[20px]" />
+                        </div>
                     </Link>
+
                     {/* Notifications*/}
                     <Tippy
                         interactive={true}

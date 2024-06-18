@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaArrowLeftLong, FaSpinner } from 'react-icons/fa6';
+
 import { IoSearchSharp } from 'react-icons/io5';
 import { IoMdSearch } from 'react-icons/io';
 import { Link } from 'react-router-dom';

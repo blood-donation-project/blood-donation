@@ -2,53 +2,21 @@ const router = require('express').Router();
 const eventController = require('../controllers/eventController');
 const middlewareController = require('../controllers/middlewareController');
 
-router.post(
-    '/create-event',
-    middlewareController.verifyTokenAndHealth,
-    eventController.createEvent
-);
+router.post('/create-event', middlewareController.verifyTokenAndHealth, eventController.createEvent);
 
-router.post(
-    '/manage-events',
-    middlewareController.verifyToken,
-    eventController.getEventById
-);
+router.post('/manage-events', middlewareController.verifyToken, eventController.getEventById);
 
-router.post(
-    '/join-event/:id',
-    middlewareController.verifyToken,
-    eventController.joinEvent
-);
+router.post('/join-event/:id', middlewareController.verifyToken, eventController.joinEvent);
 
-router.post(
-    '/cancel-join/:id',
-    middlewareController.verifyToken,
-    eventController.cancelEvent
-);
+router.post('/cancel-join/:id', middlewareController.verifyToken, eventController.cancelEvent);
 
-router.post(
-    '/check-register/:id',
-    middlewareController.verifyToken,
-    eventController.checkRegisEvent
-);
+router.post('/check-register/:id', middlewareController.verifyToken, eventController.checkRegisEvent);
 
-router.post(
-    '/delete-event/:id',
-    middlewareController.verifyToken,
-    eventController.deleteEvent
-);
+router.post('/delete-event/:id', middlewareController.verifyToken, eventController.deleteEvent);
 
-router.put(
-    '/update-event/:id',
-    middlewareController.verifyToken,
-    eventController.updateEvent
-);
+router.put('/update-event/:id', middlewareController.verifyToken, eventController.updateEvent);
 
-router.get(
-    '/detail-event/:id',
-    middlewareController.verifyToken,
-    eventController.getEventByIdEven
-);
+router.get('/detail-event/:id', middlewareController.verifyToken, eventController.getEventByIdEven);
 
 router.post('/', middlewareController.verifyToken, eventController.getEvent);
 

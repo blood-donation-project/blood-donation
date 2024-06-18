@@ -56,16 +56,17 @@ const Interest = ({ onSendData }) => {
         }));
     };
 
-    const handleSendData = () =>{
-        onSendData(true)
-    }
+    const handleSendData = () => {
+        onSendData(true);
+    };
 
     console.log(openNotes);
     return (
         <>
-            <button 
-            onClick={handleSendData}
-            className="float-left flex items-center outline-none hover:bg-slate-400 justify-center ml-4 mt-2 w-10 h-10 rounded-full bg-gray-300">
+            <button
+                onClick={handleSendData}
+                className="float-left flex items-center outline-none hover:bg-slate-400 justify-center ml-4 mt-2 w-10 h-10 rounded-full bg-gray-300"
+            >
                 <IoArrowBackSharp className="w-6 h-6" />
             </button>
             <section className="mt-3  ssm:pb-14 pb-24">
@@ -436,6 +437,18 @@ const Interest = ({ onSendData }) => {
                         </div>
                     </div>
                 </div>
+            </section>
+            <section className='flex justify-center items-center mb-10'>
+                <iframe
+                    width="1080"
+                    height="460"
+                    src="https://www.youtube.com/embed/FOBRikvafwI?si=vSIwIOHclE3QR9Cd"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                ></iframe>
             </section>
         </>
     );
