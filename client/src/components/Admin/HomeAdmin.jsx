@@ -12,10 +12,12 @@ import Menu from './Menu';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
+import { useGetAllPostsByMonthsQuery } from '../../Redux/features/post/postAPI';
 const HomeAdmin = () => {
     useAutoRefreshToken('/home/');
     const { data: getUserByMonths, error } = useGetUserByMonthsQuery();
     const { data: eventDataByMonth } = useGetEventByMonthsQuery();
+    const { data: postsDatabyMonth } = useGetAllPostsByMonthsQuery();
     const navigate = useNavigate();
     useEffect(() => {
         console.log(error);
@@ -24,6 +26,7 @@ const HomeAdmin = () => {
             navigate('/');
         }
     }, [error, navigate]);
+    
     return (
         <div className="h-screen flex">
             <Menu activeComponent={'home'} />
@@ -34,12 +37,8 @@ const HomeAdmin = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-4 gap-8">
                     <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
                         <div>
-                            <p className="text-sm text-[#6B7280]">
-                                Tổng số người dùng
-                            </p>
-                            <p className="text-xl font-semibold">
-                                {getUserByMonths?.totalUsers}
-                            </p>
+                            <p className="text-sm text-[#6B7280]">Tổng số người dùng</p>
+                            <p className="text-xl font-semibold">{getUserByMonths?.totalUsers}</p>
                         </div>
                         <div>
                             <HiMiniUsers className="w-9 h-9" />
@@ -47,10 +46,8 @@ const HomeAdmin = () => {
                     </div>
                     <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
                         <div>
-                            <p className="text-sm text-[#6B7280]">
-                                Tổng số bài đăng
-                            </p>
-                            <p className="text-lg">Map here!</p>
+                            <p className="text-sm text-[#6B7280]">Tổng số bài đăng</p>
+                            <p className="text-lg">{postsDatabyMonth?.totalPosts}</p>
                         </div>
                         <div>
                             <BsFilePost className="w-9 h-9" />
@@ -58,12 +55,8 @@ const HomeAdmin = () => {
                     </div>
                     <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
                         <div>
-                            <p className="text-sm text-[#6B7280]">
-                                Tổng số sự kiện
-                            </p>
-                            <p className="text-xl font-medium">
-                                {eventDataByMonth?.totalEvents}
-                            </p>
+                            <p className="text-sm text-[#6B7280]">Tổng số sự kiện</p>
+                            <p className="text-xl font-medium">{eventDataByMonth?.totalEvents}</p>
                         </div>
                         <div>
                             <TbCalendarEvent className="w-9 h-9" />
@@ -83,9 +76,7 @@ const HomeAdmin = () => {
                     </div>
                     {/* Doughnut chart card */}
                     <div className="bg-white rounded-lg shadow-md">
-                        <div className="flex items-center p-4 border-b">
-                            Biểu đồ tỉ lệ người dùng
-                        </div>
+                        <div className="flex items-center p-4 border-b">Biểu đồ tỉ lệ người dùng</div>
                         <div className=" flex items-center justify-center p-4 h-72">
                             <DoughnutUser />
                         </div>
@@ -102,9 +93,7 @@ const HomeAdmin = () => {
                     </div>
                     {/* Doughnut chart card */}
                     <div className="bg-white  rounded-lg shadow-md">
-                        <div className="flex items-center p-4 border-b">
-                            Biểu đồ số lượng sự kiện theo tháng
-                        </div>
+                        <div className="flex items-center p-4 border-b">Biểu đồ số lượng sự kiện theo tháng</div>
                         <div className=" flex items-center justify-center p-4 h-72">
                             <BarChartEvent />
                         </div>

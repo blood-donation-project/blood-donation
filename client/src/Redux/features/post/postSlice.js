@@ -67,6 +67,7 @@ const postSlice = createSlice({
             state.profilePosts = currentMyPosts;
             toast.success('Xóa bài thành công');
         });
+
         // Comment
         builder.addMatcher(postAPI.endpoints.getCommentByPostId.matchFulfilled, (state, action) => {
             state.comments = action.payload.data;

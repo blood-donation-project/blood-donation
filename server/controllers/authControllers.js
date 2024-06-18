@@ -13,20 +13,8 @@ let refreshTokens = [];
 const authController = {
     register: async (req, res, next) => {
         try {
-
-            const {
-                name,
-                email,
-                password,
-                dateOfBirth,
-                address,
-                phoneNumber,
-                gender,
-                role,
-                bloodGroup,
-                avatar,
-            } = req.body;
-
+            const { name, email, password, dateOfBirth, address, phoneNumber, gender, role, bloodGroup, avatar } =
+                req.body;
 
             // Check if email exists
             const checkEmail = await User.findOne({ email });
@@ -80,7 +68,7 @@ const authController = {
     },
 
     generateAccessToken: (user) => {
-        return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_ACCESS_KEY, { expiresIn: '1h' });
+        return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_ACCESS_KEY, { expiresIn: '20s' });
     },
 
     generateRefreshToken: (user) => {
@@ -99,9 +87,7 @@ const authController = {
                 return res.status(404).json({ code: 401, message: 'Wrong password' });
             }
             if (user.block) {
-                return res
-                    .status(403)
-                    .json({ code: 403, message: 'ACCOUNT_LOCKED' });
+                return res.status(403).json({ code: 403, message: 'ACCOUNT_LOCKED' });
             }
             if (!user.verified) {
                 let token = await Token.findOne({

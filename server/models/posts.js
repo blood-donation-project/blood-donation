@@ -22,7 +22,6 @@ const postSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-
 postSchema.index({ content: 'text' });
 
 const Posts = mongoose.model('Posts', postSchema);

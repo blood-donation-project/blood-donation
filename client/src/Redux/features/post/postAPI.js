@@ -88,6 +88,32 @@ export const postAPI = createApi({
                 method: 'POST',
             }),
         }),
+        getAllPostsByAdmin: builder.mutation({
+            query: (searchTerm) => ({
+                url: 'get-all-posts',
+                method: 'POST',
+                body: { searchTerm },
+            }),
+        }),
+        getAllPostsByMonths: builder.query({
+            query: () => ({
+                url: '/get-posts-by-months',
+                method: 'GET',
+            }),
+        }),
+        getAllUnPublishPosts: builder.query({
+            query: () => ({
+                url: '/get-unpublish-posts',
+                method: 'GET',
+            }),
+        }),
+        publishPost: builder.mutation({
+            query: (postId) => ({
+                url: '/publish-post',
+                method: 'PUT',
+                body: { postId },
+            }),
+        }),
     }),
 });
 
@@ -101,6 +127,10 @@ export const {
     useLikePostMutation,
     useUnlikePostMutation,
     useGetPostsByUserIdMutation,
+    useGetAllPostsByAdminMutation,
+    useGetAllPostsByMonthsQuery,
+    useGetAllUnPublishPostsQuery,
+    usePublishPostMutation,
 } = postAPI;
 
 export default postAPI;

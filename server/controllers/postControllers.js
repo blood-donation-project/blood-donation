@@ -486,6 +486,105 @@ const postControllers = {
             });
         }
     },
+    getAllPost: async (req, res) => {
+        try {
+            const { searchTerm } = req.body;
+            console.log(req.body);
+            let query = {};
+            if (searchTerm) {
+                const isObjectId = mongoose.Types.ObjectId.isValid(searchTerm);
+                if (isObjectId) {
+                    query._id = searchTerm;
+                } else {
+                    query.content = { $regex: searchTerm, $options: 'i' };
+                }
+            }
+            const posts = await Posts.find(query).populate({
+                path: 'userId',
+                select: 'username avatar introduce',
+            });
+            res.status(200).json(posts);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    getUnpublishedPost: async (req, res) => {
+        try {
+            const postsUnPublish = await Posts.find({ verified: false }).populate({
+                path: 'userId',
+                select: 'username avatar introduce',
+            });
+            res.status(200).json(postsUnPublish);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    publishPosts: async (req, res) => {
+        const { postId } = req.body;
+
+        const post = await Posts.find({ _id: postId });
+        if (post.length === 0) {
+            return res.status(400).json('Post not found');
+        }
+        const publishPosts = await Posts.findByIdAndUpdate(postId, { verified: true });
+        res.status(200).json(publishPosts);
+    },
+    getPostByMonths: async (req, res) => {
+        try {
+            const allMonths = Array.from({ length: 12 }, (_, i) =>
+                new Date(0, i).toLocaleString('en-US', { month: 'long' }),
+            );
+            const currentYear = new Date().getFullYear();
+
+            console.log('Current Year:', currentYear);
+
+            const result = await Posts.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: new Date(`${currentYear}-01-01`),
+                            $lt: new Date(`${currentYear + 1}-01-01`),
+                        },
+                    },
+                },
+                {
+                    $facet: {
+                        postsByMonth: [
+                            {
+                                $group: {
+                                    _id: { $month: '$createdAt' },
+                                    count: { $sum: 1 },
+                                },
+                            },
+                            { $sort: { _id: 1 } },
+                        ],
+                        totalPosts: [{ $count: 'count' }],
+                    },
+                },
+            ]);
+
+            const postsByMonth = fillMissingMonths(result[0].postsByMonth, allMonths);
+            const totalPosts = result[0].totalPosts[0]?.count || 0;
+
+            res.status(200).json({
+                postsByMonth,
+                totalPosts,
+            });
+        } catch (error) {
+            console.error('Error in getPostsByMonths:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+};
+
+const fillMissingMonths = (data, allMonths) => {
+    const monthCountMap = new Map(data.map((item) => [item._id, item.count]));
+    return allMonths.map((month) => ({
+        month,
+        count: monthCountMap.get(allMonths.indexOf(month) + 1) || 0,
+    }));
 };
 
 module.exports = postControllers;

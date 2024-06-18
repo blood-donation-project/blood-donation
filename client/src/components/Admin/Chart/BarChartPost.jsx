@@ -1,8 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
+import { useGetAllPostsByMonthsQuery } from '../../../Redux/features/post/postAPI';
 
 const BarChartPost = () => {
     const chartRef = useRef(null);
+    const { data: dataPost } = useGetAllPostsByMonthsQuery();
+
+    const dataChart = dataPost?.postsByMonth?.map((item) => item?.count);
 
     useEffect(() => {
         let delayed;
@@ -26,10 +30,7 @@ const BarChartPost = () => {
                 datasets: [
                     {
                         label: 'Bài đăng',
-                        data: [
-                            150, 200, 180, 220, 195, 230, 210, 240, 225, 250,
-                            235, 260,
-                        ],
+                        data: dataChart,
                         backgroundColor: 'rgba(34, 139, 34, 0.5)',
                         borderColor: 'rgba(34, 139, 34, 1)',
                         borderWidth: 2,
@@ -49,14 +50,8 @@ const BarChartPost = () => {
                     },
                     delay: (context) => {
                         let delay = 0;
-                        if (
-                            context.type === 'data' &&
-                            context.mode === 'default' &&
-                            !delayed
-                        ) {
-                            delay =
-                                context.dataIndex * 300 +
-                                context.datasetIndex * 100;
+                        if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                            delay = context.dataIndex * 300 + context.datasetIndex * 100;
                         }
                         return delay;
                     },

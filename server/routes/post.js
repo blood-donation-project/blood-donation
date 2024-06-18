@@ -4,6 +4,10 @@ const postControllers = require('../controllers/postControllers');
 const uploadSingleImage = require('../utils/multer/uploadSingleImage');
 const middlewareController = require('../controllers/middlewareController');
 
+router.get('/get-posts-by-months', middlewareController.verifyTokenAndAdmin, postControllers.getPostByMonths);
+router.get('/get-unpublish-posts', middlewareController.verifyTokenAndAdmin, postControllers.getUnpublishedPost);
+router.put('/publish-post', middlewareController.verifyTokenAndAdmin, postControllers.publishPosts);
+
 // Get home page posts
 router.get('/', middlewareController.verifyToken, postControllers.getHomePagePosts);
 router.get('/:userId', middlewareController.verifyToken, postControllers.getPostsByUserId);
@@ -14,6 +18,8 @@ router.post(
     middlewareController.verifyToken,
     postControllers.createPost,
 );
+// Get All Post By Admin
+router.post('/get-all-posts', middlewareController.verifyTokenAndAdmin, postControllers.getAllPost);
 
 router.delete('/:id/delete', middlewareController.verifyToken, postControllers.deletePost);
 

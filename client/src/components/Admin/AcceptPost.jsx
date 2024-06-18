@@ -3,8 +3,14 @@ import Menu from './Menu';
 import { IoSearchOutline, IoFilter } from 'react-icons/io5';
 import Datepicker from 'react-tailwindcss-datepicker';
 import { Image } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { useGetAllUnPublishPostsQuery, usePublishPostMutation } from '../../Redux/features/post/postAPI';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+
 const AcceptPost = () => {
+    const { data: dataUnpublishPost } = useGetAllUnPublishPostsQuery();
+    const [publishPosts] = usePublishPostMutation();
     const [input, setInput] = useState('');
     const [isOpenFilter, setOpenFilter] = useState(false);
     const [dateValue, setDateValue] = useState({
@@ -12,6 +18,9 @@ const AcceptPost = () => {
         endDate: null,
     });
 
+    const [postId, setPostID] = useState('');
+
+    console.log(dataUnpublishPost);
     const handleDateValueChange = (newValue) => {
         setDateValue(newValue);
     };
@@ -19,6 +28,13 @@ const AcceptPost = () => {
     const handleFilter = async () => {};
 
     const handleSubmit = async () => {};
+
+    const handlePublish = async (id) => {
+        try {
+            await publishPosts(id).unwrap();
+            toast.success('Phê duyệt thành công');
+        } catch (error) {}
+    };
 
     return (
         <div className="flex h-screen">
@@ -38,12 +54,9 @@ const AcceptPost = () => {
                                         placeholder="Tìm kiếm"
                                         type="text"
                                         value={input}
-                                        onChange={(e) =>
-                                            setInput(e.target.value)
-                                        }
+                                        onChange={(e) => setInput(e.target.value)}
                                         onKeyDown={(e) => {
-                                            if (e.key === 'Enter')
-                                                handleSubmit(e);
+                                            if (e.key === 'Enter') handleSubmit(e);
                                         }}
                                         name=""
                                         id=""
@@ -59,11 +72,7 @@ const AcceptPost = () => {
                                     <IoFilter />
                                     <p>Lọc bài đăng</p>
                                 </div>
-                                <div
-                                    className={`${
-                                        isOpenFilter ? '' : 'hidden'
-                                    } mb-2`}
-                                >
+                                <div className={`${isOpenFilter ? '' : 'hidden'} mb-2`}>
                                     <div className="md:w-[300px] w-full">
                                         <Datepicker
                                             primaryColor="blue"
@@ -89,43 +98,36 @@ const AcceptPost = () => {
                         </div>
                         <div className="max-w-3xl max-h-[500px] mx-auto   rounded-2xl overflow-auto">
                             {/* Map here */}
-                            <div className="bg-gray-100 rounded-2xl mb-4 p-4">
-                                <div className="flex items-center gap-2 md:mb-4 mb-2 md:ml-4 ">
-                                    <img
-                                        className="w-10 h-10 rounded-full"
-                                        src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717860215/news_images/yelzul3f8fofpghnwmig.jpg"
-                                        alt=""
-                                    />
-                                    <div className="flex flex-col ">
-                                        <Link
-                                            to={'/user/'}
-                                            className="leading-none hover:underline"
+                            {dataUnpublishPost?.map((item, index) => (
+                                <div className="bg-gray-100 rounded-2xl mb-4 p-4">
+                                    <div className="flex items-center gap-2 md:mb-4 mb-2 md:ml-4 ">
+                                        <img className="w-10 h-10 rounded-full" src={item?.userId?.avatar} alt="" />
+                                        <div className="flex flex-col ">
+                                            <Link to={'/user/'} className="leading-none hover:underline">
+                                                {item?.userId?.username}
+                                            </Link>
+                                            <p className="text-sm text-gray-500">{moment(item?.createdAt).fromNow()}</p>
+                                        </div>
+                                    </div>
+                                    <div className="mb-2">
+                                        <p>{item?.content}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center mb-4">
+                                        <Image className="max-h-96" src={item?.image} />
+                                    </div>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <button
+                                            onClick={() => handlePublish(item?._id)}
+                                            className="px-1 md:px-6 md:w-[25%] w-1/2 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg"
                                         >
-                                            Nguyễn Văn Quang
-                                        </Link>
-                                        <p className="text-sm text-gray-500">
-                                            1 giờ{' '}
-                                        </p>
+                                            Phê Duyệt
+                                        </button>
+                                        <button className="px-6 md:w-[25%] w-1/2 py-2 bg-gray-300 hover:bg-slate-400 rounded-lg">
+                                            Từ Chối
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="mb-2">
-                                    <p>Đây là nội dung của bài viết này</p>
-                                </div>
-                                <div className="flex items-center justify-center mb-4">
-                                    <Image
-                                        className="max-h-96"
-                                        src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717834042/news_images/sge4pmekvd7ncz9tdwvr.jpg"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-center gap-2">
-                                    <button className="px-1 md:px-6 md:w-[25%] w-1/2 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg">
-                                        Phê Duyệt
-                                    </button>
-                                    <button className="px-6 md:w-[25%] w-1/2 py-2 bg-gray-300 hover:bg-slate-400 rounded-lg">
-                                        Từ Chối
-                                    </button>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
