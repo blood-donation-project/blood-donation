@@ -45,11 +45,15 @@ const PostDetails = ({ postId, hideModal }) => {
     const postDetail = homePagePosts.concat(profilePosts).find((post) => post._id === postId);
 
     useEffect(() => {
-        getCommentByPostId({ postId, limit: 10, page: 1 })
-            .unwrap()
-            .then((res) => {
-                setPagination(res.pagination);
-            });
+        try {
+            getCommentByPostId({ postId, limit: 10, page: 1 })
+                .unwrap()
+                .then((res) => {
+                    setPagination(res.pagination);
+                });
+        } catch (error) {
+            console.log(error);
+        }
     }, [postId]);
 
     const onChangeComment = (e) => {

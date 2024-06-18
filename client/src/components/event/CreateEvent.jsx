@@ -152,7 +152,7 @@ const CreateEvent = ({ isOpen, onClose }) => {
                 formData
             );
             imageUrl = response.data.url;
-            const newEvent = {
+            const newEvent = { 
                 eventName: eventName,
                 image: imageUrl,
                 address: {

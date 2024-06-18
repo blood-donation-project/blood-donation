@@ -28,6 +28,7 @@ import { resetFollowers, resetFriends, resetSuggestedFriends } from '../Redux/fe
 import { HiMiniUsers } from 'react-icons/hi2';
 import { BsMessenger } from 'react-icons/bs';
 import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
+import { useGetUserMutation } from '../Redux/features/user/userAPI';
 
 const HomePage = () => {
     const dispatch = useDispatch();
@@ -42,7 +43,7 @@ const HomePage = () => {
     const [getAllFriends, { isLoading: isLoadingAllFriends }] = useGetAllFriendsMutation();
     const [getAllFollowedFacilities, { isLoading: isLoadingAllFollowers }] = useGetAllFollowedFacilitiesMutation();
 
-    const { user } = useSelector((state) => state.user);
+    const [getUser, { data: getdataUser }] = useGetUserMutation();
     const { homePagePosts } = useSelector((state) => state.posts);
 
     const { suggestedFriends, friends, followers } = useSelector((state) => state.friend);
@@ -71,6 +72,18 @@ const HomePage = () => {
             path: '/events',
         },
     ];
+    // Get User
+    useEffect(() => {
+        const fetchData = async (req, res) => {
+            try {
+                await getUser().unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getUser]);
+
     // Get homepage posts
 
     useEffect(() => {
@@ -89,7 +102,7 @@ const HomePage = () => {
         const fetchUsersAndFriends = async () => {
             try {
                 await getSuggestedUsers({ limit: 10, page: 1 }).unwrap();
-                await getAllFriends({ userId: user._id, limit: 10, page: 1 }).unwrap();
+                await getAllFriends({ userId: getdataUser?._id, limit: 10, page: 1 }).unwrap();
                 await getAllFollowedFacilities({ limit: 8, page: 1 }).unwrap();
             } catch (error) {
                 console.error('Failed to fetch data:', error);
@@ -119,7 +132,7 @@ const HomePage = () => {
     };
 
     return (
-        user && (
+        getdataUser && (
             <>
                 {/* Header */}
                 <NavMenu />
@@ -131,17 +144,19 @@ const HomePage = () => {
                             <div className="pl-2 grid">
                                 <Link
                                     className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-l-md"
-                                    to={`/user/${user._id}`}
+                                    to={`/user/${getdataUser?._id}`}
                                 >
                                     <div>
                                         <Avatar
                                             className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                            src={user.avatar}
+                                            src={getdataUser?.avatar}
                                             alt="avatar"
                                         />
                                     </div>
                                     <div className="ml-2">
-                                        <p className="text-[14px] font-semibold leading-[14px]">{user.username}</p>
+                                        <p className="text-[14px] font-semibold leading-[14px]">
+                                            {getdataUser?.username}
+                                        </p>
                                     </div>
                                 </Link>
                                 {sencondaryNav.map((nav, index) => {
@@ -208,14 +223,14 @@ const HomePage = () => {
                         <div className="py-2 px-3 bg-white rounded-[8px] shadow h-fit  w-full ">
                             <div className="flex border-b-[1px] border-b-[#ccc] pb-2">
                                 <div>
-                                    <Avatar className="w-9 h-9 rounded-[50%]" src={user.avatar} alt="avatar" />
+                                    <Avatar className="w-9 h-9 rounded-[50%]" src={getdataUser?.avatar} alt="avatar" />
                                 </div>
                                 <div
                                     className="flex-grow ml-3 flex items-center bg-[#f0f2f5] rounded-[16px] px-3 py-1 cursor-pointer"
                                     onClick={showModal}
                                 >
                                     <span className="text-[#65676B]">
-                                        {getLastName(user.username) + ' ơi, bạn đang nghĩ gì thế?'}
+                                        {getLastName(getdataUser?.username) + ' ơi, bạn đang nghĩ gì thế?'}
                                     </span>
                                 </div>
                             </div>

@@ -46,21 +46,28 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [getUser] = useGetUserMutation();
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            getUser()
-                .unwrap()
-                .then(() => {
+        try {
+            const fetchData = async () => {
+                const token = localStorage.getItem('accessToken');
+                if (token) {
+                    await getUser()
+                        .unwrap()
+                        .then(() => {
+                            setLoading(false);
+                        })
+                        .catch(() => {
+                            setLoading(false);
+                            localStorage.removeItem('accessToken');
+                        });
+                } else {
                     setLoading(false);
-                })
-                .catch(() => {
-                    setLoading(false);
-                    localStorage.removeItem('accessToken');
-                });
-        } else {
-            setLoading(false);
+                }
+            };
+            fetchData();
+        } catch (error) {
+            console.log(error);
         }
-    }, []);
+    }, [getUser]);
 
     return (
         !loading && (
