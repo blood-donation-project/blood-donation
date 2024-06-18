@@ -27,6 +27,7 @@ import { resetHomePagePosts } from '../Redux/features/post/postSlice';
 import { resetFollowers, resetFriends, resetSuggestedFriends } from '../Redux/features/friend/friendSlice';
 import { HiMiniUsers } from 'react-icons/hi2';
 import { BsMessenger } from 'react-icons/bs';
+import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
 
 const HomePage = () => {
     const dispatch = useDispatch();
@@ -45,6 +46,8 @@ const HomePage = () => {
     const { homePagePosts } = useSelector((state) => state.posts);
 
     const { suggestedFriends, friends, followers } = useSelector((state) => state.friend);
+
+    useAutoRefreshToken('/home/');
 
     const sencondaryNav = [
         {

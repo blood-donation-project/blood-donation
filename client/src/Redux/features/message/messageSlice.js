@@ -4,57 +4,45 @@ import { messageAPI } from './messageAPI';
 const messageSlice = createSlice({
     name: 'message',
     initialState: {
-        messages: [],
-        conversations: [],
+        conversations: {},
         error: null,
     },
     reducers: {
         messageReceived: (state, { payload }) => {
-            state.messages.push(payload);
+            const { receiverId, message } = payload;
+            if (!state.conversations[receiverId]) {
+                state.conversations[receiverId] = [];
+            }
+            state.conversations[receiverId].push(message);
         },
         setMessages: (state, { payload }) => {
-            state.messages = payload;
+            const { receiverId, messages } = payload;
+            state.conversations[receiverId] = messages;
         },
     },
-
     extraReducers: (builder) => {
         builder
-            .addMatcher(
-                messageAPI.endpoints.sendMessage.matchFulfilled,
-                (state, { payload }) => {
-                    state.messages = payload.messages;
-                }
-            )
-            .addMatcher(
-                messageAPI.endpoints.sendMessage.matchRejected,
-                (state, action) => {
-                    state.error = action.error.messages;
-                }
-            )
-            .addMatcher(
-                messageAPI.endpoints.getMessage.matchFulfilled,
-                (state, { payload }) => {
-                    state.messages = payload.messages;
-                }
-            )
-            .addMatcher(
-                messageAPI.endpoints.getMessage.matchRejected,
-                (state, action) => {
-                    state.error = action.error.messages;
-                }
-            )
-            .addMatcher(
-                messageAPI.endpoints.getReceiver.matchFulfilled,
-                (state, { payload }) => {
-                    state.messages = payload.messages;
-                }
-            )
-            .addMatcher(
-                messageAPI.endpoints.getReceiver.matchRejected,
-                (state, action) => {
-                    state.error = action.error.messages;
-                }
-            );
+            .addMatcher(messageAPI.endpoints.sendMessage.matchFulfilled, (state, { payload }) => {
+                const { receiverId, messages } = payload;
+                state.conversations[receiverId] = messages;
+            })
+            .addMatcher(messageAPI.endpoints.sendMessage.matchRejected, (state, action) => {
+                state.error = action.error.message;
+            })
+            .addMatcher(messageAPI.endpoints.getMessage.matchFulfilled, (state, { payload }) => {
+                const { receiverId, messages } = payload;
+                state.conversations[receiverId] = messages;
+            })
+            .addMatcher(messageAPI.endpoints.getMessage.matchRejected, (state, action) => {
+                state.error = action.error.message;
+            })
+            .addMatcher(messageAPI.endpoints.getReceiver.matchFulfilled, (state, { payload }) => {
+                const { receiverId, messages } = payload;
+                state.conversations[receiverId] = messages;
+            })
+            .addMatcher(messageAPI.endpoints.getReceiver.matchRejected, (state, action) => {
+                state.error = action.error.message;
+            });
     },
 });
 

@@ -34,37 +34,39 @@ const ChatFooter = ({ input, setInput, handleSendMessage }) => {
     };
 
     return (
-        <div className="chat-footer px-4 py-3 flex-1 border">
-            <form onSubmit={handleSendMessage} className="flex items-center">
-                <div className="relative flex flex-1 items-center rounded-s-3xl">
-                    {isPickerVisible && (
-                        <div ref={emojiRef} className="absolute z-10 bottom-full right-2 mb-2">
-                            <Picker emojiStyle="native" onEmojiClick={onEmojiClick} />
-                        </div>
-                    )}
+        <div className=" z-10 bg-white">
+            <div className="chat-footer px-4 py-3 border">
+                <form onSubmit={handleSendMessage} className="flex items-center">
+                    <div className="relative flex flex-1 items-center rounded-s-3xl">
+                        {isPickerVisible && (
+                            <div ref={emojiRef} className="absolute z-10 bottom-full right-2 mb-2">
+                                <Picker emojiStyle="native" onEmojiClick={onEmojiClick} />
+                            </div>
+                        )}
+                        <button
+                            ref={emojiButtonRef}
+                            onClick={togglePicker}
+                            className="absolute right-9  outline-none"
+                            type="button"
+                        >
+                            <BsEmojiSmileFill className="w-7 h-7 text-blue-600 hover:text-blue-500" />
+                        </button>
+                        <input
+                            className=" flex-1 p-4 bg-gray-200 text-lg rounded-3xl mr-2 outline-none transition-all duration-300 focus:border border-blue-500"
+                            type="text"
+                            placeholder="Aa"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                        />
+                    </div>
                     <button
-                        ref={emojiButtonRef}
-                        onClick={togglePicker}
-                        className="absolute right-9  outline-none"
-                        type="button"
+                        className="bg-blue-500 flex items-center justify-center hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl"
+                        type="submit"
                     >
-                        <BsEmojiSmileFill className="w-7 h-7 text-blue-600 hover:text-blue-500" />
+                        <IoSend className="w-6 h-6" />
                     </button>
-                    <input
-                        className=" flex-1 p-4 bg-gray-200 text-lg rounded-3xl mr-2 outline-none transition-all duration-300 focus:border border-blue-500"
-                        type="text"
-                        placeholder="Aa"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                    />
-                </div>
-                <button
-                    className="bg-blue-500 flex items-center justify-center hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl"
-                    type="submit"
-                >
-                    <IoSend className="w-6 h-6" />
-                </button>
-            </form>
+                </form>
+            </div>
         </div>
     );
 };

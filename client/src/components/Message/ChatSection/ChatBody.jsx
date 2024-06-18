@@ -41,9 +41,9 @@ const ChatBody = ({ messages }) => {
     }, [getUserById, params.id]);
 
     return (
-        <div className="h-[80%]">
+        <div className="overflow-y-scroll flex-1">
             {messages?.length > 0 ? (
-                <div ref={chatContainerRef} className="chat-body  w-full p-4 overflow-y-scroll bg-white ">
+                <div ref={chatContainerRef} className="chat-body  w-full p-4  bg-white ">
                     {messages.map((message, index) => (
                         <div
                             key={index}
@@ -64,7 +64,7 @@ const ChatBody = ({ messages }) => {
                     ))}
                 </div>
             ) : (
-                <div className="flex flex-1 items-center flex-col">
+                <div className="flex flex-1 h-[80%] items-center flex-col">
                     <Skeleton loading={false}>
                         <div className="flex flex-col items-center">
                             <div className="h-10"></div>

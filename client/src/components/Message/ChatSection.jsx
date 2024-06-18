@@ -25,8 +25,9 @@ const ChatSection = () => {
     const userId = userData?._id;
     const receiverId = params?.id;
     const dispatch = useDispatch();
-    const messages = useSelector((state) => state.message.messages);
     const conversations = useSelector((state) => state.message.conversations);
+    const messages = conversations[receiverId] || [];
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -48,7 +49,10 @@ const ChatSection = () => {
 
             const handleMessageReceived = (msg) => {
                 console.log('Message received:', msg);
-                dispatch(messageReceived(msg));
+                if (msg.receiverId._id === receiverId || msg.senderId._id === receiverId) {
+                    // Kiểm tra receiverId
+                    dispatch(messageReceived({ receiverId, message: msg }));
+                }
             };
 
             onMessageReceived(handleMessageReceived);
@@ -56,7 +60,7 @@ const ChatSection = () => {
             const fetchMessages = async () => {
                 try {
                     const result = await getMessage(receiverId).unwrap();
-                    dispatch(setMessages(result));
+                    dispatch(setMessages({ receiverId, messages: result }));
                 } catch (error) {
                     console.log('Error fetching messages: ', error);
                 }
@@ -86,7 +90,7 @@ const ChatSection = () => {
     );
 
     return (
-        <section className="flex flex-col flex-1 border-l border-gray-200">
+        <section className="flex flex-col h-screen flex-1 border-l border-gray-200">
             <ChatHeader />
             <ChatBody messages={messages} />
             <ChatFooter input={input} setInput={setInput} handleSendMessage={handleSendMessage} />
