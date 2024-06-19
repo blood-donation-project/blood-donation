@@ -22,6 +22,8 @@ router.get('/get-events-by-month', eventController.getEventByMonths);
 
 router.get('/detail-event/:id', middlewareController.verifyToken, eventController.getEventByIdEven);
 
+router.post('/invite-friends-event/:id', middlewareController.verifyToken, eventController.inviteFriends);
+
 router.post('/get-all-events', middlewareController.verifyTokenAndAdmin, eventController.getAllEvent);
 
 router.post('/delete-event-by-admin', middlewareController.verifyTokenAndAdmin, eventController.deleteEventByAdmin);

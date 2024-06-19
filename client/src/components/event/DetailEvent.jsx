@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import NavMenu from '../NavMenu';
 import BlurBackgroundImage from '../BlurBackgroundImage';
-import {
-    IoIosCheckmarkCircleOutline,
-    IoMdMail,
-    IoIosArrowUp,
-} from 'react-icons/io';
-import {
-    HiOutlinePencilSquare,
-    HiUsers,
-    HiOutlineXMark,
-} from 'react-icons/hi2';
+import { IoIosCheckmarkCircleOutline, IoMdMail, IoIosArrowUp } from 'react-icons/io';
+import { HiOutlinePencilSquare, HiUsers, HiOutlineXMark } from 'react-icons/hi2';
 import dayjs from 'dayjs';
 import { Popconfirm } from 'antd';
 import { FaUser } from 'react-icons/fa';
@@ -24,13 +16,13 @@ import {
     useGetEventByIdEventQuery,
     useJoinEventMutation,
 } from '../../Redux/features/events/eventAPI';
-import JoinEvent from './JoinEvent';
 import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 import UpdateEvent from './UpdateEvent';
 import { useGetUserRegisterMutation } from '../../Redux/features/events/eventAPI';
 import DetailJoiner from './DetailJoiner';
 import { toast } from 'react-toastify';
 import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
+import InviteFriends from './InviteFriends';
 
 const DetailEvent = () => {
     useAutoRefreshToken('/home/');
@@ -43,19 +35,16 @@ const DetailEvent = () => {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [isCheckJoin, setIsCheckJoin] = useState(false);
     const [getUser, { data: userData }] = useGetUserMutation();
-    const [checkRegisterEvent, { data: userRegisted }] =
-        useCheckRegisEventMutation();
-    const [getUserRegister, { data: userRegister }] =
-        useGetUserRegisterMutation();
+    const [checkRegisterEvent, { data: userRegisted }] = useCheckRegisEventMutation();
+    const [getUserRegister, { data: userRegister }] = useGetUserRegisterMutation();
     const [deleteEvent] = useDeleteEventMutation();
     const [cancelJoin] = useCancelJoinMutation();
     const { data, error } = useGetEventByIdEventQuery(params.id);
-    const day = data?.donationTime
-        ? dayjs(data.donationTime, 'YYYY/MM/DD').date()
-        : 'N/A';
+    const day = data?.donationTime ? dayjs(data.donationTime, 'YYYY/MM/DD').date() : 'N/A';
     // Open Popup
     const [isUpdateOpen, setIsUpdateOpen] = useState(false);
     const [isOpenDetail, setOpenDetail] = useState(false);
+    const [isOpenInvite, setOpenInvite] = useState(false);
     const [joinEvent] = useJoinEventMutation();
     useEffect(() => {
         const fetchUser = async () => {
@@ -164,18 +153,12 @@ const DetailEvent = () => {
                 <div className="lg:max-w-6xl m-auto bg-white shadow-custom-bottom rounded-b-lg z-50">
                     <div className="relative flex justify-center">
                         <div className="relative image-container">
-                            <BlurBackgroundImage
-                                className="max-w-3xl"
-                                src={data?.image}
-                                alt=""
-                            />
+                            <BlurBackgroundImage className="max-w-3xl" src={data?.image} alt="" />
                         </div>
                         <div className="absolute hidden md:flex z-30 -bottom-5 left-4 w-20 h-20  flex-col rounded-2xl shadow-lg ">
                             <div className="bg-red-500 w-full rounded-t-2xl h-5"></div>
                             <div className="bg-white h-[60px] rounded-b-2xl flex items-center justify-center">
-                                <h1 className="text-4xl font-semibold ">
-                                    {day}
-                                </h1>
+                                <h1 className="text-4xl font-semibold ">{day}</h1>
                             </div>
                         </div>
                     </div>
@@ -187,22 +170,15 @@ const DetailEvent = () => {
                             <h1>{data?.eventName}</h1>
                         </div>
                         <div className="text-[#65676B]">
-                            {data?.address?.ward}, {data?.address?.district},{' '}
-                            {data?.address?.province}
+                            {data?.address?.ward}, {data?.address?.district}, {data?.address?.province}
                         </div>
                     </div>
                     <div className="flex gap-1 items-center justify-center ssm:justify-end h-16 ">
-                        <div
-                            className={`${
-                                userData?.role === 'Cơ sở y tế' ? 'hidden' : ''
-                            } p-1`}
-                        >
+                        <div className={`${userData?.role === 'Cơ sở y tế' ? 'hidden' : ''} p-1`}>
                             {isCheckJoin ? (
                                 <Popconfirm
                                     title={'Hủy tham gia sự kiện'}
-                                    description={
-                                        'Bạn có chắc chắn muốn hủy tham gia sự kiện này không?'
-                                    }
+                                    description={'Bạn có chắc chắn muốn hủy tham gia sự kiện này không?'}
                                     open={openConfirmCancel}
                                     onConfirm={handleOkCanCel}
                                     okButtonProps={{ loading: confirmLoading }}
@@ -228,27 +204,25 @@ const DetailEvent = () => {
                                 </button>
                             )}
                         </div>
-                        <div
-                            className={`${
-                                userData?.role !== 'Cơ sở y tế' ? '' : 'hidden'
-                            } p-1`}
-                        >
-                            <button className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200">
+                        <div className={`${userData?.role !== 'Cơ sở y tế' ? '' : 'hidden'} p-1`}>
+                            <button
+                                onClick={() => setOpenInvite(!isOpenInvite)}
+                                className="px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200"
+                            >
                                 <IoMdMail className="w-6 h-6" />
                                 <p>Mời</p>
                             </button>
                         </div>
-                        <div
-                            className={`${
-                                userData?.role === 'Cơ sở y tế' ? '' : 'hidden'
-                            } p-1`}
-                        >
+                        <InviteFriends
+                            isOpen={isOpenInvite}
+                            onClose={() => setOpenInvite(false)}
+                            currentUser={userData}
+                        />
+                        <div className={`${userData?.role === 'Cơ sở y tế' ? '' : 'hidden'} p-1`}>
                             <button
                                 onClick={openPopupUpdate}
                                 className={`${
-                                    userData?._id === data?.userId
-                                        ? ''
-                                        : 'hidden'
+                                    userData?._id === data?.userId ? '' : 'hidden'
                                 } px-3 py-2 rounded-lg outline-none hover:bg-gray-300 flex items-center justify-center gap-2 bg-gray-200`}
                             >
                                 <HiOutlinePencilSquare className="w-6 h-6" />
@@ -256,31 +230,17 @@ const DetailEvent = () => {
                             </button>
                         </div>
                         {isUpdateOpen && (
-                            <UpdateEvent
-                                eventData={data}
-                                isOpen={isUpdateOpen}
-                                onClose={closePopupUpdate}
-                            />
+                            <UpdateEvent eventData={data} isOpen={isUpdateOpen} onClose={closePopupUpdate} />
                         )}
-                        <div
-                            className={`${
-                                userData?.role === 'Cơ sở y tế' ? '' : 'hidden'
-                            } p-1`}
-                        >
+                        <div className={`${userData?.role === 'Cơ sở y tế' ? '' : 'hidden'} p-1`}>
                             <Popconfirm
                                 title={'Hủy sự kiện'}
-                                description={
-                                    'Bạn có chắc chắn muốn hủy sự kiện này không?'
-                                }
+                                description={'Bạn có chắc chắn muốn hủy sự kiện này không?'}
                                 open={openConfirmDel}
                                 onConfirm={handleOk}
                                 okButtonProps={{ loading: confirmLoading }}
                                 onCancel={handleCancelDel}
-                                className={`${
-                                    userData?._id === data?.userId
-                                        ? ''
-                                        : 'hidden'
-                                }`}
+                                className={`${userData?._id === data?.userId ? '' : 'hidden'}`}
                             >
                                 <button
                                     onClick={showPopconfirmDel}
@@ -304,18 +264,12 @@ const DetailEvent = () => {
                                     <div>
                                         <div className="py-4">
                                             <div className="px-4 pb-4 pt-1">
-                                                <h2 className="text-lg font-semibold">
-                                                    Chi tiết
-                                                </h2>
+                                                <h2 className="text-lg font-semibold">Chi tiết</h2>
                                             </div>
                                             <button className="flex outline-none px-4 pt-1 pb-2 font-thin items-center hover:bg-gray-200 w-full rounded-lg gap-2">
                                                 <HiUsers className="w-5 h-5 text-gray-500" />
                                                 <div>
-                                                    <p>
-                                                        {userRegister?.data
-                                                            ?.count || 0}{' '}
-                                                        người đã tham gia
-                                                    </p>
+                                                    <p>{userRegister?.data?.count || 0} người đã tham gia</p>
                                                 </div>
                                             </button>
                                             <div className="flex px-4 py-2 font-thin items-center gap-2">
@@ -336,16 +290,8 @@ const DetailEvent = () => {
                                                 <FaLocationDot className="w-5 h-5 text-gray-500" />
                                                 <div>
                                                     <p className="font-bold">
-                                                        {data?.address?.ward},{' '}
-                                                        {
-                                                            data?.address
-                                                                ?.district
-                                                        }
-                                                        ,{' '}
-                                                        {
-                                                            data?.address
-                                                                ?.province
-                                                        }
+                                                        {data?.address?.ward}, {data?.address?.district},{' '}
+                                                        {data?.address?.province}
                                                     </p>
                                                 </div>
                                             </div>
@@ -353,30 +299,19 @@ const DetailEvent = () => {
                                                 <IoTimeSharp className="w-5 h-5 text-gray-500" />
                                                 <div>
                                                     <p>
-                                                        Khoảng thời gian:{' '}
-                                                        {data?.startTime} -{' '}
-                                                        {data?.endTime}
+                                                        Khoảng thời gian: {data?.startTime} - {data?.endTime}
                                                     </p>
                                                 </div>
                                             </div>
                                             <div className=" px-4 py-2 font-thin transition-all duration-300">
-                                                <div
-                                                    className={`${
-                                                        !showMore &&
-                                                        'line-clamp-1'
-                                                    } `}
-                                                >
+                                                <div className={`${!showMore && 'line-clamp-1'} `}>
                                                     <p>{data?.description}</p>
                                                 </div>
                                                 <button
-                                                    onClick={() =>
-                                                        setShowMore(!showMore)
-                                                    }
+                                                    onClick={() => setShowMore(!showMore)}
                                                     className="font-bold hover:underline"
                                                 >
-                                                    {showMore
-                                                        ? 'Thu gọn'
-                                                        : 'Xem thêm'}
+                                                    {showMore ? 'Thu gọn' : 'Xem thêm'}
                                                 </button>
                                             </div>
                                         </div>
@@ -390,15 +325,9 @@ const DetailEvent = () => {
                                     <div>
                                         <div className="py-4">
                                             <div className="px-4 pb-4 pt-1 flex items-center justify-between">
-                                                <h2 className="text-xl font-semibold">
-                                                    Người đã tham gia
-                                                </h2>
+                                                <h2 className="text-xl font-semibold">Người đã tham gia</h2>
                                                 <button
-                                                    onClick={() =>
-                                                        setOpenDetail(
-                                                            !isOpenDetail
-                                                        )
-                                                    }
+                                                    onClick={() => setOpenDetail(!isOpenDetail)}
                                                     className="text-blue-600 text-[16px] hover:underline"
                                                 >
                                                     Xem tất cả
@@ -407,9 +336,7 @@ const DetailEvent = () => {
                                             {isOpenDetail && (
                                                 <DetailJoiner
                                                     isOpen={isOpenDetail}
-                                                    onClose={() =>
-                                                        setOpenDetail(false)
-                                                    }
+                                                    onClose={() => setOpenDetail(false)}
                                                     userRegister={userRegister}
                                                     userData={userData}
                                                     userRegisted={userRegisted}
@@ -419,28 +346,16 @@ const DetailEvent = () => {
                                             <div className="flex px-4 pt-1 pb-2 font-thin items-center justify-center gap-2 ">
                                                 <button className="flex outline-none flex-col items-center rounded-lg justify-center px-10 py-2 bg-gray-100 hover:bg-gray-300">
                                                     <h1 className="text-xl font-bold">
-                                                        {userRegister?.data
-                                                            ?.count || 0}
+                                                        {userRegister?.data?.count || 0}
                                                     </h1>
-                                                    <h2 className="text-sm text-[#65676B]">
-                                                        Người tham gia
-                                                    </h2>
+                                                    <h2 className="text-sm text-[#65676B]">Người tham gia</h2>
                                                 </button>
                                             </div>
                                             {/* Check role */}
-                                            <div
-                                                className={`${
-                                                    userData?.role !==
-                                                    'Cơ sở y tế'
-                                                        ? ''
-                                                        : 'hidden'
-                                                }`}
-                                            >
+                                            <div className={`${userData?.role !== 'Cơ sở y tế' ? '' : 'hidden'}`}>
                                                 <div className="border-b-2 border-gray-400 mt-2"></div>
                                                 <div className="flex px-4 pt-4  font-thin items-center gap-2 ">
-                                                    <h1 className="text-xl font-bold">
-                                                        Đi cùng bạn bè
-                                                    </h1>
+                                                    <h1 className="text-xl font-bold">Đi cùng bạn bè</h1>
                                                 </div>
 
                                                 {/* Map Friends */}
@@ -459,10 +374,7 @@ const DetailEvent = () => {
                                                             </div>
                                                             <div className="flex items-center justify-between w-full">
                                                                 <div>
-                                                                    <p>
-                                                                        Lê Minh
-                                                                        Tuấn
-                                                                    </p>
+                                                                    <p>Lê Minh Tuấn</p>
                                                                 </div>
                                                                 <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
                                                                     Mời
@@ -484,10 +396,7 @@ const DetailEvent = () => {
                                                             </div>
                                                             <div className="flex items-center justify-between w-full">
                                                                 <div>
-                                                                    <p>
-                                                                        Lê Minh
-                                                                        Tuấn
-                                                                    </p>
+                                                                    <p>Lê Minh Tuấn</p>
                                                                 </div>
                                                                 <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
                                                                     Mời
@@ -508,9 +417,7 @@ const DetailEvent = () => {
                                     <div>
                                         <div className="py-1">
                                             <div className="px-4 pb-4 pt-1">
-                                                <h2 className="text-lg font-semibold">
-                                                    Gặp gỡ người tổ chức
-                                                </h2>
+                                                <h2 className="text-lg font-semibold">Gặp gỡ người tổ chức</h2>
                                             </div>
                                         </div>
                                         <div className="px-7">
@@ -522,25 +429,17 @@ const DetailEvent = () => {
                                                                 <div className="flex justify-center items-center ">
                                                                     <img
                                                                         className="w-40 h-40 rounded-full"
-                                                                        src={
-                                                                            data?.avatar
-                                                                        }
+                                                                        src={data?.avatar}
                                                                         alt=""
                                                                     />
                                                                 </div>
                                                                 <div className="text-center p-1 font-bold">
-                                                                    <h1 className="text-xl">
-                                                                        {
-                                                                            data?.username
-                                                                        }
-                                                                    </h1>
+                                                                    <h1 className="text-xl">{data?.username}</h1>
                                                                 </div>
                                                                 <div className="border-b my-2"></div>
                                                                 <div className="text-center pb-2">
                                                                     <h1 className="text-[16px] h-11">
-                                                                        {
-                                                                            data?.introduce
-                                                                        }
+                                                                        {data?.introduce}
                                                                     </h1>
                                                                 </div>
                                                                 <Link
@@ -548,10 +447,7 @@ const DetailEvent = () => {
                                                                     className="w-full py-2 bg-gray-300 flex items-center justify-center gap-3 hover:bg-gray-400 rounded-lg"
                                                                 >
                                                                     <FaRegMessage className="w-6 h-6" />
-                                                                    <h1>
-                                                                        Nhắn
-                                                                        ngay
-                                                                    </h1>
+                                                                    <h1>Nhắn ngay</h1>
                                                                 </Link>
                                                             </div>
                                                         </div>

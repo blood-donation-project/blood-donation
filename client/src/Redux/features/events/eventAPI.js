@@ -99,6 +99,13 @@ export const eventAPI = createApi({
                 body: { eventId },
             }),
         }),
+        inviteFriends: builder.mutation({
+            query: ({ friendId, eventId }) => ({
+                url: `/invite-friends-event/${eventId}`,
+                method: 'POST',
+                body: { friendId },
+            }),
+        }),
     }),
 });
 
@@ -115,6 +122,7 @@ export const {
     useGetEventByMonthsQuery,
     useGetAllEventsMutation,
     useDeleteEventByAdminMutation,
+    useInviteFriendsMutation,
 } = eventAPI;
 
 export default eventAPI;

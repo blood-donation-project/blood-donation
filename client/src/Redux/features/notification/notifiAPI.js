@@ -22,8 +22,15 @@ export const notifiAPI = createApi({
                 body: { userId },
             }),
         }),
+        getInviteEventNotifi: builder.mutation({
+            query: (type) => ({
+                url: 'get-notifications-invite-event',
+                method: 'POST',
+                body: type,
+            }),
+        }),
     }),
 });
 
-export const { useGetAllNotifiMutation } = notifiAPI;
+export const { useGetAllNotifiMutation, useGetInviteEventNotifiMutation } = notifiAPI;
 export default notifiAPI;

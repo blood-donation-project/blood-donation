@@ -2,10 +2,12 @@ const router = require('express').Router();
 const middlewareController = require('../controllers/middlewareController');
 const notificationController = require('../controllers/notificationController');
 
+router.post('/get-all-notifications', middlewareController.verifyToken, notificationController.getAllNotifi);
+
 router.post(
-    '/get-all-notifications',
+    '/get-notifications-invite-event',
     middlewareController.verifyToken,
-    notificationController.getAllNotifi
+    notificationController.getNotificationEvent,
 );
 
 module.exports = router;
