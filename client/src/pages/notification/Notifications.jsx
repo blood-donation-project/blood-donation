@@ -3,6 +3,7 @@ import NavMenu from '../../components/NavMenu';
 import { useGetAllNotifiMutation } from '../../Redux/features/notification/notifiAPI';
 import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 const Notification = () => {
     const [activeId, setActiveId] = useState('1');
@@ -69,7 +70,10 @@ const Notification = () => {
                             {/* Map dữ liệu thông báo từ api */}
                             {notifiData?.map((item, index) => (
                                 <div key={index} className="grid pt-6">
-                                    <div className="flex hover:cursor-pointer hover:bg-[#ebedf0] px-2 py-2 rounded">
+                                    <Link
+                                        to={item?.content?.link && item?.content?.link}
+                                        className="flex hover:cursor-pointer hover:bg-[#ebedf0] px-2 py-2 rounded"
+                                    >
                                         {item?.content?.image && (
                                             <div>
                                                 <img
@@ -87,7 +91,7 @@ const Notification = () => {
 
                                             <span className="text-[12px]">{moment(item.createAt).fromNow()}</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </div>
                             ))}
                         </div>
