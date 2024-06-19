@@ -301,7 +301,7 @@ const NavMenu = () => {
                         }}
                         visible={isShowingNotify}
                         render={(attrs) => (
-                            <div className="bg-white shadow-md w-[340px] rounded-[10px]" tabIndex="-1" {...attrs}>
+                            <div className="bg-white shadow-md w-[340px]  rounded-[10px]" tabIndex="-1" {...attrs}>
                                 <div className="p-2">
                                     <h1 className="text-[20px] font-bold">Thông báo</h1>
                                     <div className="flex mt-2">
@@ -322,27 +322,32 @@ const NavMenu = () => {
                                     </div>
                                     {/* Map dữ liệu thông báo từ api */}
 
-                                    {notifiData?.map((item, index) => (
-                                        <div key={index} className="grid pt-4">
-                                            <div className="flex">
-                                                {item?.avatar && (
-                                                    <div>
-                                                        <img
-                                                            className="w-9 h-9 rounded-[50%]"
-                                                            src={item?.avatar}
-                                                            alt="avatar"
+                                    <div className="max-h-[500px] overflow-y-auto">
+                                        {notifiData?.map((item, index) => (
+                                            <div key={index} className="grid pt-4">
+                                                <div className="flex">
+                                                    {item?.content?.image && (
+                                                        <div>
+                                                            <img
+                                                                className="w-9 h-9 rounded-[50%]"
+                                                                src={item?.content?.image}
+                                                                alt="avatar"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    <div className=" hover:bg-slate-100 p-2 rounded-md cursor-default">
+                                                        <p
+                                                            className="text-[14px] leading-[14px] "
+                                                            dangerouslySetInnerHTML={{ __html: item.content.text }}
                                                         />
+                                                        <span className="text-[12px]">
+                                                            {moment(item?.createAt).fromNow()}
+                                                        </span>
                                                     </div>
-                                                )}
-                                                <div className="ml-2">
-                                                    <p className="text-[14px] leading-[14px]">{item?.content}</p>
-                                                    <span className="text-[12px]">
-                                                        {moment(item?.createAt).fromNow()}
-                                                    </span>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}

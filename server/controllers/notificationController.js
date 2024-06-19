@@ -5,7 +5,7 @@ const notificationController = {
     getAllNotifi: async (req, res) => {
         try {
             const { userId } = req.body;
-            const result = await Notification.find({ userId: userId });
+            const result = await Notification.find({ userId: userId }).sort({ createAt: -1 });
             res.status(200).json(result);
         } catch (error) {
             console.log(error);

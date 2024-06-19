@@ -28,7 +28,8 @@ const Notification = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await getNotification(userData?._id).unwrap();
+                const notifications = await getNotification(userData?._id).unwrap();
+                console.log('Notifications:', notifications); // Log dữ liệu để kiểm tra
             } catch (error) {
                 console.log(error);
             }
@@ -39,9 +40,9 @@ const Notification = () => {
     return (
         <>
             <NavMenu />
-            <div className="flex justify-center xs:mt-[96px] md:mt-[50px] py-3  min-h-screen bg-[#f0f2f5] ">
+            <div className="flex justify-center xs:mt-[96px] md:mt-[50px] py-3 min-h-screen bg-[#f0f2f5]">
                 {/* Content */}
-                <div className=" xs:w-full h-fit md:w-[680px] md:px-4 bg-white shadow-md  md:rounded-[10px]">
+                <div className="xs:w-full h-fit md:w-[680px] md:px-4 bg-white shadow-md md:rounded-[10px]">
                     <div className="">
                         <div className="p-2">
                             <h1 className="text-[22px] font-bold">Thông báo</h1>
@@ -66,22 +67,25 @@ const Notification = () => {
                                 </div>
                             </div>
                             {/* Map dữ liệu thông báo từ api */}
-
                             {notifiData?.map((item, index) => (
                                 <div key={index} className="grid pt-6">
                                     <div className="flex hover:cursor-pointer hover:bg-[#ebedf0] px-2 py-2 rounded">
-                                        {item?.avatar && (
+                                        {item?.content?.image && (
                                             <div>
                                                 <img
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src={item?.avatar}
+                                                    src={item?.content?.image}
                                                     alt="avatar"
                                                 />
                                             </div>
                                         )}
                                         <div className="ml-2">
-                                            <p className="text-[14px] leading-[14px]">{item?.content}</p>
-                                            <span className="text-[12px]">{moment(item?.createAt).fromNow()}</span>
+                                            <div
+                                                className="text-[14px] leading-[14px] hover:bg-slate-200 p-1"
+                                                dangerouslySetInnerHTML={{ __html: item.content.text }}
+                                            />
+
+                                            <span className="text-[12px]">{moment(item.createAt).fromNow()}</span>
                                         </div>
                                     </div>
                                 </div>

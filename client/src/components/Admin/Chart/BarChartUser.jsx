@@ -31,6 +31,9 @@ const BarChartUser = () => {
                         {
                             label: 'Người dùng',
                             data: [], // Khởi tạo mảng dữ liệu trống
+                            backgroundColor: 'rgba(186, 220, 212, 1)',
+                            borderColor: 'rgba(0, 120, 180, 1)',
+                            borderWidth: 2,
                         },
                     ],
                 },
@@ -46,14 +49,8 @@ const BarChartUser = () => {
                         },
                         delay: (context) => {
                             let delay = 0;
-                            if (
-                                context.type === 'data' &&
-                                context.mode === 'default' &&
-                                !delayed
-                            ) {
-                                delay =
-                                    context.dataIndex * 300 +
-                                    context.datasetIndex * 100;
+                            if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                                delay = context.dataIndex * 300 + context.datasetIndex * 100;
                             }
                             return delay;
                         },
@@ -65,14 +62,8 @@ const BarChartUser = () => {
     }, [chartInstance]);
 
     useEffect(() => {
-        if (
-            chartInstance &&
-            getUserByMonths?.usersByMonth &&
-            chartRef.current
-        ) {
-            const userData = getUserByMonths.usersByMonth.map(
-                (item) => item?.count
-            );
+        if (chartInstance && getUserByMonths?.usersByMonth && chartRef.current) {
+            const userData = getUserByMonths.usersByMonth.map((item) => item?.count);
             chartInstance.data.datasets[0].data = userData;
             chartInstance.update();
         }
