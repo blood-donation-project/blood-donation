@@ -31,8 +31,8 @@ const DetailEvent = () => {
     useAutoRefreshToken('/home/');
     const [inviteFriend] = useInviteFriendsMutation();
     const [getNotification] = useGetInviteEventNotifiMutation();
-    const [getAllFriends, { data: friends }] = useGetAllFriendsMutation();
     const [localNotificationData, setLocalNotificationData] = useState([]);
+    const [getAllFriends, { data: friends }] = useGetAllFriendsMutation();
     const [showMore, setShowMore] = useState(false);
     const params = useParams();
     const navigate = useNavigate();
@@ -106,6 +106,8 @@ const DetailEvent = () => {
             );
         });
     };
+
+
     useEffect(() => {
         try {
             const fetchData = async () => {

@@ -7,7 +7,9 @@ router.post('/get-all-notifications', middlewareController.verifyToken, notifica
 router.post(
     '/get-notifications-invite-event',
     middlewareController.verifyToken,
-    notificationController.getNotificationEvent,
+    notificationController.getNotificationByType,
 );
+
+router.post('/request-help', middlewareController.verifyToken, notificationController.notifiHelp);
 
 module.exports = router;
