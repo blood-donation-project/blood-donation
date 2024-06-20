@@ -120,7 +120,7 @@ async function sendEmailForgotPassword(email, name, url) {
             <body>
                 <div class="container">
                     <div class="header">
-                        <img src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1718876640/news_images/Blood_donation_bdssra.svg" alt="Blood Donation Logo">
+                        <img src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1718878055/news_images/Untitled_design_3_tfe68y.png" alt="Blood Donation Logo">
                         <h1>Xin chào 👋 ${name}</h1> 
                     </div>
             
@@ -178,7 +178,7 @@ async function sendEmailRequestHelp(email, emailNeeder, phoneNeeder, name, helpe
             <body>
                 <div class="container">
                     <div class="header">
-                        <img src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1718876640/news_images/Blood_donation_bdssra.svg" alt="Blood Donation Logo">
+                        <img src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1718878055/news_images/Untitled_design_3_tfe68y.png" alt="Blood Donation Logo">
                         <h1>Xin chào ${helper} 👋, bạn nhận được một yêu cầu hỗ trợ hiến máu từ ${name}</h1>
                     </div>
                     <div class="content">
