@@ -17,10 +17,24 @@ import {
 } from '../../Redux/features/friend/friendAPI';
 import { updateAuthorPosts } from '../../Redux/features/post/postSlice';
 import { updateOtherUser } from '../../Redux/features/user/userSlice';
+import { useEffect } from 'react';
+import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 
 const UserPreview = ({ userData }) => {
-    const { user } = useSelector((state) => state.user);
     const dispatch = useDispatch();
+
+    const [getUser, { data: getdataUser }] = useGetUserMutation();
+
+    useEffect(() => {
+        const fetchData = async (req, res) => {
+            try {
+                await getUser().unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getUser]);
 
     const [cancelFriendRequest] = useCancelFriendRequestMutation();
     const [sendFriendRequest] = useSendFriendRequestMutation();
@@ -85,7 +99,7 @@ const UserPreview = ({ userData }) => {
                 </div>
             </div>
             {/*  */}
-            {user.role === 'Cơ sở y tế' ? (
+            {getdataUser?.role === 'Cơ sở y tế' ? (
                 <div>
                     {userData.role === 'Cơ sở y tế' ? (
                         <div className="flex justify-between mt-2">
@@ -109,10 +123,13 @@ const UserPreview = ({ userData }) => {
                                 </button>
                             )}
 
-                            <button className="flex-center w-[49%] py-1 bg-[#386fd6] rounded-[4px] text-white hover:bg-[#1c5291]">
+                            <Link
+                                className="flex-center w-[49%] py-1 bg-[#386fd6] rounded-[4px] text-white hover:bg-[#1c5291]"
+                                to={`/message/${userData._id}`}
+                            >
                                 <FaFacebookMessenger />
                                 <span className="ml-2">Nhắn tin</span>
-                            </button>
+                            </Link>
                         </div>
                     ) : (
                         <div className="flex justify-between mt-2">

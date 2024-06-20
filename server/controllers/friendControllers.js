@@ -1,9 +1,11 @@
 const User = require('../models/user');
 const Friends = require('../models/friends');
 const FriendRequest = require('../models/friendRequests');
+const Notification = require('../models/notifications');
 const mongoose = require('mongoose');
 
 const createPagination = require('../utils/pagination/createPagination');
+const { link } = require('../routes/friend');
 
 const friendControllers = {
     getSuggestedUsers: async (req, res) => {
@@ -273,6 +275,7 @@ const friendControllers = {
             const senderId = req.user.id;
             const { receiverId } = req.body;
 
+            const dbSender = await User.findById(senderId).select('-password');
             const dbReceiver = await User.findById(receiverId).select('-password');
 
             const existingSendRequest = await FriendRequest.findOne({
@@ -321,6 +324,24 @@ const friendControllers = {
                 senderId,
                 receiverId,
             });
+
+            if (dbFriendRequest) {
+                const existingRequest = await Notification.findOne({
+                    userId: receiverId,
+                    type: `FriendRequest_null_${dbSender._id}`,
+                });
+                if (!existingRequest) {
+                    await Notification.create({
+                        userId: receiverId,
+                        content: {
+                            text: `<p><strong>${dbSender.username}</strong> đã gửi cho bạn lời mời kết bạn</p>`,
+                            link: `/friends/requests`,
+                            image: dbSender.avatar,
+                        },
+                        type: `FriendRequest_null_${dbSender._id}`,
+                    });
+                }
+            }
 
             res.status(201).json({
                 ...dbReceiver._doc,
@@ -455,6 +476,8 @@ const friendControllers = {
         try {
             const senderId = req.user.id;
             const { receiverId } = req.body;
+
+            const dbSender = await User.findById(senderId).select('-password');
             const dbReceiver = await User.findOne({
                 _id: receiverId,
                 role: 'Cơ sở y tế',
@@ -472,10 +495,30 @@ const friendControllers = {
                 return res.status(400).json({ error: 'Follow request already sent' });
             }
 
-            await Friends.create({
+            const dbFollow = await Friends.create({
                 userId1: senderId,
                 userId2: receiverId,
             });
+
+            if (dbFollow) {
+                const existingNotifi = await Notification.findOne({
+                    userId: receiverId,
+                    'content.link': `/user/${dbSender._id}`,
+                    type: `Follow_null_${dbSender._id}`,
+                });
+
+                if (!existingNotifi) {
+                    await Notification.create({
+                        userId: receiverId,
+                        content: {
+                            text: `<p><strong>${dbSender.username}</strong> đã bắt đầu theo dõi bạn</p>`,
+                            link: `/user/${dbSender._id}`,
+                            image: dbSender.avatar,
+                        },
+                        type: `Follow_null_${dbSender._id}`,
+                    });
+                }
+            }
 
             res.status(201).json({
                 ...dbReceiver._doc,
@@ -513,6 +556,45 @@ const friendControllers = {
             res.status(500).json({ error: 'An error occurred while rejecting friend request' });
         }
     },
+    searchMyFriends: async (req, res) => {
+        try {
+            const userId = req.user.id;
+            const q = req.query.q;
+
+            const dbUsers = await User.find({
+                _id: { $ne: userId },
+                $text: { $search: q },
+            }).select('-password');
+
+            const friends = await Friends.find({
+                $or: [{ userId1: userId }, { userId2: userId }],
+            });
+            const friendIds = friends.map((friend) =>
+                friend.userId1.toString() === userId ? friend.userId2.toString() : friend.userId1.toString(),
+            );
+
+            const formattedResults = [];
+
+            dbUsers.forEach(async (user) => {
+                const isFriend = friendIds.includes(user._id.toString());
+                if (isFriend) {
+                    formattedResults.push({
+                        ...user._doc,
+                        isFriend: isFriend ? true : false,
+                        friendRequest: {},
+                    });
+                }
+            });
+
+            return res.status(200).json(formattedResults);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                errors: error.errors,
+            });
+        }
+    },
+
     // getFollowers: async (req, res) => {
     //     try {
     //         const userId = req.user.id;

@@ -18,9 +18,10 @@ const FriendsPage = () => {
     const [hasMore, setHasMore] = useState(false);
 
     const [getAllFriends, { isLoading }] = useGetAllFriendsMutation();
+
     const fetchFriends = async (page) => {
         await getAllFriends({
-            userId: user._id,
+            userId: user?._id,
             limit: 15,
             page: page || 1,
         })
@@ -32,8 +33,12 @@ const FriendsPage = () => {
 
     useEffect(() => {
         dispatch(resetFriends());
-        fetchFriends();
     }, []);
+    useEffect(() => {
+        if (user?._id) {
+            fetchFriends();
+        }
+    }, [user?._id]);
 
     useEffect(() => {
         if (pagination?.links.next) {

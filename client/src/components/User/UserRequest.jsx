@@ -34,21 +34,21 @@ const UserRequest = ({ className, userData }) => {
                     <Avatar className="object-cover w-full h-full aspect-square " src={userData.avatar} />
                 </Link>
                 <div className="p-2 shadow-sm">
-                    <Link className="text-[14px] font-semibold" to={`/user/${userData._id}`}>
+                    <Link className="text-[16px] font-semibold" to={`/user/${userData._id}`}>
                         {userData.username}
                     </Link>
                     {userData.friendRequest.status === 'pending' ? (
                         <div className="flex flex-col">
                             <button
                                 type="button"
-                                className="rounded py-1 text-[14px] hover:bg-[#1c5291] text-white font-medium bg-[#386fd6]"
+                                className="rounded py-1 text-[16px] hover:bg-[#1c5291] text-white font-medium bg-[#386fd6]"
                                 onClick={handleAcceptFriendRequest}
                             >
                                 Xác nhận
                             </button>
                             <button
                                 type="button"
-                                className="rounded py-1 text-[14px] mt-2 bg-[#ebedf0;] hover:bg-[#d2d2d2] "
+                                className="rounded py-1 text-[16px] mt-2 bg-[#ebedf0;] hover:bg-[#d2d2d2] "
                                 onClick={handleRejectFriendRequest}
                             >
                                 Từ chối
@@ -56,14 +56,14 @@ const UserRequest = ({ className, userData }) => {
                         </div>
                     ) : userData.friendRequest.status === 'rejected' ? (
                         <div className="flex flex-col">
-                            <span className="text-[14px] text-[#65676B]">Đã gỡ lời mời </span>
+                            <span className="text-[16px] text-[#65676B]">Đã gỡ lời mời </span>
                         </div>
                     ) : (
                         <div className="flex flex-col">
                             <Link
                                 to={`/user/${userData._id}`}
                                 type="button"
-                                className="rounded py-1 text-[14px] mt-2 bg-[#ebedf0] flex-center border border-[#ccc] font-medium hover:bg-[#d2d2d2] "
+                                className="rounded py-1 text-[16px] mt-2 bg-[#ebedf0] flex-center border border-[#ccc] font-medium hover:bg-[#d2d2d2] "
                             >
                                 Trang cá nhân
                             </Link>

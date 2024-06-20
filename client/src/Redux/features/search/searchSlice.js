@@ -21,6 +21,11 @@ const searchSlice = createSlice({
             const findIndex = state.postsData.findIndex((post) => post._id === postData._id);
             state.postsData[findIndex] = postData;
         },
+        updateOneSearchUserData: (state, action) => {
+            const postData = action.payload;
+            const findIndex = state.postsData.findIndex((post) => post._id === postData._id);
+            state.postsData[findIndex] = postData;
+        },
         resetSearchPostsData: (state, _) => {
             return {
                 ...state,
@@ -30,7 +35,7 @@ const searchSlice = createSlice({
         resetSearchUsersData: (state, _) => {
             return {
                 ...state,
-                userData: [],
+                usersData: [],
             };
         },
         resetSurroundingUsersData: (state, _) => {

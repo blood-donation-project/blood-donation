@@ -12,7 +12,7 @@ const UserDonateBlood = ({ className, userData }) => {
     };
     return (
         <div className="bg-white rounded-[8px] overflow-hidden ">
-            <Link className={className}>
+            <Link className={className} to={`/user/${userData._id}`}>
                 <Tippy
                     interactive={true}
                     placement="bottom-start"
@@ -36,7 +36,7 @@ const UserDonateBlood = ({ className, userData }) => {
                         />
 
                         <div className="flex flex-col justify-center p-2">
-                            <h4 className="text-[15px] font-semibold">{userData.username}</h4>
+                            <h4 className="text-[16px] font-semibold">{userData.username}</h4>
                             <div className="text-[12px] text-[#65676B] flex items-center">
                                 <MdBloodtype />
                                 <span className="ml-1">{userData.bloodGroup || 'Không xác định'}</span>

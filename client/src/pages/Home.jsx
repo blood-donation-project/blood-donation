@@ -93,7 +93,6 @@ const HomePage = () => {
                 setPagination(res.pagination);
             });
     }, [page]);
-
     // Get suggested adnd friends
     useEffect(() => {
         dispatch(resetFriends());
@@ -108,9 +107,10 @@ const HomePage = () => {
                 console.error('Failed to fetch data:', error);
             }
         };
-
-        fetchUsersAndFriends();
-    }, [getSuggestedUsers, getAllFriends]);
+        if (getdataUser?._id) {
+            fetchUsersAndFriends();
+        }
+    }, [getSuggestedUsers, getAllFriends, getdataUser?._id]);
 
     useEffect(() => {
         dispatch(resetHomePagePosts());
@@ -154,7 +154,7 @@ const HomePage = () => {
                                         />
                                     </div>
                                     <div className="ml-2">
-                                        <p className="text-[14px] font-semibold leading-[14px]">
+                                        <p className="text-[16px] font-medium leading-[14px]">
                                             {getdataUser?.username}
                                         </p>
                                     </div>
@@ -170,7 +170,7 @@ const HomePage = () => {
                                                 {nav.icon}
                                             </div>
                                             <div className="ml-2">
-                                                <p className="text-[14px] font-semibold leading-[14px]">{nav.title}</p>
+                                                <p className="text-[16px] font-medium leading-[14px]">{nav.title}</p>
                                             </div>
                                         </Link>
                                     );
@@ -182,7 +182,7 @@ const HomePage = () => {
                                 followers.length > 0 && (
                                     <div className="py-2 border-t border-t-[#ccc] pl-2 grid">
                                         <div className="pl-4">
-                                            <Link className="font-semibold text-[15px] text-[#65676B]" to={'/friends'}>
+                                            <Link className="font-semibold text-[17px] text-[#65676B]" to={'/friends'}>
                                                 Cơ sở y tế đang theo dõi
                                             </Link>
                                         </div>
@@ -203,7 +203,7 @@ const HomePage = () => {
                                                             />
                                                         </div>
                                                         <div className="ml-2">
-                                                            <p className="text-[14px] font-semibold leading-[14px]">
+                                                            <p className="text-[16px] font-medium leading-[14px]">
                                                                 {follower.username}
                                                             </p>
                                                         </div>
@@ -240,7 +240,7 @@ const HomePage = () => {
                                     onClick={showModal}
                                 >
                                     <GoPlusCircle />
-                                    <span className="ml-1 font-semibold text-[15px] text-[#65676B]">
+                                    <span className="ml-1 font-semibold text-[17px] text-[#65676B]">
                                         Tạo bài viết mới
                                     </span>
                                 </div>
@@ -278,54 +278,61 @@ const HomePage = () => {
                     <div className="xs:hidden h-screen  md:block sm:w-[240px] lg:w-[360px]">
                         <div className="xs:hidden sm:block sm:w-[240px] lg:w-[360px] hide-scrollbar  show-scrollbar-on-hover overflow-y-scroll h-screen  py-3 fixed top-[56px] right-0  bg-[#f0f2f5]">
                             {/* List người dùng gợi ý */}
-                            <div className="pb-1 pt-2 ">
-                                <div className="pl-4">
-                                    <Link className="font-semibold text-[15px] text-[#65676B]" to={'/friends/suggests'}>
-                                        Gợi ý cho bạn
-                                    </Link>
+                            {getdataUser?.role !== 'Cơ sở y tế' && (
+                                <div className="pb-1 pt-2 ">
+                                    <div className="pl-4">
+                                        <Link
+                                            className="font-semibold text-[17px] text-[#65676B]"
+                                            to={'/friends/suggests'}
+                                        >
+                                            Gợi ý cho bạn
+                                        </Link>
+                                    </div>
+                                    <div className=" py-2 pl-2 grid">
+                                        {isLoadingSuggestedUsers ? (
+                                            <UserSuggestLoading />
+                                        ) : (
+                                            suggestedFriends.map((suggestedFriend, index) => {
+                                                return (
+                                                    <Link
+                                                        className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md"
+                                                        key={index}
+                                                        to={`/user/${suggestedFriend._id}`}
+                                                    >
+                                                        <div>
+                                                            <Avatar
+                                                                className="w-9 h-9 rounded-[50%] border border-[#ccc]"
+                                                                src={suggestedFriend.avatar}
+                                                                alt="avatar"
+                                                            />
+                                                        </div>
+                                                        <div className="ml-2">
+                                                            <p className="text-[16px] font-medium leading-[12px]">
+                                                                {suggestedFriend.username}
+                                                            </p>
+                                                            <span className="text-[11px] text-[#65676B]">
+                                                                Gợi ý cho bạn
+                                                            </span>
+                                                        </div>
+                                                    </Link>
+                                                );
+                                            })
+                                        )}
+                                    </div>
                                 </div>
-                                <div className=" py-2 pl-2 grid">
-                                    {isLoadingSuggestedUsers ? (
-                                        <UserSuggestLoading />
-                                    ) : (
-                                        suggestedFriends.map((suggestedFriend, index) => {
-                                            return (
-                                                <Link
-                                                    className="flex items-center hover:bg-[#ebedf0] pl-2 py-1.5 rounded-md"
-                                                    key={index}
-                                                    to={`/user/${suggestedFriend._id}`}
-                                                >
-                                                    <div>
-                                                        <Avatar
-                                                            className="w-9 h-9 rounded-[50%] border border-[#ccc]"
-                                                            src={suggestedFriend.avatar}
-                                                            alt="avatar"
-                                                        />
-                                                    </div>
-                                                    <div className="ml-2">
-                                                        <p className="text-[14px] font-semibold leading-[12px]">
-                                                            {suggestedFriend.username}
-                                                        </p>
-                                                        <span className="text-[11px] text-[#65676B]">
-                                                            Gợi ý cho bạn
-                                                        </span>
-                                                    </div>
-                                                </Link>
-                                            );
-                                        })
-                                    )}
-                                </div>
-                            </div>
+                            )}
                             {/* List bạn bè  */}
 
                             {isLoadingAllFriends ? (
                                 <UserFriendLoading />
                             ) : (
                                 friends.length > 0 && (
-                                    <div className="py-2 border-t border-t-[#ccc]">
+                                    <div
+                                        className={`${getdataUser?.role === 'Cơ sở y tế' ? 'py-2 ' : 'py-2 border-t border-t-[#ccc]'}`}
+                                    >
                                         <div className="pl-4">
-                                            <Link className="font-semibold text-[15px] text-[#65676B]" to={'/friends'}>
-                                                Bạn bè
+                                            <Link className="font-semibold text-[17px] text-[#65676B]" to={'/friends'}>
+                                                {getdataUser?.role === 'Cơ sở y tế' ? 'Người dùng theo dõi' : 'Bạn bè'}
                                             </Link>
                                         </div>
 
@@ -345,7 +352,7 @@ const HomePage = () => {
                                                             />
                                                         </div>
                                                         <div className="ml-2">
-                                                            <p className="text-[14px] font-semibold leading-[14px]">
+                                                            <p className="text-[16px] font-medium leading-[14px]">
                                                                 {friend.username}
                                                             </p>
                                                         </div>

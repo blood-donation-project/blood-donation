@@ -110,7 +110,7 @@ const CreatePost = ({ hideModal }) => {
                         <Avatar className="w-9 h-9 rounded-[50%] border border-[#ccc]" src={user.avatar} alt="avatar" />
                     </div>
                     <div className="ml-2">
-                        <p className="text-[14px] font-semibold leading-[14px]">{user.username}</p>
+                        <p className="text-[16px] font-semibold leading-[14px]">{user.username}</p>
                         <div className="bg-[#e4e6eb] px-1 rounded-md mt-1 flex items-center text-[#65676B]">
                             <TiWorld />
                             <span className="text-[12px] font-semibold ml-1 ">Bài viết của bạn sẽ đăng công khai</span>
@@ -123,7 +123,7 @@ const CreatePost = ({ hideModal }) => {
                         <TextareaAutosize
                             ref={inputRef}
                             value={postContent.textContent}
-                            className="w-full bg-transparent px-2 py-1 outline-none resize-none text-[14px]"
+                            className="w-full bg-transparent px-2 py-1 outline-none resize-none text-[16px]"
                             placeholder={getLastName(user.username) + ' ơi, bạn đang nghĩ gì thế?'}
                             onChange={onChangeTextContent}
                         />
@@ -164,7 +164,7 @@ const CreatePost = ({ hideModal }) => {
                 <div className=" xs:absolute xs:bottom-0 xs:left-0 xs:right-0 rounded-b-[10px] h-[120px] border-t boder-t-[#ababab]  bg-white py-2 px-2">
                     <div className="border border-[#ccc] rounded-[8px] px-2 py-3">
                         <div className="flex items-center">
-                            <span className="text-[14px] font-semibold">Thêm vào bài viết của bạn</span>
+                            <span className="text-[16px] font-semibold">Thêm vào bài viết của bạn</span>
                             <div className="flex ml-4">
                                 <label
                                     className="relative mr-2 cursor-pointer text-[18px] text-green-500 p-1 rounded-[50%] hover:bg-[#ebedf0]"
@@ -179,9 +179,6 @@ const CreatePost = ({ hideModal }) => {
                                         onChange={handleImageChange}
                                     />
                                 </label>
-                                <div className="mr-2 cursor-pointer text-[18px] text-orange-500 p-1 rounded-[50%] hover:bg-[#ebedf0]">
-                                    <MdInsertEmoticon />
-                                </div>
                             </div>
                         </div>
                     </div>

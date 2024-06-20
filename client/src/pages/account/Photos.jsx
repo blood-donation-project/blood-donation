@@ -62,84 +62,76 @@ const PhotosPage = () => {
     return (
         <>
             <NavMenu />
-            <div className="mt-[56px]  ">
-                <div className="max-w-[1150px] mx-auto px-4 ">
-                    <ProfileOverview />
-                </div>
-                {/* Body content */}
-                <div className="bg-gray-200 pt-4 pb-10  min-h-[calc(100vh_-_636px)]">
-                    <div className="max-w-[1150px] mx-auto  md:px-4">
-                        <div className="bg-white p-4 md:rounded-lg overflow-hidden">
-                            {/*  */}
-                            <div className="flex">
-                                <div>
-                                    <h3 className="text-[18px] font-bold">Ảnh</h3>
-                                </div>
-                            </div>
 
-                            {/*  */}
-                            <div className="mt-4">
-                                <div>
-                                    {/* Map photos data here */}
-                                    {isLoading ? (
-                                        <div className="xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-6 rounded-[8px] overflow-hidden grid   gap-1">
-                                            {new Array(9).fill(0).map((_, i) => {
-                                                return (
-                                                    <div className=" aspect-square cursor-pointer" key={i}>
-                                                        <Skeleton className="w-full h-full" />
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : (
-                                        <InfiniteScroll
-                                            className="xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-6 rounded-[8px] overflow-hidden grid   gap-1"
-                                            dataLength={photos.length}
-                                            next={() => {
-                                                fetchPhotos(pagination?.currentPage + 1);
-                                            }}
-                                            hasMore={hasMore}
-                                            loader={new Array(9).fill(0).map((img, i) => {
-                                                return (
-                                                    <div className=" aspect-square cursor-pointer" key={i}>
-                                                        <Skeleton className="w-full h-full" />
-                                                    </div>
-                                                );
-                                            })}
-                                            scrollThreshold="100px"
-                                        >
-                                            {photos.map((img, i) => {
-                                                return (
-                                                    <div
-                                                        className=" aspect-square cursor-pointer"
-                                                        key={i}
-                                                        onClick={() => {
-                                                            showViewImageModal(img);
-                                                        }}
-                                                    >
-                                                        <Image
-                                                            className=" object-cover w-full h-full"
-                                                            src={img}
-                                                            alt=""
-                                                        />
-                                                    </div>
-                                                );
-                                            })}
-                                        </InfiniteScroll>
-                                    )}
-                                    {!isLoading && photos.length === 0 && (
-                                        <div className="flex-center">
-                                            <span className="text-[#65676B] font-medium">
-                                                Hiện chưa có ảnh nào được đăng tải
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
+            <div className="bg-gray-200 pt-4 pb-10  min-h-[calc(100vh_-_636px)]">
+                <div className="max-w-[1150px] mx-auto  md:px-4">
+                    <div className="bg-white p-4 md:rounded-lg overflow-hidden">
+                        {/*  */}
+                        <div className="flex">
+                            <div>
+                                <h3 className="text-[18px] font-bold">Ảnh</h3>
+                            </div>
+                        </div>
+
+                        {/*  */}
+                        <div className="mt-4">
+                            <div>
+                                {/* Map photos data here */}
+                                {isLoading ? (
+                                    <div className="xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-6 rounded-[8px] overflow-hidden grid   gap-1">
+                                        {new Array(9).fill(0).map((_, i) => {
+                                            return (
+                                                <div className=" aspect-square cursor-pointer" key={i}>
+                                                    <Skeleton className="w-full h-full" />
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <InfiniteScroll
+                                        className="xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-6 rounded-[8px] overflow-hidden grid   gap-1"
+                                        dataLength={photos.length}
+                                        next={() => {
+                                            fetchPhotos(pagination?.currentPage + 1);
+                                        }}
+                                        hasMore={hasMore}
+                                        loader={new Array(9).fill(0).map((img, i) => {
+                                            return (
+                                                <div className=" aspect-square cursor-pointer" key={i}>
+                                                    <Skeleton className="w-full h-full" />
+                                                </div>
+                                            );
+                                        })}
+                                        scrollThreshold="100px"
+                                    >
+                                        {photos.map((img, i) => {
+                                            return (
+                                                <div
+                                                    className=" aspect-square cursor-pointer"
+                                                    key={i}
+                                                    onClick={() => {
+                                                        showViewImageModal(img);
+                                                    }}
+                                                >
+                                                    <Image className=" object-cover w-full h-full" src={img} alt="" />
+                                                </div>
+                                            );
+                                        })}
+                                    </InfiniteScroll>
+                                )}
+                                {!isLoading && photos.length === 0 && (
+                                    <div className="flex-center">
+                                        <span className="text-[#65676B] font-medium">
+                                            Hiện chưa có ảnh nào được đăng tải
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <ModalWrapper
                 hideModal={hideViewImageModal}
                 isShowing={isShowingViewImageModal}

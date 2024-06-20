@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
 
 import Tippy from '@tippyjs/react/headless';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, NavLink, useLocation, useNavigate, useActionData } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
 import { TiHome } from 'react-icons/ti';
 import { MdEvent, MdLogout } from 'react-icons/md';
-import { FaRegNewspaper, FaArrowLeftLong } from 'react-icons/fa6';
+import { FaArrowLeftLong } from 'react-icons/fa6';
 import { PiUsersThree } from 'react-icons/pi';
 
 import { FaFacebookMessenger, FaSpinner } from 'react-icons/fa';
 import { FiMenu } from 'react-icons/fi';
 
 import { useSearchUsersMutation } from '../Redux/features/search/searchAPI';
-import { setUsersSearch } from '../Redux/features/search/searchSlice';
 import UserSearch from './User/UserSearch';
 import ModalWrapper from './Modal/ModalWrapper';
 import Image from './Image/Image';
@@ -32,39 +30,54 @@ import { MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { useGetAllNotifiMutation } from '../Redux/features/notification/notifiAPI';
 import moment from 'moment';
+import { useGetUserMutation } from '../Redux/features/user/userAPI';
+import axios from 'axios';
 const NavMenu = () => {
     useAutoRefreshToken('/api/user/get-user');
     const [logOut] = useLogoutMutation();
-    const [getNotification, { data: notifiData }] = useGetAllNotifiMutation();
+    const [getNotification, { isLoading: isLoadingNotifi, data: notifiData }] = useGetAllNotifiMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
     const [searchText, setSearchText] = useState('');
     const [isShowingSearchResults, setIsShowingSearchResults] = useState(false);
     const [isShowingNotify, setIsShowingNotify] = useState(false);
+    const [searchResult, setSearchResult] = useState([]);
 
     const [isShowingAccountControl, setIsShowingAccountControl] = useState(false);
 
     const [isShowingSearchMobile, setIsShowingSearchMobile] = useState(false);
     const [isShowingMobileMenu, setIsShowingMobileMenu] = useState(false);
-    const [activeId, setActiveId] = useState('1');
 
-    const { user } = useSelector((state) => state.user);
-    const { usersData } = useSelector((state) => state.search);
     const [searchUsers, { isLoading }] = useSearchUsersMutation();
+    const [getUser, { data: getdataUser }] = useGetUserMutation();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await getNotification(user?._id).unwrap();
+                await getNotification(getdataUser?._id).unwrap();
             } catch (error) {
                 console.log(error);
             }
         };
         fetchData();
-    }, [getNotification, user?._id]);
+    }, [getNotification, getdataUser?._id]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getUser().unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getUser]);
+
+    // useEffect(() => {
+    //     setSearchResult(searchUsers);
+    // }, [searchUsers]);
 
     const [getReceiver, { data: receiverMessage }] = useGetReceiverMutation();
     const params = useParams();
@@ -95,11 +108,6 @@ const NavMenu = () => {
             icon: <MdEvent className="text-[28px] " />,
             mainPath: 'events',
         },
-        {
-            path: '/news',
-            icon: <FaRegNewspaper className="text-[28px] " />,
-            mainPath: 'news',
-        },
     ];
 
     const debounce = useDebounce(searchText, 500);
@@ -108,17 +116,26 @@ const NavMenu = () => {
         if (!debounce) {
             return;
         }
-        searchUsers({ q: debounce, limit: 5, page: 1 }).unwrap();
-    }, [debounce]);
 
-    const handleDivClick = (e) => {
-        const dataId = e.currentTarget.getAttribute('data-id');
-        setActiveId(dataId);
-    };
+        const fetchSearch = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/api/search/users`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    },
+                    params: { q: debounce, limit: 5, page: 1 },
+                });
+                setSearchResult(response.data.data);
+            } catch (error) {
+                // console.log(error);
+            }
+        };
+        fetchSearch();
+    }, [debounce]);
 
     const searchInputChange = (e) => {
         const value = e.target.value;
-        if (value.length === 0) dispatch(setUsersSearch({ data: [] }));
+        if (value.length === 0) setSearchResult([]);
         if (value.startsWith(' ')) return;
 
         setSearchText(value);
@@ -159,7 +176,7 @@ const NavMenu = () => {
         navigate('/login');
     };
 
-    return user ? (
+    return (
         <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-[99999]">
             {/* Nav */}
             <div className=" xs:h-[46px] items-center md:h-full md:px-[200px] lg:px-[300px]   flex xs:justify-between md:justify-center xs:border-b xs:border-b-[#ccc]">
@@ -174,6 +191,9 @@ const NavMenu = () => {
                         appendTo={document.body}
                         onClickOutside={() => {
                             setIsShowingSearchResults(false);
+                        }}
+                        onHidden={() => {
+                            // dispatch(setSearchResult([]));
                         }}
                         zIndex={'999999'}
                         visible={isShowingSearchResults}
@@ -197,7 +217,7 @@ const NavMenu = () => {
                                             <IoMdSearch className="text-[#65676B] text-[20px]" />
                                         </div>
                                         <input
-                                            className=" px-1 text-[14px] bg-transparent outline-none "
+                                            className=" px-1 text-[16px] bg-transparent outline-none "
                                             placeholder="Tìm kiếm trên ..."
                                             value={searchText}
                                             onChange={searchInputChange}
@@ -215,7 +235,7 @@ const NavMenu = () => {
                                                 <IoMdSearch className="text-[#65676B] text-[20px]" />
                                             </div>
                                             <div className="ml-2">
-                                                <p className="text-[14px] leading-[14px]">{searchText}</p>
+                                                <p className="text-[16px] leading-[14px]">{searchText}</p>
                                             </div>
                                         </Link>
                                     )}
@@ -226,7 +246,8 @@ const NavMenu = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                        usersData.map((user, index) => {
+                                        searchResult.length > 0 &&
+                                        searchResult?.map((user, index) => {
                                             return <UserSearch key={index} userData={user} />;
                                         })
                                     )}
@@ -243,7 +264,7 @@ const NavMenu = () => {
                                 <IoMdSearch className="text-[#65676B] text-[20px]" />
                             </div>
                             <input
-                                className="xs:hidden lg:block px-1 text-[14px] bg-transparent outline-none "
+                                className="xs:hidden lg:block px-1 text-[16px] bg-transparent outline-none "
                                 placeholder="Tìm kiếm trên ..."
                                 onFocus={() => {
                                     setIsShowingSearchResults(true);
@@ -258,7 +279,7 @@ const NavMenu = () => {
                     <div className="md:hidden text-[#c01b2c] font-bold ">BloodDonation</div>
                 </div>
                 {/* Nav PC & Tablet */}
-                <div className=" xs:hidden md:grid h-full grid-cols-4 max-w-[590px] w-full ">
+                <div className=" xs:hidden md:grid h-full grid-cols-3 max-w-[590px] w-full ">
                     {navLinks.map((nav, i) => {
                         return (
                             <NavLink
@@ -289,7 +310,7 @@ const NavMenu = () => {
                     {/* Message */}
                     <Link
                         className="w-10 h-10 cursor-pointer rounded-[50%] item bg-[#e4e6eb]  flex-center mr-2 "
-                        to={`/message/${receiverMessage?.[0]?.latestMessage?.receiverId || user?._id}`}
+                        to={`/message/${receiverMessage?.[0]?.latestMessage?.receiverId || getdataUser?._id}`}
                     >
                         <FaFacebookMessenger className="text-[20px]" />
                     </Link>
@@ -304,45 +325,42 @@ const NavMenu = () => {
                             <div className="bg-white shadow-md w-[340px] rounded-[10px]" tabIndex="-1" {...attrs}>
                                 <div className="p-2">
                                     <h1 className="text-[20px] font-bold">Thông báo</h1>
-                                    <div className="flex mt-2">
-                                        <div
-                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '1' ? 'font-semibold text-[#386fd6] bg-[#d3e1fb]' : ''}`}
-                                            data-id="1"
-                                            onClick={handleDivClick}
-                                        >
-                                            <span>Tất cả</span>
-                                        </div>
-                                        <div
-                                            className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${activeId === '2' ? 'font-semibold text-[#386fd6] bg-[#d3e1fb]' : ''}`}
-                                            data-id="2"
-                                            onClick={handleDivClick}
-                                        >
-                                            <span>Chưa đọc</span>
-                                        </div>
-                                    </div>
                                     {/* Map dữ liệu thông báo từ api */}
-
                                     {notifiData?.map((item, index) => (
-                                        <div key={index} className="grid pt-4">
+                                        <Link
+                                            key={index}
+                                            className="grid py-2 hover:bg-[#d2d2d2] rounded-[6px]"
+                                            to={item.content.link}
+                                        >
                                             <div className="flex">
-                                                {item?.avatar && (
+                                                {item?.content?.image && (
                                                     <div>
-                                                        <img
+                                                        <Avatar
                                                             className="w-9 h-9 rounded-[50%]"
-                                                            src={item?.avatar}
+                                                            src={item?.content?.image}
                                                             alt="avatar"
                                                         />
                                                     </div>
                                                 )}
                                                 <div className="ml-2">
-                                                    <p className="text-[14px] leading-[14px]">{item?.content}</p>
+                                                    <div
+                                                        className="text-[16px] leading-[14px]"
+                                                        dangerouslySetInnerHTML={{ __html: item?.content.text }}
+                                                    ></div>
                                                     <span className="text-[12px]">
                                                         {moment(item?.createAt).fromNow()}
                                                     </span>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </Link>
                                     ))}
+                                    {!isLoadingNotifi && notifiData?.length === 0 && (
+                                        <div className="py-3 flex-center">
+                                            <span className="text-[#65676B] font-medium">
+                                                Hiện chưa có thông báo nào
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -356,7 +374,7 @@ const NavMenu = () => {
                             <IoMdNotifications className="text-[20px]" />
                         </div>
                     </Tippy>
-                    {/* User controls*/}
+                    {/* getdataUser controls*/}
                     <Tippy
                         interactive={true}
                         onClickOutside={() => {
@@ -367,28 +385,28 @@ const NavMenu = () => {
                             <div className="bg-white shadow-md w-[300px] rounded-[10px]" tabIndex="-1" {...attrs}>
                                 <div className="p-1">
                                     <div className="px-2 py-1 hover:bg-[#ebedf0] rounded-[6px] ">
-                                        <Link className="flex py-1.5 items-center " to={`/user/${user._id}`}>
+                                        <Link className="flex py-1.5 items-center " to={`/user/${getdataUser?._id}`}>
                                             <div>
                                                 <Avatar
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src={user.avatar}
+                                                    src={getdataUser?.avatar}
                                                     alt="avatar"
                                                 />
                                             </div>
                                             <div className="ml-2">
-                                                <p className="text-[16px] font-semibold ">{user.username}</p>
+                                                <p className="text-[16px] font-semibold ">{getdataUser?.username}</p>
                                             </div>
                                         </Link>
                                     </div>
                                     <div className="w-full h-[2px] my-1  bg-[#ccc]"></div>
-                                    {user?.role === 'admin' && (
+                                    {getdataUser?.role === 'admin' && (
                                         <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
                                             <Link className="flex py-1.5 items-center " to={'/v1/admin'}>
                                                 <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
                                                     <MdOutlineAdminPanelSettings className="text-[20px]" />
                                                 </div>
                                                 <div className="ml-2">
-                                                    <p className="text-[14px] font-semibold ">Chuyển đến Admin</p>
+                                                    <p className="text-[16px] font-semibold ">Chuyển đến Admin</p>
                                                 </div>
                                             </Link>
                                         </div>
@@ -403,7 +421,7 @@ const NavMenu = () => {
                                                 <MdLogout className="text-[20px]" />
                                             </div>
                                             <div className="ml-2">
-                                                <p className="text-[14px] font-semibold ">Đăng xuất</p>
+                                                <p className="text-[16px] font-semibold ">Đăng xuất</p>
                                             </div>
                                         </Link>
                                     </div>
@@ -412,7 +430,11 @@ const NavMenu = () => {
                         )}
                     >
                         <div onClick={toggleVisibilityAccountControl}>
-                            <Avatar className="w-10 h-10 rounded-[50%] cursor-pointer" src={user.avatar} alt="avatar" />
+                            <Avatar
+                                className="w-10 h-10 rounded-[50%] cursor-pointer"
+                                src={getdataUser?.avatar}
+                                alt="avatar"
+                            />
                         </div>
                     </Tippy>
                 </div>
@@ -460,10 +482,6 @@ const NavMenu = () => {
             <ModalWrapper isShowing={isShowingMobileMenu}>
                 <MobileMenu hideModal={hideMobileMenu} />
             </ModalWrapper>
-        </div>
-    ) : (
-        <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-[99999] flex item-center">
-            <Image src={logoWeb} alt="logo" />
         </div>
     );
 };

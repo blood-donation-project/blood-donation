@@ -8,7 +8,7 @@ const UserSearch = ({ userData }) => {
                 <Avatar className="w-9 h-9 rounded-[50%]" src={userData.avatar} alt="avatar" />
             </div>
             <div className="ml-2 flex justify-center flex-col">
-                <p className="text-[14px] leading-[14px] font-semibold">{userData.username}</p>
+                <p className="text-[16px] leading-[14px] font-semibold">{userData.username}</p>
                 {userData.role === 'Cơ sở y tế' ? (
                     <p className="text-[12px]">Cơ sở y tế</p>
                 ) : (

@@ -3,16 +3,12 @@ import NavMenu from '../../components/NavMenu';
 import { useGetAllNotifiMutation } from '../../Redux/features/notification/notifiAPI';
 import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import Avatar from '../../components/Image/Avatar';
 
 const Notification = () => {
-    const [activeId, setActiveId] = useState('1');
-    const [getNotification, { data: notifiData }] = useGetAllNotifiMutation();
+    const [getNotification, { isLoading: isLoadingNotifi, data: notifiData }] = useGetAllNotifiMutation();
     const [getUser, { data: userData }] = useGetUserMutation();
-
-    const handleDivClick = (e) => {
-        const dataId = e.currentTarget.getAttribute('data-id');
-        setActiveId(dataId);
-    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -45,47 +41,40 @@ const Notification = () => {
                     <div className="">
                         <div className="p-2">
                             <h1 className="text-[22px] font-bold">Thông báo</h1>
-                            <div className="flex mt-4">
-                                <div
-                                    className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${
-                                        activeId === '1' ? 'font-semibold text-red-500 bg-red-100' : ''
-                                    }`}
-                                    data-id="1"
-                                    onClick={handleDivClick}
-                                >
-                                    <span>Tất cả</span>
-                                </div>
-                                <div
-                                    className={`mr-2 transition text-[14px] cursor-pointer px-2 rounded-[10px] hover:bg-[#ebedf0] ${
-                                        activeId === '2' ? 'font-semibold text-red-500 bg-red-100' : ''
-                                    }`}
-                                    data-id="2"
-                                    onClick={handleDivClick}
-                                >
-                                    <span>Chưa đọc</span>
-                                </div>
-                            </div>
+
                             {/* Map dữ liệu thông báo từ api */}
 
                             {notifiData?.map((item, index) => (
-                                <div key={index} className="grid pt-6">
-                                    <div className="flex hover:cursor-pointer hover:bg-[#ebedf0] px-2 py-2 rounded">
-                                        {item?.avatar && (
+                                <Link
+                                    key={index}
+                                    className="grid pt-4 hover:bg-[#d2d2d2] rounded-[6px]"
+                                    to={item.content.link}
+                                >
+                                    <div className="flex">
+                                        {item?.content?.image && (
                                             <div>
-                                                <img
+                                                <Avatar
                                                     className="w-9 h-9 rounded-[50%]"
-                                                    src={item?.avatar}
+                                                    src={item?.content?.image}
                                                     alt="avatar"
                                                 />
                                             </div>
                                         )}
                                         <div className="ml-2">
-                                            <p className="text-[14px] leading-[14px]">{item?.content}</p>
+                                            <div
+                                                className="text-[16px] leading-[14px]"
+                                                dangerouslySetInnerHTML={{ __html: item?.content.text }}
+                                            ></div>
                                             <span className="text-[12px]">{moment(item?.createAt).fromNow()}</span>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
+                            {!isLoadingNotifi && notifiData?.length === 0 && (
+                                <div className="py-3 flex-center">
+                                    <span className="text-[#65676B] font-medium">Hiện chưa có thông báo nào</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

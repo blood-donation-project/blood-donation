@@ -83,7 +83,7 @@ const UserRoundingFilter = ({ hideModal, isShowing, setPagination }) => {
                 const formatOptions = res?.data?.map((el) => {
                     return {
                         ...el,
-                        value: el?.id,
+                        value: el?.full_name,
                         label: el?.full_name,
                     };
                 });

@@ -1,49 +1,23 @@
 import { useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
-import { AiOutlineLike } from 'react-icons/ai';
-import ModalWrapper from '../Modal/ModalWrapper';
-import PostDetails from '../Modal/ModalContent/PostDetails';
-import { FaRegComment, FaTrashAlt } from 'react-icons/fa';
+
+import { FaTrashAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { AiFillLike } from 'react-icons/ai';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { BsThreeDots } from 'react-icons/bs';
 
-import { useDeletePostMutation, useLikePostMutation, useUnlikePostMutation } from '../../Redux/features/post/postAPI';
+import { useDeletePostMutation } from '../../Redux/features/post/postAPI';
 import Image from '../Image/Image';
 import UserPreview from '../User/UserPreview';
 import Avatar from '../Image/Avatar';
 import calculatePostTime from '../../utils/formartTime/calculatePostTime';
-import { updateOneSearchPostData } from '../../Redux/features/search/searchSlice';
 
 // Data
-const Post = ({ postData }) => {
+const PostPendingApproval = ({ postData }) => {
     const { user } = useSelector((state) => state.user);
-    const dispatch = useDispatch();
-
-    const [isShowingModal, setIsShowingModal] = useState(false);
     const [isShowingPostOptions, setIsShowingPostOptions] = useState(false);
-    const [postId, setPostId] = useState('');
-
-    const [likePost] = useLikePostMutation();
-    const [unlikePost] = useUnlikePostMutation();
     const [deletePost] = useDeletePostMutation();
-
-    const handleLikePost = () => {
-        likePost(postData._id)
-            .unwrap()
-            .then((res) => {
-                dispatch(updateOneSearchPostData(res));
-            });
-    };
-
-    const handleUnlikePost = () => {
-        unlikePost(postData._id)
-            .unwrap()
-            .then((res) => {
-                dispatch(updateOneSearchPostData(res));
-            });
-    };
 
     const showPostOptions = () => {
         setIsShowingPostOptions(true);
@@ -51,18 +25,6 @@ const Post = ({ postData }) => {
 
     const hidePostOptions = () => {
         setIsShowingPostOptions(false);
-    };
-
-    const showModal = () => {
-        if (isShowingModal === false) {
-            setPostId(postData._id);
-
-            setIsShowingModal(true);
-        }
-    };
-
-    const hideModal = () => {
-        setIsShowingModal(false);
     };
 
     const handleDeletePost = () => {
@@ -155,54 +117,12 @@ const Post = ({ postData }) => {
 
             {/* Image/video */}
             {postData.image && (
-                <div className="bg-[#b2aea6] flex-center cursor-pointer" onClick={showModal}>
+                <div className="bg-[#b2aea6] flex-center cursor-pointer">
                     <Image className=" max-w-full max-h-[660px]" src={postData.image} alt="" />
                 </div>
             )}
-
-            {/* Comments  && Reaction */}
-            <div className="px-2 py-1">
-                <div className="flex py-1 justify-between border-b border-b-[#ccc]">
-                    <span className="text-[16px] text-[#65676B]">
-                        {postData.likeCount > 0 && `${postData.likeCount} lượt thích`}
-                    </span>
-                    <span className="text-[16px] text-[#65676B] cursor-pointer hover:underline" onClick={showModal}>
-                        {postData.commentCount > 0 && `${postData.commentCount} bình luận`}{' '}
-                    </span>
-                </div>
-                <div className="flex pt-1">
-                    {postData.liked ? (
-                        <div
-                            className=" text-[#386fd6] cursor-pointer flex-center py-1.5 w-[50%] rounded-md hover:bg-[#f0f2f5]  "
-                            onClick={handleUnlikePost}
-                        >
-                            <AiFillLike />
-                            <span className=" text-[15px]  ml-1 font-semibold ">Thích</span>
-                        </div>
-                    ) : (
-                        <div
-                            className="text-[#65676B] cursor-pointer flex-center py-1.5 w-[50%] rounded-md hover:bg-[#f0f2f5]"
-                            onClick={handleLikePost}
-                        >
-                            <AiOutlineLike />
-                            <span className=" text-[15px]  ml-1 font-semibold ">Thích</span>
-                        </div>
-                    )}
-
-                    <div
-                        className="cursor-pointer flex-center py-1.5 w-[50%] rounded-md hover:bg-[#f0f2f5]"
-                        onClick={showModal}
-                    >
-                        <FaRegComment />
-                        <span className=" text-[15px]  ml-1 font-semibold text-[#65676B]">Bình luận</span>
-                    </div>
-                </div>
-            </div>
-            <ModalWrapper isShowing={isShowingModal} hideModal={hideModal}>
-                <PostDetails hideModal={hideModal} postId={postId} />
-            </ModalWrapper>
         </div>
     );
 };
 
-export default Post;
+export default PostPendingApproval;

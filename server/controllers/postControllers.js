@@ -3,6 +3,7 @@ const Reactions = require('../models/reactions');
 const Comments = require('../models/comments');
 const Friends = require('../models/friends');
 const FriendRequest = require('../models/friendRequests');
+const Notification = require('../models/notifications');
 const mongoose = require('mongoose');
 
 const dotenv = require('dotenv');
@@ -26,6 +27,7 @@ const postControllers = {
                     userId: id,
                     image: url,
                     content: clientPostData.content,
+                    verified: false,
                 });
 
                 return res.status(201).json({
@@ -39,6 +41,7 @@ const postControllers = {
                 userId: id,
                 image: '',
                 content: clientPostData.content,
+                verified: false,
             });
 
             return res.status(201).json({
@@ -94,11 +97,13 @@ const postControllers = {
             // Tạo pagination
             const totalPosts = await Posts.countDocuments({
                 userId,
+                verified: true,
             });
             const pagination = createPagination(limit, page, totalPosts);
 
             const posts = await Posts.find({
                 userId,
+                verified: true,
             })
                 .limit(pagination.perPage)
                 .skip(pagination.offSet)
@@ -168,7 +173,129 @@ const postControllers = {
             });
         }
     },
+    getPostsPendingApprovalByUserId: async (req, res) => {
+        try {
+            const myId = req.user.id;
+            const userId = req.params.userId;
+            const limit = req.query.limit ? Number(req.query.limit) : 10;
+            const page = req.query.page ? Number(req.query.page) : 1;
 
+            if (myId !== userId) return res.status(403).json({ error: ' You do not have access to this resource.' });
+
+            // Tạo pagination
+            const totalPosts = await Posts.countDocuments({
+                userId,
+                verified: false,
+            });
+            const pagination = createPagination(limit, page, totalPosts);
+
+            const posts = await Posts.find({
+                userId,
+                verified: false,
+            })
+                .limit(pagination.perPage)
+                .skip(pagination.offSet)
+                .sort({ createdAt: -1 })
+                .lean();
+
+            const formattedPosts = await Promise.all(
+                posts.map(async (post) => {
+                    const commentCount = await Comments.countDocuments({ postId: post._id });
+                    const likeCount = await Reactions.countDocuments({ postId: post._id });
+                    const liked = await Reactions.exists({ postId: post._id, userId });
+                    const author = await User.findById(post.userId).select('-password');
+
+                    return {
+                        ...post,
+                        commentCount,
+                        likeCount,
+                        liked: liked ? true : false,
+
+                        author: {
+                            ...author._doc,
+                            friendRequest: {},
+                            isFriend: false,
+                        },
+                    };
+                }),
+            );
+
+            let links = {};
+            if (pagination.currentPage < pagination.totalPages) {
+                links.next = `${process.env.BASE_URL}api/posts/pending-approval?limit=${pagination.perPage}&page=${
+                    pagination.currentPage + 1
+                }`;
+            }
+            if (pagination.currentPage > 1) {
+                links.prev = `${process.env.BASE_URL}api/posts/pending-approval?limit=${pagination.perPage}&page=${
+                    pagination.currentPage - 1
+                }`;
+            }
+
+            return res.status(200).json({
+                data: formattedPosts,
+                pagination: {
+                    ...pagination,
+                    links,
+                },
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                errors: error.errors,
+            });
+        }
+    },
+    getPostById: async (req, res) => {
+        try {
+            const myId = req.user.id;
+            const postId = req.params.postId;
+
+            const dbPost = await Posts.findOne({
+                _id: postId,
+                verified: true,
+            });
+            if (!dbPost) {
+                return res.status(404).json({ error: 'Post not found' });
+            }
+            const commentCount = await Comments.countDocuments({ postId: dbPost._id });
+            const likeCount = await Reactions.countDocuments({ postId: dbPost._id });
+            const liked = await Reactions.exists({ postId: dbPost._id, userId: myId });
+            const author = await User.findById(dbPost.userId).select('-password');
+            const isFriend = await Friends.find({
+                $or: [
+                    { userId1: myId, userId2: dbPost.userId },
+                    { userId1: dbPost.userId, userId2: myId },
+                ],
+            });
+
+            const friendRequest = await FriendRequest.findOne({
+                $or: [
+                    { senderId: myId, receiverId: dbPost.userId },
+                    { senderId: dbPost.userId, receiverId: myId },
+                ],
+                status: 'pending',
+            });
+
+            return res.status(200).json({
+                ...dbPost._doc,
+                commentCount,
+                likeCount,
+                liked: liked ? true : false,
+
+                author: {
+                    ...author._doc,
+                    friendRequest,
+                    isFriend: isFriend ? true : false,
+                },
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                errors: error.errors,
+            });
+        }
+    },
     getHomePagePosts: async (req, res) => {
         try {
             const userId = req.user.id;
@@ -176,10 +303,14 @@ const postControllers = {
             const page = req.query.page ? Number(req.query.page) : 1;
 
             // Tạo pagination
-            const totalPosts = await Posts.countDocuments();
+            const totalPosts = await Posts.countDocuments({
+                verified: true,
+            });
             const pagination = createPagination(limit, page, totalPosts);
 
-            const posts = await Posts.find()
+            const posts = await Posts.find({
+                verified: true,
+            })
                 .limit(pagination.perPage)
                 .skip(pagination.offSet)
                 .sort({ createdAt: -1 })
@@ -347,6 +478,9 @@ const postControllers = {
             const postId = req.params.id;
             const clientCommentData = req.body;
 
+            const user = await User.findById(id).select('-password');
+            const post = await Posts.findById(postId);
+
             if (!clientCommentData.content || clientCommentData.content.trim() === '') {
                 return res.status(400).json({ error: 'Comment content is required' });
             }
@@ -357,13 +491,30 @@ const postControllers = {
                 content: clientCommentData.content,
             });
 
-            const post = await Posts.findById(postId);
+            if (id !== post.userId.toString()) {
+                const existingNotifi = await Notification.findOne({
+                    userId: post.userId,
+                    'content.link': `/post/${postId}`,
+                    type: `Like_${postId}_${user._id}`,
+                });
+                if (!existingNotifi) {
+                    await Notification.create({
+                        userId: post.userId,
+                        content: {
+                            text: `<p><strong>${user.username}</strong> đã bình luận bài viết của bạn</p>`,
+                            link: `/post/${postId}`,
+                            image: user.avatar,
+                        },
+                        type: `Like_${postId}_${user._id}`,
+                    });
+                }
+            }
+
             const commentCount = await Comments.countDocuments({ postId: post._id });
             const likeCount = await Reactions.countDocuments({ postId: post._id });
             const liked = await Reactions.exists({ postId: post._id, userId: id });
 
             //
-            const user = await User.findById(id).select('-password');
 
             return res.status(201).json({
                 ...dbCommentData._doc,
@@ -384,25 +535,43 @@ const postControllers = {
     },
 
     likePost: async (req, res) => {
-        const session = await mongoose.startSession();
-        session.startTransaction();
         try {
             const { id } = req.user;
             const postId = req.params.id;
 
+            const dbUser = await User.findById(id).select('-password');
             const isLiked = await Reactions.findOne({
                 userId: id,
                 postId: postId,
             });
+            const post = await Posts.findById(postId);
 
             if (!isLiked) {
                 await Reactions.create({
                     userId: id,
                     postId: postId,
                 });
+
+                if (id !== post.userId.toString()) {
+                    const existingNotifi = await Notification.findOne({
+                        userId: post.userId,
+                        'content.link': `/post/${postId}`,
+                        type: `Like_${postId}_${dbUser._id}`,
+                    });
+                    if (!existingNotifi) {
+                        await Notification.create({
+                            userId: post.userId,
+                            content: {
+                                text: `<p><strong>${dbUser.username}</strong> đã thích bài viết của bạn</p>`,
+                                link: `/post/${postId}`,
+                                image: dbUser.avatar,
+                            },
+                            type: `Like_${postId}_${dbUser._id}`,
+                        });
+                    }
+                }
             }
             //
-            const post = await Posts.findById(postId);
             const commentCount = await Comments.countDocuments({ postId: post._id });
             const likeCount = await Reactions.countDocuments({ postId: post._id });
             //
@@ -413,9 +582,6 @@ const postControllers = {
                     { userId1: author._id, userId2: id },
                 ],
             });
-
-            await session.commitTransaction();
-            session.endSession();
 
             return res.status(201).json({
                 ...post._doc,
@@ -529,6 +695,28 @@ const postControllers = {
             return res.status(400).json('Post not found');
         }
         const publishPosts = await Posts.findByIdAndUpdate(postId, { verified: true });
+
+        const author = await User.findById(publishPosts.userId);
+        if (publishPosts && author.role === 'Cơ sở y tế') {
+            const friends = await Friends.find({
+                $or: [{ userId1: author._id }, { userId2: author._id }],
+            });
+            const friendIds = friends.map((friend) =>
+                friend.userId1.toString() === author._id.toString() ? friend.userId2 : friend.userId1,
+            );
+
+            const notifications = friendIds.map((friendId) => ({
+                userId: friendId,
+                content: {
+                    text: `<p><strong>${author.username}</strong> đã đăng tải một bài viết mới</p>`,
+                    link: `/posts/${publishPosts._id}`,
+                    image: author.avatar,
+                },
+                type: `CreatePost_${publishPosts._id}_${author._id}`,
+            }));
+
+            await Notification.insertMany(notifications);
+        }
         res.status(200).json(publishPosts);
     },
     getPostByMonths: async (req, res) => {

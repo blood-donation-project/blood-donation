@@ -35,6 +35,15 @@ export const friendAPI = createApi({
                 },
             }),
         }),
+        searchMyFriends: builder.mutation({
+            query: ({ q }) => ({
+                url: '/search',
+                method: 'GET',
+                params: {
+                    q,
+                },
+            }),
+        }),
         getAllFollowedFacilities: builder.mutation({
             query: ({ limit, page }) => ({
                 url: '/followed-facilities',
@@ -126,6 +135,7 @@ export const {
     useFollowMutation,
     useUnfollowMutation,
     useGetAllFollowedFacilitiesMutation,
+    useSearchMyFriendsMutation,
 } = friendAPI;
 
 export default friendAPI;

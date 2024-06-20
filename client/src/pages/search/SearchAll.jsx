@@ -1,25 +1,19 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { SiPowerpages } from 'react-icons/si';
 import { BsFillPostcardHeartFill } from 'react-icons/bs';
 import { FaUserFriends } from 'react-icons/fa';
-import Tippy from '@tippyjs/react/headless';
 
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-
 import { useSearchPostsMutation, useSearchUsersMutation } from '../../Redux/features/search/searchAPI';
-
-import UserPreview from '../../components/User/UserPreview';
 import NoResult from '../../components/NoResult';
 import NavMenu from '../../components/NavMenu';
 import { NavLink } from 'react-router-dom';
 import Post from '../../components/Post/Post';
-import Avatar from '../../components/Image/Avatar';
-
 import UserSearchDetail from '../../components/User/UserSearchDetail';
 import UserFriendLoading from '../../components/LoadingSkeleton/User/UserFriendLoading';
 import PostLoading from '../../components/LoadingSkeleton/Post/PostLoading';
@@ -35,10 +29,11 @@ const SearchAllPage = () => {
     const [page, setPage] = useState(1);
     const [paginationPost, setPaginationPost] = useState();
     const [hasMore, setHasMore] = useState(false);
-    const [searched, setSearched] = useState(false);
+
     const [isLoadingSearchPosts, setIsLoadingSearchPosts] = useState(true);
 
     const { usersData, postsData } = useSelector((state) => state.search);
+
     const [searchPosts] = useSearchPostsMutation();
     const [searchUsers, { isLoading: isLoadingSearchUsers }] = useSearchUsersMutation();
 
@@ -46,16 +41,9 @@ const SearchAllPage = () => {
         if (queryValue === '' || queryValue === undefined || queryValue === null) {
             navigate('/404');
         }
+        dispatch(resetSearchPostsData());
 
         const fetch = async () => {
-            if (!searched) {
-                await searchUsers({ q: queryValue, limit: 5, page: page })
-                    .unwrap()
-                    .then(() => {
-                        setSearched(true);
-                    });
-            }
-
             await searchPosts({ q: queryValue, limit: 5, page: page })
                 .unwrap()
                 .then((res) => {
@@ -69,6 +57,14 @@ const SearchAllPage = () => {
 
         fetch();
     }, [queryValue, page]);
+
+    useEffect(() => {
+        if (queryValue === '' || queryValue === undefined || queryValue === null) {
+            navigate('/404');
+        }
+        dispatch(resetSearchUsersData());
+        searchUsers({ q: queryValue, limit: 5, page: page }).unwrap();
+    }, [queryValue]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -197,19 +193,21 @@ const SearchAllPage = () => {
                                     </div>
                                 ) : (
                                     postsData.length > 0 && (
-                                        <InfiniteScroll
-                                            dataLength={postsData.length}
-                                            next={() => {
-                                                setPage((prev) => prev + 1);
-                                            }}
-                                            hasMore={hasMore}
-                                            loader={<PostLoading />}
-                                            scrollThreshold="100px"
-                                        >
-                                            {postsData.map((post, index) => {
-                                                return <Post key={index} postData={post} />;
-                                            })}
-                                        </InfiniteScroll>
+                                        <div className="h-fit mt-3">
+                                            <InfiniteScroll
+                                                dataLength={postsData.length}
+                                                next={() => {
+                                                    setPage((prev) => prev + 1);
+                                                }}
+                                                hasMore={hasMore}
+                                                loader={<PostLoading />}
+                                                scrollThreshold="100px"
+                                            >
+                                                {postsData.map((post, index) => {
+                                                    return <Post key={index} postData={post} />;
+                                                })}
+                                            </InfiniteScroll>
+                                        </div>
                                     )
                                 )}
                             </div>

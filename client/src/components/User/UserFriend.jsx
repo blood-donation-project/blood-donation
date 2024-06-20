@@ -8,7 +8,7 @@ const UserFriend = ({ className, userData }) => {
             <div className="bg-white rounded-[8px] overflow-hidden shadow-md">
                 <Avatar className="object-cover w-full h-full aspect-square " src={userData.avatar} alt="avatar" />
                 <div className="p-2 shadow-sm">
-                    <span className="text-[14px] font-medium">{userData.username}</span>
+                    <span className="text-[16px] font-medium">{userData.username}</span>
                 </div>
             </div>
         </Link>

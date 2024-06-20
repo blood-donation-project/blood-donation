@@ -47,6 +47,22 @@ export const postAPI = createApi({
                 },
             }),
         }),
+        getPostsById: builder.mutation({
+            query: (postId) => ({
+                url: `/get-by-id/${postId}`,
+                method: 'GET',
+            }),
+        }),
+        getPostsPendingApprovalByUserId: builder.mutation({
+            query: ({ userId, limit, page }) => ({
+                url: `/${userId}/pending-approval`,
+                method: 'GET',
+                params: {
+                    limit,
+                    page,
+                },
+            }),
+        }),
         getCommentByPostId: builder.mutation({
             query: ({ postId, limit, page }) => ({
                 url: `/${postId}/comments`,
@@ -131,6 +147,8 @@ export const {
     useGetAllPostsByMonthsQuery,
     useGetAllUnPublishPostsQuery,
     usePublishPostMutation,
+    useGetPostsPendingApprovalByUserIdMutation,
+    useGetPostsByIdMutation,
 } = postAPI;
 
 export default postAPI;

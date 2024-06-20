@@ -4,6 +4,7 @@ const friendControllers = require('../controllers/friendControllers');
 
 router.get('/suggests', middlewareController.verifyToken, friendControllers.getSuggestedUsers);
 router.get('/', middlewareController.verifyToken, friendControllers.getAllFriends);
+router.get('/search', middlewareController.verifyToken, friendControllers.searchMyFriends);
 // router.get('/followers', middlewareController.verifyToken, friendControllers.getFollowers);
 router.get('/followed-facilities', middlewareController.verifyToken, friendControllers.getAllFollowedFacilities);
 router.get('/requests', middlewareController.verifyToken, friendControllers.getFriendRequests);

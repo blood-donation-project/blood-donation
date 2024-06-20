@@ -6,7 +6,7 @@ import UserPreview from './UserPreview';
 
 const UserFriendProfile = ({ className, friendData }) => {
     return (
-        <Link className={className}>
+        <Link className={className} to={`/user/${friendData._id}`}>
             <Tippy
                 interactive={true}
                 placement="bottom-start"

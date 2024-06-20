@@ -36,8 +36,8 @@ const PostComment = ({ commentData }) => {
                 </div>
                 <div className="ml-2 ">
                     <div className="bg-[#f0f2f5] rounded-[10px]  p-2 ">
-                        <p className="text-[12px] font-semibold leading-[14px]">{commentData.user.username}</p>
-                        <p className="text-[14px]">{commentData.content}</p>
+                        <p className="text-[14px] font-semibold leading-[14px]">{commentData.user.username}</p>
+                        <p className="text-[16px]">{commentData.content}</p>
                     </div>
                     <div className="px-2">
                         <span className="text-[10px] text-[#65676B] leading-[10px]">

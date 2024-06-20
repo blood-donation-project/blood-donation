@@ -10,7 +10,13 @@ router.put('/publish-post', middlewareController.verifyTokenAndAdmin, postContro
 
 // Get home page posts
 router.get('/', middlewareController.verifyToken, postControllers.getHomePagePosts);
+router.get('/get-by-id/:postId', middlewareController.verifyToken, postControllers.getPostById);
 router.get('/:userId', middlewareController.verifyToken, postControllers.getPostsByUserId);
+router.get(
+    '/:userId/pending-approval',
+    middlewareController.verifyToken,
+    postControllers.getPostsPendingApprovalByUserId,
+);
 // Create post
 router.post(
     '/create',

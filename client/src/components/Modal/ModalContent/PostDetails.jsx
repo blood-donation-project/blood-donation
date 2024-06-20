@@ -5,10 +5,10 @@ import Tippy from '@tippyjs/react/headless';
 import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
 import { IoMdClose } from 'react-icons/io';
 import { FaRegComment, FaSpinner } from 'react-icons/fa';
+import Picker from 'emoji-picker-react';
 
 import { Link } from 'react-router-dom';
 import { MdOutlineEmojiEmotions } from 'react-icons/md';
-import { IoCameraOutline } from 'react-icons/io5';
 import { BsFillSendFill } from 'react-icons/bs';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 
@@ -26,6 +26,9 @@ import calculatePostTime from '../../../utils/formartTime/calculatePostTime';
 import Avatar from '../../Image/Avatar';
 import PostCommentLoading from '../../LoadingSkeleton/Comment/PostCommentLoading';
 import { updateOneSearchPostData } from '../../../Redux/features/search/searchSlice';
+import { IoSend } from 'react-icons/io5';
+
+import { BsEmojiSmileFill } from 'react-icons/bs';
 
 const PostDetails = ({ postId, hideModal }) => {
     const dispatch = useDispatch();
@@ -43,6 +46,35 @@ const PostDetails = ({ postId, hideModal }) => {
 
     const { homePagePosts, profilePosts, comments } = useSelector((state) => state.posts);
     const postDetail = homePagePosts.concat(profilePosts).find((post) => post._id === postId);
+
+    const emojiRef = useRef(null);
+    const emojiButtonRef = useRef(null);
+    const [isPickerVisible, setPickerVisible] = useState(false);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                emojiRef.current &&
+                !emojiRef.current.contains(event.target) &&
+                !emojiButtonRef.current.contains(event.target)
+            ) {
+                setPickerVisible(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [emojiRef]);
+
+    const onEmojiClick = (emojiObject) => {
+        setCommentContent((cmt) => cmt + emojiObject.emoji);
+    };
+
+    const togglePicker = () => {
+        setPickerVisible(!isPickerVisible);
+    };
 
     useEffect(() => {
         try {
@@ -171,7 +203,7 @@ const PostDetails = ({ postId, hideModal }) => {
                                         </Tippy>
                                     </div>
                                     <div className="ml-2">
-                                        <p className="text-[14px] font-semibold leading-[14px]">
+                                        <p className="text-[16px] font-semibold leading-[14px]">
                                             {postDetail.author.username}
                                         </p>
                                         <span className="text-[12px] text-[#65676B]">
@@ -181,7 +213,7 @@ const PostDetails = ({ postId, hideModal }) => {
                                 </div>
                                 {/* Mô tả bài đăng */}
                                 <div className="">
-                                    <span className="text-[14px]">{postDetail.content}</span>
+                                    <span className="text-[16px]">{postDetail.content}</span>
                                 </div>
                             </div>
                             {/* Hình ảnh/Video nếu có */}
@@ -193,11 +225,11 @@ const PostDetails = ({ postId, hideModal }) => {
                             {/* Bình luận/cảm xúc */}
                             <div className="px-2 py-1">
                                 <div className="flex py-1 justify-between border-b border-b-[#ccc]">
-                                    <span className="text-[14px] text-[#65676B]">
+                                    <span className="text-[16px] text-[#65676B]">
                                         {' '}
                                         {postDetail.likeCount > 0 && `${postDetail.likeCount} lượt thích`}
                                     </span>
-                                    <span className="text-[14px] text-[#65676B] cursor-pointer hover:underline">
+                                    <span className="text-[16px] text-[#65676B] cursor-pointer hover:underline" >
                                         {postDetail.commentCount > 0 && `${postDetail.commentCount} bình luận`}{' '}
                                     </span>
                                 </div>
@@ -273,7 +305,7 @@ const PostDetails = ({ postId, hideModal }) => {
                             <div className="h-[60px] overflow-y-scroll">
                                 <TextareaAutosize
                                     value={commentContent}
-                                    className="w-full bg-transparent px-3 py-1 outline-none resize-none text-[14px]"
+                                    className="w-full bg-transparent px-3 py-1 outline-none resize-none text-[16px]"
                                     placeholder={`Bình luận với vai trò ${user.username}`}
                                     onChange={onChangeComment}
                                     onKeyDown={onKeyDownPostComments}
@@ -281,13 +313,25 @@ const PostDetails = ({ postId, hideModal }) => {
                             </div>
 
                             <div className="flex items-center justify-between px-3">
-                                <div className="flex ">
-                                    <i className=" cursor-pointer text-[#65676B] text-[18px] mr-2">
-                                        <MdOutlineEmojiEmotions />
-                                    </i>
-                                    <i className="cursor-pointer text-[#65676B] text-[18px] mr-2">
-                                        <IoCameraOutline />
-                                    </i>
+                                <div className="flex relative">
+                                    {isPickerVisible && (
+                                        <div ref={emojiRef} className="  ">
+                                            <Picker
+                                                emojiStyle="native"
+                                                className="bottom-[400px]"
+                                                style={{ height: '400px' }}
+                                                onEmojiClick={onEmojiClick}
+                                            />
+                                        </div>
+                                    )}
+                                    <button
+                                        ref={emojiButtonRef}
+                                        onClick={togglePicker}
+                                        className="outline-none"
+                                        type="button"
+                                    >
+                                        <BsEmojiSmileFill className="text-[#65676B]" />
+                                    </button>
                                 </div>
                                 <div className="flex">
                                     <div className="mr-2">{commentLength}/500</div>

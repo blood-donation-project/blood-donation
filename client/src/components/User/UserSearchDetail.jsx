@@ -21,7 +21,7 @@ const UserSearchDetail = ({ userData }) => {
                     </div>
                 )}
             >
-                <Link className="flex cursor-pointer items-center" to={'/user/123'}>
+                <Link className="flex cursor-pointer items-center" to={`/user/${userData._id}`}>
                     <Avatar
                         className={'rounded-[50%] w-[60px] h-[60px] border border-[#ccc] '}
                         src={userData.avatar}

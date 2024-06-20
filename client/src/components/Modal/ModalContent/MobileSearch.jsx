@@ -52,7 +52,7 @@ const MobileSearch = ({ hideModal }) => {
                     <div className="   px-2 py-1  bg-[#f0f2f5] justify-center items-center rounded-[50px]">
                         {' '}
                         <input
-                            className="px-1 text-[14px] w-full bg-transparent outline-none "
+                            className="px-1 text-[16px] w-full bg-transparent outline-none "
                             placeholder="Tìm kiếm trên ..."
                             value={searchText}
                             onChange={searchInputChange}
@@ -63,7 +63,7 @@ const MobileSearch = ({ hideModal }) => {
                 <div>
                     <Link
                         className={`px-2 py-2 flex-center  ${searchText.length === 0 ? ' pointer-events-none text-[#65676B] cursor-default  ' : '  cursor-pointer hover:bg-[#ebedf0]'}`}
-                        to={'/search/all?q=21'}
+                        to={`/search/all?q=${searchText}`}
                         onClick={(e) => {
                             if (searchText.length === 0) e.preventDefault();
                         }}
@@ -85,7 +85,7 @@ const MobileSearch = ({ hideModal }) => {
                                     <IoMdSearch className="text-[#65676B] text-[20px]" />
                                 </div>
                                 <div className="ml-2">
-                                    <p className="text-[14px] leading-[14px]">{searchText}</p>
+                                    <p className="text-[16px] leading-[14px]">{searchText}</p>
                                 </div>
                             </Link>
                         )}

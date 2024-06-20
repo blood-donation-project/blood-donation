@@ -15,22 +15,18 @@ export const useAutoRefreshToken = (endpoint) => {
         } else {
             const fetchData = async () => {
                 try {
-                    const response = await fetch(
-                        `http://localhost:3001${endpoint}`,
-                        {
-                            method: 'GET',
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                            },
-                        }
-                    );
+                    const response = await fetch(`http://localhost:3001${endpoint}`, {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    });
 
                     if (response.status === 403) {
                         // Access Token expired
                         await refreshToken().unwrap();
                     } else {
                         const data = await response.text();
-                        console.log(data);
                     }
                 } catch (error) {
                     console.error('Error:', error);
@@ -54,15 +50,12 @@ export const useVerifyToken = (endpoint) => {
         } else {
             const fetchData = async () => {
                 try {
-                    const response = await fetch(
-                        `http://localhost:3001${endpoint}`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                            },
-                        }
-                    );
+                    const response = await fetch(`http://localhost:3001${endpoint}`, {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    });
                     if (response.status === 403) {
                         navigate(-1);
                     } else {

@@ -46,7 +46,7 @@ const UserReceivesBlood = () => {
                 </Link>
             </Tippy>
             <div className="flex-center">
-                <div className=" px-2 py-0.5 text-[14px] text-[#65676B] flex items-center">
+                <div className=" px-2 py-0.5 text-[16px] text-[#65676B] flex items-center">
                     <MdLocationPin />
                     <span className="ml-1">Hai Bà Trưng, Hà Nội</span>
                 </div>

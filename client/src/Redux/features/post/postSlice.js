@@ -8,7 +8,9 @@ const postSlice = createSlice({
     initialState: {
         homePagePosts: [],
         profilePosts: [],
+        post: {},
         comments: [],
+        profilePostsPendingApproval: [],
     },
     reducers: {
         updateAuthorPosts: (state, action) => {
@@ -40,6 +42,12 @@ const postSlice = createSlice({
                 profilePosts: [],
             };
         },
+        resetProfilePostsPendingApproval: (state, _) => {
+            return {
+                ...state,
+                profilePostsPendingApproval: [],
+            };
+        },
     },
     extraReducers: (builder) => {
         // POst
@@ -49,22 +57,34 @@ const postSlice = createSlice({
         builder.addMatcher(postAPI.endpoints.getPostsByUserId.matchFulfilled, (state, action) => {
             state.profilePosts = [...state.profilePosts, ...action.payload.data];
         });
+        builder.addMatcher(postAPI.endpoints.getPostsById.matchFulfilled, (state, action) => {
+            state.post = { ...action.payload };
+        });
+        builder.addMatcher(postAPI.endpoints.getPostsPendingApprovalByUserId.matchFulfilled, (state, action) => {
+            state.profilePostsPendingApproval = [...state.profilePostsPendingApproval, ...action.payload.data];
+        });
         builder.addMatcher(postAPI.endpoints.createPost.matchFulfilled, (state, action) => {
-            state.homePagePosts = [action.payload, ...state.homePagePosts];
-            state.profilePosts = [action.payload, ...state.profilePosts];
-            toast.success('Đăng bài thành công');
+            state.profilePostsPendingApproval = [action.payload, ...state.profilePostsPendingApproval];
+            toast.success('Bài đăng của bạn đang được phê duyệt');
         });
         builder.addMatcher(postAPI.endpoints.deletePost.matchFulfilled, (state, action) => {
             const currentHomePagePosts = state.homePagePosts;
             const currentMyPosts = state.profilePosts;
+            const currentPostPendingApproval = state.profilePostsPendingApproval;
+
             const indexHompagePost = state.homePagePosts.findIndex((post) => post._id === action.payload.postId);
             const indexMyPost = state.profilePosts.findIndex((post) => post._id === action.payload.postId);
+            const indexPostPendingApproval = state.profilePostsPendingApproval.findIndex(
+                (post) => post._id === action.payload.postId,
+            );
 
             currentHomePagePosts.splice(indexHompagePost, 1);
             currentMyPosts.splice(indexMyPost, 1);
+            currentPostPendingApproval.splice(indexPostPendingApproval, 1);
 
             state.homePagePosts = currentHomePagePosts;
             state.profilePosts = currentMyPosts;
+            state.profilePostsPendingApproval = currentPostPendingApproval;
             toast.success('Xóa bài thành công');
         });
 
@@ -81,12 +101,15 @@ const postSlice = createSlice({
             const indexProfilePost = state.profilePosts.findIndex((post) => post._id === commentData.post._id);
             const newPostData = {
                 ...commentData.post,
-                author: state.homePagePosts[indexHomePagePost].author,
+                author: state.homePagePosts[indexHomePagePost]?.author,
             };
 
             state.homePagePosts[indexHomePagePost] = newPostData;
             state.profilePosts[indexProfilePost] = newPostData;
-
+            state.post = {
+                ...commentData.post,
+                author: state.post.author,
+            };
             delete commentData.post;
             state.comments = [{ ...commentData }, ...state.comments];
         });
@@ -98,6 +121,7 @@ const postSlice = createSlice({
 
             state.homePagePosts[indexHompagePost] = postData;
             state.profilePosts[indexMyPost] = postData;
+            state.post = postData;
         });
         builder.addMatcher(postAPI.endpoints.unlikePost.matchFulfilled, (state, action) => {
             const postData = action.payload;
@@ -105,9 +129,11 @@ const postSlice = createSlice({
             const indexMyPost = state.profilePosts.findIndex((post) => post._id === action.payload._id);
             state.homePagePosts[indexHompagePost] = postData;
             state.profilePosts[indexMyPost] = postData;
+            state.post = postData;
         });
     },
 });
 
-export const { resetHomePagePosts, updateAuthorPosts, resetProfilePosts } = postSlice.actions;
+export const { resetHomePagePosts, updateAuthorPosts, resetProfilePosts, resetProfilePostsPendingApproval } =
+    postSlice.actions;
 export default postSlice.reducer;

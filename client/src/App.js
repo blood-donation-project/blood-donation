@@ -40,6 +40,8 @@ import ManageEventAd from './components/Admin/ManageEventAd';
 import NotificationAdmin from './components/Admin/NotificationAdmin';
 import ManagePost from './components/Admin/ManagePost';
 import AcceptPost from './components/Admin/AcceptPost';
+import ProfileLayout from './layouts/ProfileLayout';
+import PostPage from './pages/Post/PostPage';
 
 function App() {
     return (
@@ -105,6 +107,7 @@ function App() {
                         </FriendLayout>
                     }
                 />
+                <Route path="/post/:postId" element={<PostPage />} />
 
                 {/* Admin Page */}
                 <Route path="/v1/admin/" element={<HomeAdmin />} />
@@ -115,10 +118,38 @@ function App() {
                 <Route path="/v1/admin/manage-post/accept-post" element={<AcceptPost />} />
                 {/* End Admin Page */}
 
-                <Route path="/user/:id" element={<ProfilePage />} />
-                <Route path="/user/:id/about" element={<AboutPage />} />
-                <Route path="/user/:id/friends" element={<ProfileFriendsPage />} />
-                <Route path="/user/:id/photos" element={<PhotosPage />} />
+                <Route
+                    path="/user/:id"
+                    element={
+                        <ProfileLayout>
+                            <ProfilePage />
+                        </ProfileLayout>
+                    }
+                />
+                <Route
+                    path="/user/:id/about"
+                    element={
+                        <ProfileLayout>
+                            <AboutPage />
+                        </ProfileLayout>
+                    }
+                />
+                <Route
+                    path="/user/:id/friends"
+                    element={
+                        <ProfileLayout>
+                            <ProfileFriendsPage />
+                        </ProfileLayout>
+                    }
+                />
+                <Route
+                    path="/user/:id/photos"
+                    element={
+                        <ProfileLayout>
+                            <PhotosPage />
+                        </ProfileLayout>
+                    }
+                />
 
                 <Route path="/search/all" element={<SearchAllPage />} />
                 <Route path="/search/posts" element={<SearchPostsPage />} />

@@ -9,6 +9,7 @@ const friendSlice = createSlice({
         suggestedFriends: [],
         friendRequests: [],
         followers: [],
+        searchFriends: [],
     },
     reducers: {
         resetFriends: (state, _) => {
@@ -35,10 +36,19 @@ const friendSlice = createSlice({
                 friendRequests: [],
             };
         },
+        resetSearchMyFriends: (state, _) => {
+            return {
+                ...state,
+                searchFriends: [],
+            };
+        },
     },
     extraReducers: (builder) => {
         builder.addMatcher(friendAPI.endpoints.getAllFriends.matchFulfilled, (state, action) => {
             state.friends = [...state.friends, ...action.payload.data];
+        });
+        builder.addMatcher(friendAPI.endpoints.searchMyFriends.matchFulfilled, (state, action) => {
+            state.searchFriends = action.payload;
         });
         builder.addMatcher(friendAPI.endpoints.getAllFollowedFacilities.matchFulfilled, (state, action) => {
             state.followers = [...state.followers, ...action.payload.data];
@@ -95,7 +105,10 @@ const friendSlice = createSlice({
             state.friends[indexFriend] = user;
         });
         builder.addMatcher(friendAPI.endpoints.follow.matchFulfilled, (state, action) => {
-            state.followers = [...state.followers, action.payload];
+            const user = action.payload;
+            state.followers = [...state.followers, user];
+            const index = state.suggestedFriends.findIndex((suggest) => user._id === suggest._id);
+            state.suggestedFriends[index] = user;
         });
         builder.addMatcher(friendAPI.endpoints.unfollow.matchFulfilled, (state, action) => {
             const currentFollowers = state.followers;
@@ -107,5 +120,6 @@ const friendSlice = createSlice({
     },
 });
 
-export const { resetFriends, resetSuggestedFriends, resetFollowers, resetFriendRequests } = friendSlice.actions;
+export const { resetSearchMyFriends, resetFriends, resetSuggestedFriends, resetFollowers, resetFriendRequests } =
+    friendSlice.actions;
 export default friendSlice.reducer;

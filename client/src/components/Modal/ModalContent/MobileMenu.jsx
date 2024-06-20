@@ -60,8 +60,8 @@ const MobileMenu = ({ hideModal }) => {
                             />
                         </div>
                         <div className="ml-2">
-                            <p className="text-[14px] font-semibold leading-[14px] line-clamp-1">{user.username}</p>
-                            <span className="text-[14px] text-[#65676B]">Xem trang cá nhân của bạn</span>
+                            <p className="text-[16px] font-semibold leading-[14px] line-clamp-1">{user.username}</p>
+                            <span className="text-[16px] text-[#65676B]">Xem trang cá nhân của bạn</span>
                         </div>
                     </Link>
                 </div>
@@ -76,7 +76,7 @@ const MobileMenu = ({ hideModal }) => {
                                 <BsMessenger />
                             </div>
                             <div className="mt-2">
-                                <p className="text-[14px] font-semibold leading-[14px]">Tin nhắn</p>
+                                <p className="text-[16px] font-semibold leading-[14px]">Tin nhắn</p>
                             </div>
                         </Link>
                     </div>
@@ -89,7 +89,7 @@ const MobileMenu = ({ hideModal }) => {
                                 <HiMiniUsers />
                             </div>
                             <div className="mt-2">
-                                <p className="text-[14px] font-semibold leading-[14px]">Bạn bè</p>
+                                <p className="text-[16px] font-semibold leading-[14px]">Bạn bè</p>
                             </div>
                         </Link>
                     </div>
@@ -102,7 +102,7 @@ const MobileMenu = ({ hideModal }) => {
                                 <FaBell />
                             </div>
                             <div className="mt-2">
-                                <p className="text-[14px] font-semibold leading-[14px]">Thông báo</p>
+                                <p className="text-[16px] font-semibold leading-[14px]">Thông báo</p>
                             </div>
                         </Link>
                     </div>
@@ -115,7 +115,7 @@ const MobileMenu = ({ hideModal }) => {
                                 <MdEvent />
                             </div>
                             <div className="mt-2">
-                                <p className="text-[14px] font-semibold leading-[14px]">Sự kiện</p>
+                                <p className="text-[16px] font-semibold leading-[14px]">Sự kiện</p>
                             </div>
                         </Link>
                     </div>
@@ -127,7 +127,7 @@ const MobileMenu = ({ hideModal }) => {
                             <MdOutlineAdminPanelSettings className="w-6 h-6" />
                         </div>
                         <div className="ml-2">
-                            <p className="text-[14px] font-semibold leading-[14px]">Chuyển tới trang Admin</p>
+                            <p className="text-[16px] font-semibold leading-[14px]">Chuyển tới trang Admin</p>
                         </div>
                     </Link>
                 </div>
@@ -140,7 +140,7 @@ const MobileMenu = ({ hideModal }) => {
                             <LuLogOut className="w-6 h-6" />
                         </div>
                         <div className="ml-2">
-                            <p className="text-[14px] font-semibold leading-[14px]">Đăng xuất</p>
+                            <p className="text-[16px] font-semibold leading-[14px]">Đăng xuất</p>
                         </div>
                     </Link>
                 </div>
