@@ -112,7 +112,7 @@ async function sendEmailForgotPassword(email, name, url) {
                     /* Button */
                     .btn { display: inline-block; padding: 12px 24px; background-color: #0866ff; color: #fff; text-decoration: none; border-radius: 5px; text-align: center; }
                     .btn:hover { background-color: #1877f2; } /* Hiệu ứng hover */
-            
+                    .text-btn {color: #fff !important;}
                     /* Footer */
                     .footer { text-align: center; font-size: 12px; color: #666; margin-top: 30px; }
                 </style>
@@ -126,7 +126,7 @@ async function sendEmailForgotPassword(email, name, url) {
             
                     <div class="content">
                         <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Để đặt lại mật khẩu, vui lòng nhấp vào liên kết dưới đây:</p>
-                        <a href="${url}" class="btn"><span>Đặt lại mật khẩu</span></a>
+                        <a href="${url}" class="btn"><span class="text-btn">Đặt lại mật khẩu</span></a>
                         <p>Lưu ý: Liên kết này sẽ hết hạn sau 10 phút </p>
                         <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này và mật khẩu của bạn sẽ không bị thay đổi.</p>
                         <p>Nếu bạn có bất kỳ câu hỏi nào, xin vui lòng liên hệ với bộ phận hỗ trợ của chúng tôi qua email: vanquang200310@gmail.com</p>
