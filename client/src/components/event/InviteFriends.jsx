@@ -1,35 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI';
 import { useInviteFriendsMutation } from '../../Redux/features/events/eventAPI';
-import { useGetInviteEventNotifiMutation } from '../../Redux/features/notification/notifiAPI';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 
-const InviteFriends = ({ isOpen, onClose, currentUser, friends }) => {
+const InviteFriends = ({ isOpen, onClose, currentUser, friends, notificationData, setNotificationData }) => {
     const params = useParams();
     const [inviteFriend] = useInviteFriendsMutation();
-    const [getNotification] = useGetInviteEventNotifiMutation();
-    const [localNotificationData, setLocalNotificationData] = useState([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const notifications = await getNotification({
-                    type: `InviteEvent_${params.id}_${currentUser?._id}`,
-                }).unwrap();
-                setLocalNotificationData(notifications);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getNotification, currentUser?._id, params.id]);
 
     const handleInviteFriend = async (friendId) => {
         try {
             const eventId = params.id;
             await inviteFriend({ friendId, eventId }).unwrap();
-            setLocalNotificationData((prevData) => [
+            // Cập nhật notificationData ngay lập tức
+            setNotificationData((prevData) => [
                 ...prevData,
                 {
                     userId: friendId,
@@ -42,7 +25,7 @@ const InviteFriends = ({ isOpen, onClose, currentUser, friends }) => {
     };
 
     const isFriendInvited = (friendId) => {
-        return localNotificationData.some((notification) => {
+        return notificationData.some((notification) => {
             const [prefix, notifEventId, notifUserId] = notification.type.split('_');
             return (
                 prefix === 'InviteEvent' &&
@@ -103,11 +86,11 @@ const InviteFriends = ({ isOpen, onClose, currentUser, friends }) => {
                                 </div>
                             </div>
 
-                            {friends?.data?.map((item, index) => (
+                            {friends?.data?.slice(0, 3).map((item, index) => (
                                 <div key={index} className="overflow-y-auto max-h-80">
                                     <div className="flex items-center space-x-6 p-1 mb-2 rounded-xl">
                                         <img className="w-12 h-12 rounded-full" src={item?.avatar} alt="" />
-                                        <div className=" flex items-center justify-between w-full transition-all duration-500">
+                                        <div className="text-lg flex items-center justify-between w-full">
                                             <Link className="hover:underline" to={`/user/${item?._id}`}>
                                                 {item?.username}
                                             </Link>
@@ -118,8 +101,8 @@ const InviteFriends = ({ isOpen, onClose, currentUser, friends }) => {
                                                 </div>
                                             ) : (
                                                 <button
-                                                    className="hover:bg-gray-300 p-2 px-4 rounded-lg"
                                                     onClick={() => handleInviteFriend(item._id)}
+                                                    className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg"
                                                 >
                                                     Mời
                                                 </button>

@@ -196,8 +196,6 @@ const DetailEvent = () => {
         }
     };
 
-    console.log(friends);
-
     return (
         <div className="">
             <NavMenu />
@@ -271,6 +269,8 @@ const DetailEvent = () => {
                             onClose={() => setOpenInvite(false)}
                             currentUser={userData}
                             friends={friends}
+                            notificationData={localNotificationData}
+                            setNotificationData={setLocalNotificationData}
                         />
                         <div className={`${userData?.role === 'Cơ sở y tế' ? '' : 'hidden'} p-1`}>
                             <button
