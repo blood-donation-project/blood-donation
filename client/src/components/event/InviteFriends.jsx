@@ -5,17 +5,15 @@ import { useInviteFriendsMutation } from '../../Redux/features/events/eventAPI';
 import { useGetInviteEventNotifiMutation } from '../../Redux/features/notification/notifiAPI';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 
-const InviteFriends = ({ isOpen, onClose, currentUser }) => {
+const InviteFriends = ({ isOpen, onClose, currentUser, friends }) => {
     const params = useParams();
     const [inviteFriend] = useInviteFriendsMutation();
     const [getNotification] = useGetInviteEventNotifiMutation();
-    const [getAllFriends, { data: friends }] = useGetAllFriendsMutation();
     const [localNotificationData, setLocalNotificationData] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await getAllFriends({ userId: currentUser?._id }).unwrap();
                 const notifications = await getNotification({
                     type: `InviteEvent_${params.id}_${currentUser?._id}`,
                 }).unwrap();
@@ -25,7 +23,7 @@ const InviteFriends = ({ isOpen, onClose, currentUser }) => {
             }
         };
         fetchData();
-    }, [getAllFriends, getNotification, currentUser?._id, params.id]);
+    }, [getNotification, currentUser?._id, params.id]);
 
     const handleInviteFriend = async (friendId) => {
         try {

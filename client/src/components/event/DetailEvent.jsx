@@ -14,6 +14,7 @@ import {
     useCheckRegisEventMutation,
     useDeleteEventMutation,
     useGetEventByIdEventQuery,
+    useInviteFriendsMutation,
     useJoinEventMutation,
 } from '../../Redux/features/events/eventAPI';
 import { useGetUserMutation } from '../../Redux/features/user/userAPI';
@@ -23,10 +24,15 @@ import DetailJoiner from './DetailJoiner';
 import { toast } from 'react-toastify';
 import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 import InviteFriends from './InviteFriends';
-
+import { useGetInviteEventNotifiMutation } from '../../Redux/features/notification/notifiAPI';
+import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI';
+import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 const DetailEvent = () => {
     useAutoRefreshToken('/home/');
-
+    const [inviteFriend] = useInviteFriendsMutation();
+    const [getNotification] = useGetInviteEventNotifiMutation();
+    const [getAllFriends, { data: friends }] = useGetAllFriendsMutation();
+    const [localNotificationData, setLocalNotificationData] = useState([]);
     const [showMore, setShowMore] = useState(false);
     const params = useParams();
     const navigate = useNavigate();
@@ -55,6 +61,51 @@ const DetailEvent = () => {
         fetchUser();
     }, [getUser]);
 
+    // Invite Friend
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getAllFriends({ userId: userData?._id, limit: 10 }).unwrap();
+
+                const notifications = await getNotification({
+                    type: `InviteEvent_${params.id}_${userData?._id}`,
+                }).unwrap();
+                setLocalNotificationData(notifications);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getAllFriends, getNotification, userData?._id, params.id]);
+
+    const handleInviteFriend = async (friendId) => {
+        try {
+            const eventId = params.id;
+            await inviteFriend({ friendId, eventId }).unwrap();
+            setLocalNotificationData((prevData) => [
+                ...prevData,
+                {
+                    userId: friendId,
+                    type: `InviteEvent_${eventId}_${userData._id}`,
+                },
+            ]);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const isFriendInvited = (friendId) => {
+        return localNotificationData.some((notification) => {
+            const [prefix, notifEventId, notifUserId] = notification.type.split('_');
+            return (
+                prefix === 'InviteEvent' &&
+                notifEventId === params.id &&
+                notifUserId === userData._id &&
+                notification.userId === friendId
+            );
+        });
+    };
     useEffect(() => {
         try {
             const fetchData = async () => {
@@ -145,6 +196,8 @@ const DetailEvent = () => {
         }
     };
 
+    console.log(friends);
+
     return (
         <div className="">
             <NavMenu />
@@ -217,6 +270,7 @@ const DetailEvent = () => {
                             isOpen={isOpenInvite}
                             onClose={() => setOpenInvite(false)}
                             currentUser={userData}
+                            friends={friends}
                         />
                         <div className={`${userData?.role === 'Cơ sở y tế' ? '' : 'hidden'} p-1`}>
                             <button
@@ -354,57 +408,53 @@ const DetailEvent = () => {
                                             {/* Check role */}
                                             <div className={`${userData?.role !== 'Cơ sở y tế' ? '' : 'hidden'}`}>
                                                 <div className="border-b-2 border-gray-400 mt-2"></div>
-                                                <div className="flex px-4 pt-4  font-thin items-center gap-2 ">
+                                                <div className="flex px-4 pt-4  font-thin items-center justify-between gap-2 ">
                                                     <h1 className="text-xl font-bold">Đi cùng bạn bè</h1>
+                                                    <button
+                                                        className="text-sm text-blue-500 hover:underline"
+                                                        onClick={() => setOpenInvite(!isOpenInvite)}
+                                                    >
+                                                        Xem tất cả
+                                                    </button>
                                                 </div>
 
                                                 {/* Map Friends */}
-                                                <div className="my-4">
-                                                    <Link
-                                                        to={''}
-                                                        className="flex px-4  font-thin items-center gap-2 hover:bg-gray-200 rounded-xl"
-                                                    >
-                                                        <div className="flex items-center w-full">
-                                                            <div className="my-2 mr-3">
-                                                                <img
-                                                                    className="w-9 h-9 rounded-full"
-                                                                    src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717557842/news_images/fcqms56gcinpofmgq0pi.jpg"
-                                                                    alt=""
-                                                                />
-                                                            </div>
-                                                            <div className="flex items-center justify-between w-full">
-                                                                <div>
-                                                                    <p>Lê Minh Tuấn</p>
+                                                {friends?.data?.slice(0, 3)?.map((item, index) => (
+                                                    <div key={index} className="my-4">
+                                                        <div className="flex px-4  font-thin items-center gap-2 hover:bg-gray-200 rounded-xl">
+                                                            <div className="flex items-center w-full">
+                                                                <div className="my-2 mr-3">
+                                                                    <img
+                                                                        className="w-9 h-9 rounded-full"
+                                                                        src={item?.avatar}
+                                                                        alt=""
+                                                                    />
                                                                 </div>
-                                                                <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
-                                                                    Mời
-                                                                </button>
+                                                                <div className="flex items-center justify-between w-full">
+                                                                    <Link
+                                                                        className="hover:underline"
+                                                                        to={`/user/${item?._id}`}
+                                                                    >
+                                                                        <p>{item?.username}</p>
+                                                                    </Link>
+                                                                    {isFriendInvited(item._id) ? (
+                                                                        <div className="p-2 flex items-center gap-1 text-blue-500 bg-blue-100 rounded-lg cursor-default border border-blue-400">
+                                                                            <IoMdCheckmarkCircleOutline className="w-5 h-5" />
+                                                                            Đã mời
+                                                                        </div>
+                                                                    ) : (
+                                                                        <button
+                                                                            className="hover:bg-gray-300 bg-gray-300 p-2 px-4 rounded-lg"
+                                                                            onClick={() => handleInviteFriend(item._id)}
+                                                                        >
+                                                                            Mời
+                                                                        </button>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </Link>
-                                                    <Link
-                                                        to={''}
-                                                        className="flex px-4  font-thin items-center gap-2 hover:bg-gray-200 rounded-xl"
-                                                    >
-                                                        <div className="flex items-center w-full">
-                                                            <div className="my-2 mr-3">
-                                                                <img
-                                                                    className="w-9 h-9 rounded-full"
-                                                                    src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1717557842/news_images/fcqms56gcinpofmgq0pi.jpg"
-                                                                    alt=""
-                                                                />
-                                                            </div>
-                                                            <div className="flex items-center justify-between w-full">
-                                                                <div>
-                                                                    <p>Lê Minh Tuấn</p>
-                                                                </div>
-                                                                <button className="py-2 px-4 bg-gray-300 hover:bg-gray-400 rounded-lg">
-                                                                    Mời
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </Link>
-                                                </div>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
