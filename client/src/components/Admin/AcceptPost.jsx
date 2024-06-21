@@ -2,15 +2,21 @@ import React, { useEffect, useState } from 'react';
 import Menu from './Menu';
 import { IoSearchOutline, IoFilter } from 'react-icons/io5';
 import Datepicker from 'react-tailwindcss-datepicker';
+
 import { Image } from 'antd';
-import { Link, useParams } from 'react-router-dom';
-import { useGetAllUnPublishPostsQuery, usePublishPostMutation } from '../../Redux/features/post/postAPI';
+import { Link } from 'react-router-dom';
+import {
+    useGetAllUnPublishPostsMutation,
+    usePublishPostMutation,
+    useRefusePostMutation,
+} from '../../Redux/features/post/postAPI';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 
 const AcceptPost = () => {
-    const { data: dataUnpublishPost, refetch } = useGetAllUnPublishPostsQuery();
+    const [getUnPublishPosts, { data: dataUnpublishPost }] = useGetAllUnPublishPostsMutation();
     const [publishPosts] = usePublishPostMutation();
+    const [refusePosts] = useRefusePostMutation();
     const [input, setInput] = useState('');
     const [isOpenFilter, setOpenFilter] = useState(false);
     const [dateValue, setDateValue] = useState({
@@ -20,26 +26,56 @@ const AcceptPost = () => {
 
     const [unpublishedPosts, setUnpublishedPosts] = useState([]);
 
+    const handleDateValueChange = (newValue) => {
+        setDateValue(newValue);
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await getUnPublishPosts().unwrap();
+        };
+        fetchData();
+    }, [getUnPublishPosts]);
+
     useEffect(() => {
         if (dataUnpublishPost) {
             setUnpublishedPosts(dataUnpublishPost);
         }
     }, [dataUnpublishPost]);
 
-    const handleDateValueChange = (newValue) => {
-        setDateValue(newValue);
+    const handleFilter = async () => {
+        const content = {
+            searchContent: input,
+            startDate: dateValue.startDate,
+            endDate: dateValue.endDate,
+        };
+        await getUnPublishPosts(content).unwrap();
     };
 
-    const handleFilter = async () => {};
+    const handleSubmit = async () => {
+        const content = {
+            searchContent: input,
+            startDate: dateValue.startDate,
+            endDate: dateValue.endDate,
+        };
+        await getUnPublishPosts(content).unwrap();
+    };
 
-    const handleSubmit = async () => {};
-
-    const handlePublish = async (id) => {
+    const handlePublish = async (postId) => {
         try {
-            await publishPosts(id).unwrap();
-            setUnpublishedPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
-            refetch();
-            toast.success('Phê duyệt thành công');
+            await publishPosts(postId).unwrap();
+            setUnpublishedPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+
+            toast.success('Phê duyệt thành công!');
+        } catch (error) {}
+    };
+
+    const handleRefuse = async (postId) => {
+        try {
+            await refusePosts(postId).unwrap();
+            setUnpublishedPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+
+            toast.success('Từ chối thành công!');
         } catch (error) {}
     };
 
@@ -106,11 +142,14 @@ const AcceptPost = () => {
                         <div className="max-w-3xl max-h-[500px] mx-auto   rounded-2xl overflow-auto">
                             {/* Map here */}
                             {unpublishedPosts?.map((item, index) => (
-                                <div className="bg-gray-100 rounded-2xl mb-4 p-4">
+                                <div key={item?._id} className="bg-gray-100 rounded-2xl mb-4 p-4">
                                     <div className="flex items-center gap-2 md:mb-4 mb-2 md:ml-4 ">
                                         <img className="w-10 h-10 rounded-full" src={item?.userId?.avatar} alt="" />
                                         <div className="flex flex-col ">
-                                            <Link to={'/user/'} className="leading-none hover:underline">
+                                            <Link
+                                                to={`/user/${item?.userId?._id}`}
+                                                className="leading-none hover:underline"
+                                            >
                                                 {item?.userId?.username}
                                             </Link>
                                             <p className="text-sm text-gray-500">{moment(item?.createdAt).fromNow()}</p>
@@ -129,7 +168,10 @@ const AcceptPost = () => {
                                         >
                                             Phê Duyệt
                                         </button>
-                                        <button className="px-6 md:w-[25%] w-1/2 py-2 bg-gray-300 hover:bg-slate-400 rounded-lg">
+                                        <button
+                                            onClick={() => handleRefuse(item?._id)}
+                                            className="px-6 md:w-[25%] w-1/2 py-2 bg-gray-300 hover:bg-slate-400 rounded-lg"
+                                        >
                                             Từ Chối
                                         </button>
                                     </div>

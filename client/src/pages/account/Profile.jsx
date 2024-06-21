@@ -89,7 +89,7 @@ const ProfilePage = () => {
             dispatch(resetProfilePostsPendingApproval());
             fetchProfilePostsApproval();
         }
-    }, [activeId]);
+    }, [activeId, id]);
 
     // Friends and photos
     useEffect(() => {
@@ -98,13 +98,13 @@ const ProfilePage = () => {
 
         getAllFriends({ userId: id, limit: 9, page: 1 }).unwrap();
         getPhotos({ userId: id, limit: 9, page: 1 }).unwrap();
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         if (divRef.current) {
             setDivHeight(divRef.current.offsetHeight);
         }
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         if (pagination?.links.next) {

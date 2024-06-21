@@ -134,9 +134,7 @@ const userController = {
             const user = await User.findById(userId);
             if (user.block) {
                 await User.findByIdAndUpdate(userId, { block: false });
-                return res
-                    .status(200)
-                    .json({ message: 'UnLock successfully!' });
+                return res.status(200).json({ message: 'UnLock successfully!' });
             } else {
                 await User.findByIdAndUpdate(userId, { block: true });
                 return res.status(200).json({ message: 'Lock successfully!' });
@@ -205,9 +203,7 @@ const userController = {
                 return res.status(401).json({ message: 'No token provided' });
             }
             const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_KEY);
-            const user = await User.findById(decodedToken.id).select(
-                '-password'
-            );
+            const user = await User.findById(decodedToken.id).select('-password');
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -218,9 +214,7 @@ const userController = {
                     _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
                 });
                 if (checkIdentification) {
-                    return res
-                        .status(409)
-                        .json({ message: 'Identification exist' });
+                    return res.status(409).json({ message: 'Identification exist' });
                 }
             }
             if (phoneNumber && phoneNumber.trim() !== '') {
@@ -229,9 +223,7 @@ const userController = {
                     _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
                 });
                 if (checkPhoneNumber) {
-                    return res
-                        .status(409)
-                        .json({ message: 'PhoneNumber exist' });
+                    return res.status(409).json({ message: 'PhoneNumber exist' });
                 }
             }
 
@@ -246,7 +238,7 @@ const userController = {
                     address,
                     bloodGroup,
                     role,
-                }
+                },
             );
             res.status(200).json(result);
         } catch (error) {
@@ -254,13 +246,11 @@ const userController = {
         }
     },
 
-      
-
     // Get UserByMonth
     getUserByMonths: async (req, res) => {
         try {
             const allMonths = Array.from({ length: 12 }, (_, i) =>
-                new Date(0, i).toLocaleString('en-US', { month: 'long' })
+                new Date(0, i).toLocaleString('en-US', { month: 'long' }),
             );
             const currentYear = new Date().getFullYear();
 
@@ -285,17 +275,12 @@ const userController = {
                             { $sort: { _id: 1 } },
                         ],
                         totalUsers: [{ $count: 'count' }],
-                        totalRoles: [
-                            { $group: { _id: '$role', count: { $sum: 1 } } },
-                        ],
+                        totalRoles: [{ $group: { _id: '$role', count: { $sum: 1 } } }],
                     },
                 },
             ]);
 
-            const usersByMonth = fillMissingMonths(
-                result[0].usersByMonth,
-                allMonths
-            );
+            const usersByMonth = fillMissingMonths(result[0].usersByMonth, allMonths);
             const totalUsers = result[0].totalUsers[0]?.count || 0;
             const totalRoles = result[0].totalRoles;
 
@@ -309,7 +294,6 @@ const userController = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
-
 };
 
 function fillMissingMonths(data, allMonths) {

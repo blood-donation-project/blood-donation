@@ -7,11 +7,17 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { FaEye } from 'react-icons/fa';
 import { useGetAllPostsByAdminMutation } from '../../Redux/features/post/postAPI';
 import moment from 'moment';
+import DetailPosts from './DetailPosts';
 
 const ManagePost = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [getAllPost, { data: getDataPosts }] = useGetAllPostsByAdminMutation();
-
+    const [postId, setPostId] = useState('');
+    // Open Popup Detail Post
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const togglePopup = () => {
+        setIsPopupOpen(!isPopupOpen);
+    };
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -93,7 +99,15 @@ const ManagePost = () => {
                                         <td>{moment(item?.updateAt).format('DD/MM/YYYY')}</td>
                                         <td className="text-center content-center">
                                             <div className="flex justify-end items-center gap-2">
-                                                <FaEye />
+                                                <button
+                                                    className="hover:bg-gray-200 p-2 rounded-full"
+                                                    onClick={() => {
+                                                        setPostId(item?._id);
+                                                        togglePopup();
+                                                    }}
+                                                >
+                                                    <FaEye />
+                                                </button>
                                                 <Popconfirm
                                                     title={'Xóa bài viết'}
                                                     description={'Bạn chắc chắn muốn xóa bài viết này không?'}
@@ -105,6 +119,7 @@ const ManagePost = () => {
                                                     </div>
                                                 </Popconfirm>
                                             </div>
+                                            <DetailPosts isOpen={isPopupOpen} onClose={togglePopup} postId={postId} />
                                         </td>
                                     </tr>
                                 ))}

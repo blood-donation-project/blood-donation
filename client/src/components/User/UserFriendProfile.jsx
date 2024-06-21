@@ -10,7 +10,7 @@ const UserFriendProfile = ({ className, friendData }) => {
             <Tippy
                 interactive={true}
                 placement="bottom-start"
-                delay={[400, 0]}
+                delay={[500, 0]}
                 appendTo={document.body}
                 render={(attrs) => (
                     <div
@@ -29,7 +29,7 @@ const UserFriendProfile = ({ className, friendData }) => {
                         alt="avatar"
                     />
                     <div>
-                        <span className="text-[12px] font-semibold">{friendData.username}</span>
+                        <span className="text-[12px] font-semibold line-clamp-1">{friendData.username}</span>
                     </div>
                 </div>
             </Tippy>

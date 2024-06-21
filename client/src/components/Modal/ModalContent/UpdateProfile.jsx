@@ -477,6 +477,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     className="block w-full outline-none border border-[#ccc] py-[2px] mt-[2px]"
                                     {...register('role')}
                                     defaultValue={user?.role}
+                                    disabled={user?.role === 'Cơ sở y tế'}
                                     onChange={handleInputChange}
                                 >
                                     <option value={user?.role}>{user?.role}</option>
@@ -492,6 +493,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                     className="block w-full outline-none border border-[#ccc] py-[2px] mt-[2px]"
                                     {...register('bloodType')}
                                     defaultValue={profileData.bloodType}
+                                    disabled={user?.role === 'Cơ sở y tế'}
                                     onChange={handleInputChange}
                                 >
                                     {user?.bloodGroup ? (

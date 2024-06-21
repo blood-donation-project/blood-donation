@@ -24,7 +24,8 @@ const Notification = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await getNotification(userData?._id).unwrap();
+                const notifications = await getNotification(userData?._id).unwrap();
+                console.log('Notifications:', notifications); // Log dữ liệu để kiểm tra
             } catch (error) {
                 console.log(error);
             }
@@ -35,22 +36,20 @@ const Notification = () => {
     return (
         <>
             <NavMenu />
-            <div className="flex justify-center xs:mt-[96px] md:mt-[50px] py-3  min-h-screen bg-[#f0f2f5] ">
+            <div className="flex justify-center xs:mt-[96px] md:mt-[50px] py-3 min-h-screen bg-[#f0f2f5]">
                 {/* Content */}
-                <div className=" xs:w-full h-fit md:w-[680px] md:px-4 bg-white shadow-md  md:rounded-[10px]">
+                <div className="xs:w-full h-fit md:w-[680px] md:px-4 bg-white shadow-md md:rounded-[10px]">
                     <div className="">
                         <div className="p-2">
                             <h1 className="text-[22px] font-bold">Thông báo</h1>
 
                             {/* Map dữ liệu thông báo từ api */}
-
                             {notifiData?.map((item, index) => (
-                                <Link
-                                    key={index}
-                                    className="grid pt-4 hover:bg-[#d2d2d2] rounded-[6px]"
-                                    to={item.content.link}
-                                >
-                                    <div className="flex">
+                                <div key={index} className="grid pt-6">
+                                    <Link
+                                        to={item?.content?.link && item?.content?.link}
+                                        className="flex hover:cursor-pointer hover:bg-[#ebedf0] px-2 py-2 rounded"
+                                    >
                                         {item?.content?.image && (
                                             <div>
                                                 <Avatar
@@ -62,13 +61,14 @@ const Notification = () => {
                                         )}
                                         <div className="ml-2">
                                             <div
-                                                className="text-[16px] leading-[14px]"
-                                                dangerouslySetInnerHTML={{ __html: item?.content.text }}
-                                            ></div>
-                                            <span className="text-[12px]">{moment(item?.createAt).fromNow()}</span>
+                                                className="text-[14px] leading-[14px] hover:bg-slate-200 p-1"
+                                                dangerouslySetInnerHTML={{ __html: item.content.text }}
+                                            />
+
+                                            <span className="text-[12px]">{moment(item.createAt).fromNow()}</span>
                                         </div>
-                                    </div>
-                                </Link>
+                                    </Link>
+                                </div>
                             ))}
                             {!isLoadingNotifi && notifiData?.length === 0 && (
                                 <div className="py-3 flex-center">

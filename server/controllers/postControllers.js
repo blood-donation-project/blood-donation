@@ -5,13 +5,13 @@ const Friends = require('../models/friends');
 const FriendRequest = require('../models/friendRequests');
 const Notification = require('../models/notifications');
 const mongoose = require('mongoose');
+const User = require('../models/user');
 
 const dotenv = require('dotenv');
 dotenv.config();
 
 const createPagination = require('../utils/pagination/createPagination');
 const uploadImageCloudinary = require('../utils/cloudinary/uploadImage');
-const User = require('../models/user');
 
 const postControllers = {
     createPost: async (req, res) => {
@@ -655,8 +655,9 @@ const postControllers = {
     getAllPost: async (req, res) => {
         try {
             const { searchTerm } = req.body;
-            console.log(req.body);
-            let query = {};
+            let query = {
+                verified: true,
+            };
             if (searchTerm) {
                 const isObjectId = mongoose.Types.ObjectId.isValid(searchTerm);
                 if (isObjectId) {
@@ -677,7 +678,24 @@ const postControllers = {
     },
     getUnpublishedPost: async (req, res) => {
         try {
-            const postsUnPublish = await Posts.find({ verified: false }).populate({
+            const { searchContent, startDate, endDate } = req.body;
+            let query = {
+                verified: false,
+            };
+
+            if (searchContent) {
+                query.content = { $regex: searchContent, $options: 'i' };
+            }
+
+            if (startDate && endDate) {
+                query.createdAt = {
+                    $gte: new Date(startDate),
+                    $lte: new Date(endDate),
+                };
+            }
+
+            console.log(query);
+            const postsUnPublish = await Posts.find(query).populate({
                 path: 'userId',
                 select: 'username avatar introduce',
             });
@@ -690,10 +708,16 @@ const postControllers = {
     publishPosts: async (req, res) => {
         const { postId } = req.body;
 
-        const post = await Posts.find({ _id: postId });
-        if (post.length === 0) {
+        const post = await Posts.findOne({ _id: postId }).populate({
+            path: 'userId',
+            select: 'username avatar introduce',
+        });
+        if (!post) {
             return res.status(400).json('Post not found');
         }
+        const content = {
+            text: `<p>Xin chào!👋 <strong>${post.userId.username}</strong>. Bài viết của bạn đã được duyệt thành công! Hãy cùng nhau xây dựng một cộng đồng hiến máu văn minh nhé ❤️</p>`,
+        };
         const publishPosts = await Posts.findByIdAndUpdate(postId, { verified: true });
 
         const author = await User.findById(publishPosts.userId);
@@ -717,6 +741,7 @@ const postControllers = {
 
             await Notification.insertMany(notifications);
         }
+
         res.status(200).json(publishPosts);
     },
     getPostByMonths: async (req, res) => {
@@ -762,6 +787,35 @@ const postControllers = {
             });
         } catch (error) {
             console.error('Error in getPostsByMonths:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    refusePost: async (req, res) => {
+        try {
+            const { postId } = req.body;
+
+            const post = await Posts.findOne({ _id: postId }).populate({
+                path: 'userId',
+                select: 'username avatar introduce',
+            });
+            if (!post) {
+                return res.status(400).json('Post not found');
+            }
+
+            await Posts.findByIdAndDelete(postId);
+
+            const content = {
+                text: `<p>Xin chào 👋 <strong>${post.userId.username}</strong>. Bài viết của bạn đã bị từ chối ❌</p>`,
+            };
+            const newNotification = new Notification({
+                userId: post.userId._id,
+                content,
+                type: 'AcceptPosts',
+            });
+            await newNotification.save();
+            res.status(200).json({ message: 'Delete Post Successfully' });
+        } catch (error) {
+            console.log(error);
             res.status(500).json({ message: 'Internal server error' });
         }
     },

@@ -322,45 +322,41 @@ const NavMenu = () => {
                         }}
                         visible={isShowingNotify}
                         render={(attrs) => (
-                            <div className="bg-white shadow-md w-[340px] rounded-[10px]" tabIndex="-1" {...attrs}>
+                            <div className="bg-white shadow-md w-[360px]  rounded-[10px]" tabIndex="-1" {...attrs}>
                                 <div className="p-2">
                                     <h1 className="text-[20px] font-bold">Thông báo</h1>
                                     {/* Map dữ liệu thông báo từ api */}
-                                    {notifiData?.map((item, index) => (
-                                        <Link
-                                            key={index}
-                                            className="grid py-2 hover:bg-[#d2d2d2] rounded-[6px]"
-                                            to={item.content.link}
-                                        >
-                                            <div className="flex">
-                                                {item?.content?.image && (
-                                                    <div>
-                                                        <Avatar
-                                                            className="w-9 h-9 rounded-[50%]"
-                                                            src={item?.content?.image}
-                                                            alt="avatar"
+
+                                    <div className="max-h-[500px] overflow-y-auto">
+                                        {notifiData?.map((item, index) => (
+                                            <Link
+                                                to={item?.content?.link && item?.content?.link}
+                                                key={index}
+                                                className="grid pt-2 mt-2 rounded-lg cursor-pointer hover:bg-slate-100"
+                                            >
+                                                <div className="flex items-center h-20">
+                                                    {item?.content?.image && (
+                                                        <div className="w-[30%] flex justify-center">
+                                                            <img
+                                                                className="w-14 h-14 rounded-full"
+                                                                src={item?.content?.image}
+                                                                alt="avatar"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    <div className="  p-2 rounded-md  ">
+                                                        <p
+                                                            className="text-[16px] leading-[14px] "
+                                                            dangerouslySetInnerHTML={{ __html: item.content.text }}
                                                         />
+                                                        <span className="text-[12px]">
+                                                            {moment(item?.createAt).fromNow()}
+                                                        </span>
                                                     </div>
-                                                )}
-                                                <div className="ml-2">
-                                                    <div
-                                                        className="text-[16px] leading-[14px]"
-                                                        dangerouslySetInnerHTML={{ __html: item?.content.text }}
-                                                    ></div>
-                                                    <span className="text-[12px]">
-                                                        {moment(item?.createAt).fromNow()}
-                                                    </span>
                                                 </div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                    {!isLoadingNotifi && notifiData?.length === 0 && (
-                                        <div className="py-3 flex-center">
-                                            <span className="text-[#65676B] font-medium">
-                                                Hiện chưa có thông báo nào
-                                            </span>
-                                        </div>
-                                    )}
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -457,7 +453,7 @@ const NavMenu = () => {
             </div>
 
             {/* Nav mobile */}
-            <div className=" xs:grid md:hidden h-[50px]  grid-cols-4  w-full ">
+            <div className=" xs:grid md:hidden h-[50px]  grid-cols-3  w-full ">
                 {navLinks.map((nav, i) => {
                     return (
                         <NavLink

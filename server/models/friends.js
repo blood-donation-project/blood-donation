@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const friendSchema = new mongoose.Schema({
     userId1: {
         type: mongoose.Schema.Types.ObjectId,
-        require: true,
+        required: true,
         ref: 'User',
     },
     userId2: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        require: true,
+        required: true,
     },
     createAt: {
         type: Date,

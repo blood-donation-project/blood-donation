@@ -240,8 +240,8 @@ const SurroundingUsers = () => {
                                 loader={<UserDonateBlood />}
                                 scrollThreshold="100px"
                             >
-                                {surroundingUsersData.map((user, index) => {
-                                    return <UserDonateBlood key={index} userData={user} />;
+                                {surroundingUsersData.map((helper, index) => {
+                                    return <UserDonateBlood key={index} helper={helper} />;
                                 })}
                             </InfiniteScroll>
                         ) : (

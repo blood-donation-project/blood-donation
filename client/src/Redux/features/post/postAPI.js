@@ -117,16 +117,24 @@ export const postAPI = createApi({
                 method: 'GET',
             }),
         }),
-        getAllUnPublishPosts: builder.query({
-            query: () => ({
+        getAllUnPublishPosts: builder.mutation({
+            query: (content) => ({
                 url: '/get-unpublish-posts',
-                method: 'GET',
+                method: 'POST',
+                body: content,
             }),
         }),
         publishPost: builder.mutation({
             query: (postId) => ({
                 url: '/publish-post',
                 method: 'PUT',
+                body: { postId },
+            }),
+        }),
+        refusePost: builder.mutation({
+            query: (postId) => ({
+                url: '/refuse-posts',
+                method: 'POST',
                 body: { postId },
             }),
         }),
@@ -145,10 +153,13 @@ export const {
     useGetPostsByUserIdMutation,
     useGetAllPostsByAdminMutation,
     useGetAllPostsByMonthsQuery,
-    useGetAllUnPublishPostsQuery,
+    useGetAllUnPublishPostsMutation,
     usePublishPostMutation,
+
     useGetPostsPendingApprovalByUserIdMutation,
     useGetPostsByIdMutation,
+
+    useRefusePostMutation,
 } = postAPI;
 
 export default postAPI;
