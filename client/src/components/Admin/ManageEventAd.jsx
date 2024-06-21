@@ -3,13 +3,13 @@ import Menu from './Menu';
 import { Popconfirm } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoSearchOutline } from 'react-icons/io5';
-import {
-    useDeleteEventByAdminMutation,
-    useGetAllEventsMutation,
-} from '../../Redux/features/events/eventAPI';
+import { useDeleteEventByAdminMutation, useGetAllEventsMutation } from '../../Redux/features/events/eventAPI';
 import { MdDeleteOutline } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 const ManageEventAd = () => {
+    useAutoRefreshToken('/home/');
+
     const [deleteEventByAdmin] = useDeleteEventByAdminMutation();
     const [getAllEvent, { data: eventData }] = useGetAllEventsMutation();
     const [eventId, setEvenId] = useState('');
@@ -63,12 +63,9 @@ const ManageEventAd = () => {
                                         placeholder="Tìm kiếm sự kiện"
                                         type="text"
                                         value={searchTerm}
-                                        onChange={(e) =>
-                                            setSearchTerm(e.target.value)
-                                        }
+                                        onChange={(e) => setSearchTerm(e.target.value)}
                                         onKeyDown={(e) => {
-                                            if (e.key === 'Enter')
-                                                handleSubmit(e);
+                                            if (e.key === 'Enter') handleSubmit(e);
                                         }}
                                         name=""
                                         id=""
@@ -80,45 +77,27 @@ const ManageEventAd = () => {
                             <table className="border w-full ">
                                 <tr className="sticky -top-1 bg-white shadow-sm">
                                     <td className="w-[30%] text-start py-2 font-medium">
-                                        <span className="ml-5">
-                                            Tên sự kiện ({eventData?.length})
-                                        </span>
+                                        <span className="ml-5">Tên sự kiện ({eventData?.length})</span>
                                     </td>
                                     <td className="w-[30%] text-start ">
-                                        <span className="ml-5">
-                                            Tên cơ sở tổ chức
-                                        </span>
+                                        <span className="ml-5">Tên cơ sở tổ chức</span>
                                     </td>
-                                    <td className="w-[40%] text-center ">
-                                        Địa điểm
-                                    </td>
+                                    <td className="w-[40%] text-center ">Địa điểm</td>
                                 </tr>
                                 {/* Map here */}
                                 {eventData?.map((item) => (
-                                    <tr
-                                        key={''}
-                                        className="border content-center"
-                                    >
+                                    <tr key={''} className="border content-center">
                                         <td className="py-3 ">
                                             <Link
                                                 to={`/events/detail-event/${item?._id}`}
                                                 className="gap-2 flex items-center ml-5 "
                                             >
-                                                <p className="hover:underline">
-                                                    {item?.eventName}
-                                                </p>
+                                                <p className="hover:underline">{item?.eventName}</p>
                                             </Link>
                                         </td>
                                         <td className="text-start flex items-center  text-gray-600">
-                                            <img
-                                                className="w-10 h-10 rounded-full"
-                                                src={item?.userId?.avatar}
-                                                alt=""
-                                            />
-                                            <Link
-                                                to={`/user/${item?.userId?._id}`}
-                                                className="ml-5 hover:underline"
-                                            >
+                                            <img className="w-10 h-10 rounded-full" src={item?.userId?.avatar} alt="" />
+                                            <Link to={`/user/${item?.userId?._id}`} className="ml-5 hover:underline">
                                                 {item?.userId?.username}
                                             </Link>
                                         </td>
@@ -127,19 +106,13 @@ const ManageEventAd = () => {
                                                 <p className="w-[80%]">{`${item?.address?.street}, ${item?.address?.ward}, ${item?.address?.district}, ${item?.address?.province}`}</p>
                                                 <Popconfirm
                                                     title={'Hủy sự kiện'}
-                                                    description={
-                                                        'Bạn chắc chắn muốn hủy sự kiện này không?'
-                                                    }
-                                                    onConfirm={
-                                                        handleCancelEvent
-                                                    }
+                                                    description={'Bạn chắc chắn muốn hủy sự kiện này không?'}
+                                                    onConfirm={handleCancelEvent}
                                                     okText="Có"
                                                     cancelText="Không"
                                                 >
                                                     <div
-                                                        onClick={() =>
-                                                            setEvenId(item?._id)
-                                                        }
+                                                        onClick={() => setEvenId(item?._id)}
                                                         className="p-2 mr-2  flex items-center justify-center cursor-pointer hover:bg-gray-200 rounded-full"
                                                     >
                                                         <MdDeleteOutline className="w-6 h-6" />

@@ -10,6 +10,7 @@ router.get('/get-posts-by-months', middlewareController.verifyTokenAndAdmin, pos
 router.post('/get-unpublish-posts', middlewareController.verifyTokenAndAdmin, postControllers.getUnpublishedPost);
 router.put('/publish-post', middlewareController.verifyTokenAndAdmin, postControllers.publishPosts);
 router.post('/refuse-posts', middlewareController.verifyTokenAndAdmin, postControllers.refusePost);
+router.post('/delete-post-by-admin', middlewareController.verifyTokenAndAdmin, postControllers.deletePostByAdmin);
 
 // Get home page posts
 router.get('/', middlewareController.verifyToken, postControllers.getHomePagePosts);

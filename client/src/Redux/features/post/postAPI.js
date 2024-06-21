@@ -138,6 +138,13 @@ export const postAPI = createApi({
                 body: { postId },
             }),
         }),
+        deletePostByAdmin: builder.mutation({
+            query: (postId) => ({
+                url: '/delete-post-by-admin',
+                method: 'POST',
+                body: { postId },
+            }),
+        }),
     }),
 });
 
@@ -155,11 +162,10 @@ export const {
     useGetAllPostsByMonthsQuery,
     useGetAllUnPublishPostsMutation,
     usePublishPostMutation,
-
     useGetPostsPendingApprovalByUserIdMutation,
     useGetPostsByIdMutation,
-
     useRefusePostMutation,
+    useDeletePostByAdminMutation,
 } = postAPI;
 
 export default postAPI;

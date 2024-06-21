@@ -2,17 +2,22 @@ import React, { useEffect, useState } from 'react';
 import Menu from './Menu';
 import { IoSearchOutline } from 'react-icons/io5';
 import { Popconfirm } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdDeleteOutline } from 'react-icons/md';
 import { FaEye } from 'react-icons/fa';
-import { useGetAllPostsByAdminMutation } from '../../Redux/features/post/postAPI';
+import { useDeletePostByAdminMutation, useGetAllPostsByAdminMutation } from '../../Redux/features/post/postAPI';
 import moment from 'moment';
+import { toast } from 'react-toastify';
 import DetailPosts from './DetailPosts';
-
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 const ManagePost = () => {
+    useAutoRefreshToken('/home/');
+
     const [searchTerm, setSearchTerm] = useState('');
-    const [getAllPost, { data: getDataPosts }] = useGetAllPostsByAdminMutation();
+    const [getAllPost] = useGetAllPostsByAdminMutation();
+    const [deletePostByAdmin] = useDeletePostByAdminMutation();
     const [postId, setPostId] = useState('');
+    const [allPost, setAllPost] = useState([]);
     // Open Popup Detail Post
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const togglePopup = () => {
@@ -21,7 +26,8 @@ const ManagePost = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await getAllPost().unwrap();
+                const posts = await getAllPost().unwrap();
+                setAllPost(posts);
             } catch (error) {
                 console.log(error);
             }
@@ -37,7 +43,16 @@ const ManagePost = () => {
             console.log(error);
         }
     };
-    console.log(getDataPosts);
+
+    const handleDeletePost = async (postId) => {
+        try {
+            await deletePostByAdmin(postId).unwrap();
+            setAllPost((prev) => prev.filter((item) => item?._id !== postId));
+            toast.success('Xóa bài viết thành công!');
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <div className="flex h-screen">
@@ -81,7 +96,7 @@ const ManagePost = () => {
                                     <td className="w-[10%] text-center "></td>
                                 </tr>
                                 {/* Map here */}
-                                {getDataPosts?.map((item, index) => (
+                                {allPost?.map((item, index) => (
                                     <tr key={item?._id} className="border content-center">
                                         <td className="text-start flex items-center p-1">
                                             <img className="w-10 h-10 rounded-full" src={item?.userId?.avatar} alt="" />
@@ -111,6 +126,7 @@ const ManagePost = () => {
                                                 <Popconfirm
                                                     title={'Xóa bài viết'}
                                                     description={'Bạn chắc chắn muốn xóa bài viết này không?'}
+                                                    onConfirm={() => handleDeletePost(item?._id)}
                                                     okText="Có"
                                                     cancelText="Không"
                                                 >

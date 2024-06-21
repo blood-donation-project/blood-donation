@@ -695,10 +695,12 @@ const postControllers = {
             }
 
             console.log(query);
-            const postsUnPublish = await Posts.find(query).populate({
-                path: 'userId',
-                select: 'username avatar introduce',
-            }).sort({createdAt: -1});
+            const postsUnPublish = await Posts.find(query)
+                .populate({
+                    path: 'userId',
+                    select: 'username avatar introduce',
+                })
+                .sort({ createdAt: -1 });
             res.status(200).json(postsUnPublish);
         } catch (error) {
             console.log(error);
@@ -810,7 +812,36 @@ const postControllers = {
             const newNotification = new Notification({
                 userId: post.userId._id,
                 content,
-                type: 'AcceptPosts',
+                type: 'RefusePosts',
+            });
+            await newNotification.save();
+            res.status(200).json({ message: 'Delete Post Successfully' });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+    deletePostByAdmin: async (req, res) => {
+        try {
+            const { postId } = req.body;
+
+            const post = await Posts.findOne({ _id: postId }).populate({
+                path: 'userId',
+                select: 'username avatar introduce',
+            });
+            if (!post) {
+                return res.status(400).json('Post not found');
+            }
+
+            await Posts.findByIdAndDelete(postId);
+
+            const content = {
+                text: `<p>Xin chào 👋 <strong>${post.userId.username}</strong>. Bài viết của bạn đã bị xóa bởi Admin ❌</p>`,
+            };
+            const newNotification = new Notification({
+                userId: post.userId._id,
+                content,
+                type: 'DeletePosts',
             });
             await newNotification.save();
             res.status(200).json({ message: 'Delete Post Successfully' });
@@ -820,7 +851,6 @@ const postControllers = {
         }
     },
 };
-
 const fillMissingMonths = (data, allMonths) => {
     const monthCountMap = new Map(data.map((item) => [item._id, item.count]));
     return allMonths.map((month) => ({

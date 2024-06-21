@@ -20,7 +20,7 @@ const DetailPosts = ({ isOpen, onClose, postId }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-20 flex items-center justify-center">
             <div className="relative mx-auto p-5 border w-full max-w-2xl h-auto max-h-full overflow-y-auto shadow-lg rounded-lg bg-white">
                 <button className="absolute top-0 right-0 m-3 text-gray-600 hover:text-gray-900" onClick={onClose}>
                     <FaXmark className="w-5 h-5" />
