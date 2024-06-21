@@ -24,9 +24,9 @@
         <style>
             /* Customize the position of the floating entry */
             #chatbotAI {
-                position: absolute;
-                right: 40px;
-                bottom: 30px;
+                position: fixed;
+                right: 20px;
+                bottom: 90px;
                 z-index: 99999;
                 overflow: hidden;
                 border-radius: 50px;
@@ -34,26 +34,23 @@
         </style>
         <title>Blood Donation</title>
     </head>
-    <body class="light">
+    <body class="light" style="position: relative !important">
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
-
-        <div id="chatbotAI">
-            <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/0.1.0-beta.4/libs/oversea/index.js"></script>
-            <script>
-                new CozeWebSDK.WebChatClient({
-                    config: {
-                        bot_id: '7367189687020650513',
-                    },
-                    componentProps: {
-                        title: 'Chat Bot AI',
-                        icon: 'https://res.cloudinary.com/dkjwdmndq/image/upload/v1718957809/news_images/ajlgfgcvkyg8ngoqrosc.png',
-                    },
-                    el: document.getElementById('chatbotAI'),
-                });
-            </script>
-        </div>
-
+        <div id="chatbotAI"></div>
+        <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/0.1.0-beta.4/libs/oversea/index.js"></script>
+        <script>
+            new CozeWebSDK.WebChatClient({
+                config: {
+                    bot_id: '7367189687020650513',
+                },
+                componentProps: {
+                    title: 'Chat Bot AI',
+                    icon: 'https://res.cloudinary.com/dkjwdmndq/image/upload/v1718957809/news_images/ajlgfgcvkyg8ngoqrosc.png',
+                },
+                el: document.getElementById('chatbotAI'),
+            });
+        </script>
         <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

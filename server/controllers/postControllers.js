@@ -698,7 +698,7 @@ const postControllers = {
             const postsUnPublish = await Posts.find(query).populate({
                 path: 'userId',
                 select: 'username avatar introduce',
-            });
+            }).sort({createdAt: -1});
             res.status(200).json(postsUnPublish);
         } catch (error) {
             console.log(error);
