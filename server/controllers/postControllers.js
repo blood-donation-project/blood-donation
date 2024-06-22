@@ -721,7 +721,11 @@ const postControllers = {
             text: `<p>Xin chào!👋 <strong>${post.userId.username}</strong>. Bài viết của bạn đã được duyệt thành công! Hãy cùng nhau xây dựng một cộng đồng hiến máu văn minh nhé ❤️</p>`,
         };
         const publishPosts = await Posts.findByIdAndUpdate(postId, { verified: true });
-
+        const notification = new Notification({
+            userId: publishPosts.userId,
+            content,
+            type: 'AcceptPost',
+        });
         const author = await User.findById(publishPosts.userId);
         if (publishPosts && author.role === 'Cơ sở y tế') {
             const friends = await Friends.find({
@@ -741,7 +745,7 @@ const postControllers = {
                 type: `CreatePost_${publishPosts._id}_${author._id}`,
             }));
 
-            await Notification.insertMany(notifications);
+            await Promise.all([Notification.insertMany(notifications), notification.save()]);
         }
 
         res.status(200).json(publishPosts);

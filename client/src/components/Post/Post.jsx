@@ -110,7 +110,7 @@ const Post = ({ postData }) => {
                         >
                             {postData.author.username}
                         </Link>
-                        <span className="text-[12px] text-[#65676B]">{calculatePostTime(postData.createdAt)}</span>
+                        <span className="text-[12px] text-[#65676B]">{calculatePostTime(postData.updatedAt)}</span>
                     </div>
                     {user._id === postData.author._id && (
                         <div className="absolute right-3 top-0">
