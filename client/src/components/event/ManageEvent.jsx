@@ -40,6 +40,8 @@ const ManageEvent = () => {
         setIsPopupOpen(false);
     };
 
+    console.log(eventDataById);
+
     // Data From OrganizeEvent To ManageEvent
 
     // GET USER
@@ -47,9 +49,7 @@ const ManageEvent = () => {
         const fetchData = async () => {
             try {
                 const result = await getUser().unwrap();
-                result?.role === 'Cơ sở y tế'
-                    ? setOptionComponent('organize')
-                    : setOptionComponent('join');
+                result?.role === 'Cơ sở y tế' ? setOptionComponent('organize') : setOptionComponent('join');
             } catch (error) {}
         };
         fetchData();
@@ -83,16 +83,10 @@ const ManageEvent = () => {
             <div className="md:mt-[65px] xs:mt-[99px]">
                 <div className="lg:flex">
                     {/* SideBar */}
-                    <div
-                        className={`${
-                            isOpenMenu ? 'bg-white z-40 ' : 'hidden '
-                        } lg:block  lg:w-[360px] `}
-                    >
+                    <div className={`${isOpenMenu ? 'bg-white z-40 ' : 'hidden '} lg:block  lg:w-[360px] `}>
                         <div className="fixed h-[calc(h-screen_-_56px)] bg-white left-0 top-[96px] ssm:top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
                             <div className="py-1">
-                                <h2 className="text-2xl font-semibold">
-                                    Sự kiện của bạn
-                                </h2>
+                                <h2 className="text-2xl font-semibold">Sự kiện của bạn</h2>
                             </div>
 
                             <div className="mt-4">
@@ -109,60 +103,33 @@ const ManageEvent = () => {
                                         <h2 className="text-lg">Trang chủ</h2>
                                     </div>
                                 </Link>
-                                <form
-                                    onSubmit={handleSubmit}
-                                    className=""
-                                >
+                                <form onSubmit={handleSubmit} className="">
                                     {/* Filter Event */}
-                                    <div
-                                        className={` w-full  rounded-lg transition-all duration-200 my-1`}
-                                    >
+                                    <div className={` w-full  rounded-lg transition-all duration-200 my-1`}>
                                         <div
-                                            onClick={() =>
-                                                setIsFilterOpen(!isFilterOpen)
-                                            }
+                                            onClick={() => setIsFilterOpen(!isFilterOpen)}
                                             className={` ${
-                                                isFilterOpen
-                                                    ? 'bg-gray-100'
-                                                    : ''
+                                                isFilterOpen ? 'bg-gray-100' : ''
                                             } flex cursor-pointer items-center rounded-xl hover:bg-gray-100 px-2 h-14 gap-3`}
                                         >
                                             <div
                                                 className={` w-11 h-11 ${
-                                                    isFilterOpen
-                                                        ? 'bg-blue-500 text-white'
-                                                        : 'bg-gray-300'
+                                                    isFilterOpen ? 'bg-blue-500 text-white' : 'bg-gray-300'
                                                 }   rounded-full flex justify-center items-center transition-all duration-300`}
                                             >
                                                 <GrSearch className="w-6 h-6 flex justify-center items-center" />
                                             </div>
                                             <div className=" flex flex-1 justify-between items-center">
-                                                <h2 className="text-lg">
-                                                    Tìm kiếm
-                                                </h2>
-                                                {isFilterOpen ? (
-                                                    <PiCaretUpBold />
-                                                ) : (
-                                                    <PiCaretDownBold />
-                                                )}
+                                                <h2 className="text-lg">Tìm kiếm</h2>
+                                                {isFilterOpen ? <PiCaretUpBold /> : <PiCaretDownBold />}
                                             </div>
                                         </div>
 
-                                        <div
-                                            className={`${
-                                                isFilterOpen
-                                                    ? 'block'
-                                                    : 'hidden'
-                                            } p-2`}
-                                        >
+                                        <div className={`${isFilterOpen ? 'block' : 'hidden'} p-2`}>
                                             <div className="pb-2">
                                                 <input
                                                     value={eventName}
-                                                    onChange={(e) =>
-                                                        setEventName(
-                                                            e.target.value
-                                                        )
-                                                    }
+                                                    onChange={(e) => setEventName(e.target.value)}
                                                     placeholder="Tìm kếm tên sự kiện"
                                                     className="w-full outline-none border border-gray-300 focus:border-blue-500 focus:ring
                                                 focus:ring-blue-200 transition-all duration-300 rounded-lg p-2"
@@ -181,9 +148,7 @@ const ManageEvent = () => {
                                                     inputClassName={
                                                         ' outline-none p-2 py-3 w-full border border-gray-300 transition-all duration-300 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-lg'
                                                     }
-                                                    onChange={
-                                                        handleDateValueChange
-                                                    }
+                                                    onChange={handleDateValueChange}
                                                     readOnly={true}
                                                 />
                                             </div>
@@ -200,31 +165,21 @@ const ManageEvent = () => {
                                     </div>
                                 </form>
                                 <div
-                                    onClick={() =>
-                                        setIsMyEventOpen(!isMyEventOpen)
-                                    }
+                                    onClick={() => setIsMyEventOpen(!isMyEventOpen)}
                                     className={` ${
                                         isMyEventOpen ? 'bg-gray-100' : ''
                                     } flex cursor-pointer items-center rounded-xl hover:bg-gray-100 px-2 h-14 my-1 gap-3`}
                                 >
                                     <div
                                         className={` w-11 h-11 ${
-                                            isMyEventOpen
-                                                ? 'bg-blue-500 text-white'
-                                                : 'bg-gray-300'
+                                            isMyEventOpen ? 'bg-blue-500 text-white' : 'bg-gray-300'
                                         }   rounded-full flex justify-center items-center transition-all duration-300`}
                                     >
                                         <FaUser className="w-6 h-6 flex justify-center items-center" />
                                     </div>
                                     <div className=" flex flex-1 justify-between items-center">
-                                        <h2 className="text-lg">
-                                            Sự kiện của bạn
-                                        </h2>
-                                        {isMyEventOpen ? (
-                                            <PiCaretUpBold />
-                                        ) : (
-                                            <PiCaretDownBold />
-                                        )}
+                                        <h2 className="text-lg">Sự kiện của bạn</h2>
+                                        {isMyEventOpen ? <PiCaretUpBold /> : <PiCaretDownBold />}
                                     </div>
                                 </div>
                                 <div
@@ -238,33 +193,23 @@ const ManageEvent = () => {
                                             setIsSearch(false);
                                         }}
                                         className={` ${
-                                            optionComponent === 'organize'
-                                                ? 'bg-gray-100'
-                                                : ''
+                                            optionComponent === 'organize' ? 'bg-gray-100' : ''
                                         } cursor-pointer flex h-14  rounded-xl gap-3 items-center hover:bg-gray-100 pl-2`}
                                     >
                                         <div
                                             className={`w-11 h-11 ${
-                                                optionComponent ===
-                                                    'organize' ||
-                                                optionComponent === 'join'
+                                                optionComponent === 'organize' || optionComponent === 'join'
                                                     ? 'bg-blue-500 text-white'
                                                     : 'bg-gray-300'
                                             }  flex justify-center items-center rounded-full`}
                                         >
-                                            {userData?.role ===
-                                            'Cơ sở y tế' ? (
+                                            {userData?.role === 'Cơ sở y tế' ? (
                                                 <FaCalendarAlt className="w-6 h-6" />
                                             ) : (
                                                 <FaCheckCircle className="w-6 h-6" />
                                             )}
                                         </div>
-                                        <h2>
-                                            {userData?.role ===
-                                            'Cơ sở y tế'
-                                                ? 'Tổ chức'
-                                                : 'Sẽ tham gia'}
-                                        </h2>
+                                        <h2>{userData?.role === 'Cơ sở y tế' ? 'Tổ chức' : 'Sẽ tham gia'}</h2>
                                     </div>
                                     <div
                                         onClick={() => {
@@ -272,16 +217,12 @@ const ManageEvent = () => {
                                             setIsSearch(false);
                                         }}
                                         className={` ${
-                                            optionComponent === 'passed'
-                                                ? 'bg-gray-100'
-                                                : ''
+                                            optionComponent === 'passed' ? 'bg-gray-100' : ''
                                         } cursor-pointer flex h-14  rounded-xl gap-3 items-center hover:bg-gray-100 pl-2`}
                                     >
                                         <div
                                             className={`w-11 h-11 ${
-                                                optionComponent === 'passed'
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-gray-300'
+                                                optionComponent === 'passed' ? 'bg-blue-500 text-white' : 'bg-gray-300'
                                             }  flex justify-center items-center rounded-full`}
                                         >
                                             <BsArrowCounterclockwise className="w-6 h-6" />
@@ -310,10 +251,7 @@ const ManageEvent = () => {
                             ''
                         )}
                         <div>
-                            <CreateEvent
-                                isOpen={isPopupOpen}
-                                onClose={handleClosePopup}
-                            />
+                            <CreateEvent isOpen={isPopupOpen} onClose={handleClosePopup} />
                         </div>
                         {userData?.role === 'Cơ sở y tế' ? (
                             isSearch ? (
@@ -324,10 +262,7 @@ const ManageEvent = () => {
                                     role={userData?.role}
                                 />
                             ) : (
-                                <OrganizeEvent
-                                    title={'Sự kiện đang tổ chức'}
-                                    tab={optionComponent}
-                                />
+                                <OrganizeEvent title={'Sự kiện đang tổ chức'} tab={optionComponent} />
                             )
                         ) : isSearch ? (
                             <SearchOrganizeEvent
@@ -337,10 +272,7 @@ const ManageEvent = () => {
                                 role={userData?.role}
                             />
                         ) : (
-                            <OrganizeEvent
-                                title={'Sự kiện sẽ tham gia'}
-                                tab={optionComponent}
-                            />
+                            <OrganizeEvent title={'Sự kiện sẽ tham gia'} tab={optionComponent} />
                         )}
                     </div>
                 </div>
@@ -349,13 +281,7 @@ const ManageEvent = () => {
                     className=" lg:hidden "
                     type="primary"
                     shape="square"
-                    icon={
-                        isOpenMenu ? (
-                            <HiXMark className="w-6 h-6" />
-                        ) : (
-                            <IoSearchOutline className="w-6 h-6" />
-                        )
-                    }
+                    icon={isOpenMenu ? <HiXMark className="w-6 h-6" /> : <IoSearchOutline className="w-6 h-6" />}
                     style={{ width: '50px', right: '10px', height: '50px' }}
                 />
             </div>

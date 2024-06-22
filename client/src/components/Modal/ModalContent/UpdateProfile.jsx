@@ -17,6 +17,7 @@ import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
 import { useNavigate } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import { Switch } from 'antd';
 
 const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
     const {
@@ -29,7 +30,7 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
 
     const { user } = useSelector((state) => state.user);
     const [updateUser] = useUpdateUserMutation();
-
+    const [status, setStatus] = useState(user?.status);
     const [loading, setLoading] = useState(false);
     const [avatarURL, setAvatarURL] = useState('');
     const [backgroundImageURL, setBackgroundImageURL] = useState('');
@@ -39,6 +40,8 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         wards: null,
     });
     useAutoRefreshToken('/home/');
+
+    console.log(user);
 
     const [profileData, setProfileData] = useState({
         fullName: '',
@@ -222,10 +225,14 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
         }));
     };
 
+    const handleChangeStatus = (checked) => {
+        setStatus(checked);
+    };
+
     const clearForm = () => {
         reset();
     };
-
+    console.log(status);
     const handleSubmitForm = async (e) => {
         setLoading(true);
         const formData = new FormData();
@@ -246,12 +253,13 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
             avatar: avatarUrl,
             backgroundImage: backgroundUrl,
             street: profileData.street,
-            province: profileData.address?.province?.name,
-            district: profileData.address?.district?.name,
-            ward: profileData.address?.ward?.name,
+            province: profileData.address?.province?.full_name,
+            district: profileData.address?.district?.full_name,
+            ward: profileData.address?.ward?.full_name,
             phoneNumber: profileData.phone,
             bloodGroup: profileData.bloodType,
             role: profileData.role,
+            status: status,
         };
         try {
             await updateUser(updateUserr).unwrap();
@@ -470,7 +478,10 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                         </div>
 
                         {/*Blood type*/}
-                        <div className="md:flex-row xs:flex-col  w-full flex justify-between mb-3">
+
+                        <div
+                            className={`${user?.role === 'admin' || user?.role === 'Cơ sở y tế' ? 'hidden' : 'md:flex-row xs:flex-col flex '}   w-full justify-between mb-3`}
+                        >
                             <div className="xs:w-full md:w-[45%] xs:mt-2 md:mt-0">
                                 <label htmlFor="">Vai trò </label>
                                 <select
@@ -515,7 +526,10 @@ const UpdateProfile = ({ accountId, hideModal, isShowing }) => {
                                 </select>
                             </div>
                         </div>
-
+                        <div className="flex items-center gap-2">
+                            <p>Sẵn sàng hiến máu</p>
+                            <Switch onChange={handleChangeStatus} defaultChecked={status} />
+                        </div>
                         <div className="w-full ">
                             <div className="w-full flex justify-end px-4 py-5">
                                 <button className="ml-4 w-[117px] py-1 bg-red-500 rounded text-white" type="submit">

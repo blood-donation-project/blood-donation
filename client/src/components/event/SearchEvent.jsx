@@ -4,6 +4,7 @@ import '../event/style.css';
 import { Link } from 'react-router-dom';
 import ListEvent from './ListEvent';
 const SearchEvent = ({ eventData, userData }) => {
+    console.log(eventData);
     return (
         <div>
             <div className="max-w-7xl h-full m-auto py-4">
@@ -20,9 +21,7 @@ const SearchEvent = ({ eventData, userData }) => {
                     <div>
                         <h1 className="text-2xl text-black">
                             Khám phá sự kiện <br />
-                            <span className="text-[16px]">
-                                {eventData?.count} Kết Quả
-                            </span>
+                            <span className="text-[16px]">{eventData?.count} Kết Quả</span>
                         </h1>
 
                         <div className="mt-10">
@@ -42,28 +41,18 @@ const SearchEvent = ({ eventData, userData }) => {
                                     startTime={item?.startTime}
                                     endTime={item?.endTime}
                                     eventId={item?._id}
-                                    buttonName={`${
-                                        userData?.role === 'Cơ sở y tế'
-                                            ? 'Xem thêm'
-                                            : 'Tham Gia'
-                                    }`}
+                                    joiner={eventData?.count}
+                                    buttonName={`${userData?.role === 'Cơ sở y tế' ? 'Xem thêm' : 'Tham Gia'}`}
                                 />
                             ))}
                         </div>
                     </div>
                 ) : (
                     <div className=" overflow-y-hidden">
-                        <h1 className="text-2xl px-10 pt-10 text-[#1C5291]">
-                            0 Kết quả
-                        </h1>
+                        <h1 className="text-2xl px-10 pt-10 text-[#1C5291]">0 Kết quả</h1>
                         <div className="flex justify-center items-center flex-col h-full">
-                            <img
-                                src={schedule}
-                                alt=""
-                            />
-                            <p className="text-lg text-[#7a7a7a]">
-                                Không tìm thấy kết quả nào
-                            </p>
+                            <img src={schedule} alt="" />
+                            <p className="text-lg text-[#7a7a7a]">Không tìm thấy kết quả nào</p>
                         </div>
                     </div>
                 )}

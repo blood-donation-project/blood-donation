@@ -177,6 +177,7 @@ const searchControllers = {
             });
             const query = {
                 'address.province': province,
+                status: true,
             };
 
             if (bloodGroup) {

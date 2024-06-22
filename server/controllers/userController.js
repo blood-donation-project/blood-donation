@@ -190,6 +190,7 @@ const userController = {
                 phoneNumber,
                 bloodGroup,
                 role,
+                status,
             } = req.body;
             const address = {
                 province,
@@ -238,6 +239,7 @@ const userController = {
                     address,
                     bloodGroup,
                     role,
+                    status
                 },
             );
             res.status(200).json(result);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Menu from './Menu';
 import { IoSearchOutline } from 'react-icons/io5';
 import { Popconfirm } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { MdDeleteOutline } from 'react-icons/md';
 import { FaEye } from 'react-icons/fa';
 import { useDeletePostByAdminMutation, useGetAllPostsByAdminMutation } from '../../Redux/features/post/postAPI';

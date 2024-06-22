@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PiUsersThreeLight } from 'react-icons/pi';
 import { Link } from 'react-router-dom';
+import { useGetUserRegisterMutation } from '../../Redux/features/events/eventAPI';
+
 const ListEvent = ({
     index,
     image,
@@ -17,17 +19,25 @@ const ListEvent = ({
     eventId,
     buttonName,
 }) => {
+    const [getUserRegis, { data: userRegis }] = useGetUserRegisterMutation();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getUserRegis(eventId).unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getUserRegis, eventId]);
+
+    console.log(userRegis);
+
     return (
-        <div
-            key={index}
-            className="lg:w-[90%]  w-full flex flex-col ssm:mb-4 mb-6 md:flex-row"
-        >
+        <div key={index} className="lg:w-[90%]  w-full flex flex-col ssm:mb-4 mb-6 md:flex-row">
             <div className="w-full md:w-1/4  flex-1 min-h-36 flex justify-center items-center bg-white">
-                <img
-                    className="rounded-full w-36 h-36"
-                    src={avatar}
-                    alt=""
-                />
+                <img className="rounded-full w-36 h-36" src={avatar} alt="" />
             </div>
             <div className="p-[1%] w-full md:w-1/2 bg-[#f4f4f4]  ">
                 <div className="flex flex-row m-1 items-start text-xl text-rose-400 font-semibold justify-start">
@@ -37,12 +47,8 @@ const ListEvent = ({
                     {centerName}
                 </div>
                 <div className="flex flex-row m-1 items-start justify-start">
-                    <span className="max-w-fit text-[#7a7a7a] flex-1 text-[16px] whitespace-nowrap">
-                        Địa chỉ:
-                    </span>
-                    <p className="ml-1">
-                        {`${street}, ${ward}, ${district}, ${province} `}
-                    </p>
+                    <span className="max-w-fit text-[#7a7a7a] flex-1 text-[16px] whitespace-nowrap">Địa chỉ:</span>
+                    <p className="ml-1">{`${street}, ${ward}, ${district}, ${province} `}</p>
                 </div>
                 <div className="flex flex-row m-1 items-start justify-start">
                     <span className="max-w-fit text-[#7a7a7a] flex-1 text-[16px] whitespace-nowrap">
@@ -64,14 +70,11 @@ const ListEvent = ({
                     <div className="">
                         <div className="flex flex-row items-center  text-[#7a7a7a]">
                             <PiUsersThreeLight className="w-6 h-6" />
-                            <span className="text-sm ml-1 flex-1">
-                                Số lượng tham gia
-                            </span>
+                            <span className="text-sm ml-1 flex-1">Số lượng tham gia</span>
                         </div>
                         {/* Map */}
                         <h5 className="text-2xl text-[#386fd6] font-medium">
-                            129/200{' '}
-                            <span className="text-sm font-normal">Người</span>
+                            {userRegis?.data?.count} <span className="text-sm font-normal"> Người </span>
                         </h5>
                     </div>
                     <div>
