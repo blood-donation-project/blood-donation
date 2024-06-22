@@ -27,6 +27,7 @@ import InviteFriends from './InviteFriends';
 import { useGetInviteEventNotifiMutation } from '../../Redux/features/notification/notifiAPI';
 import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
+import moment from 'moment';
 const DetailEvent = () => {
     useAutoRefreshToken('/home/');
     const [inviteFriend] = useInviteFriendsMutation();
@@ -106,7 +107,6 @@ const DetailEvent = () => {
             );
         });
     };
-
 
     useEffect(() => {
         try {
@@ -217,7 +217,7 @@ const DetailEvent = () => {
                     </div>
                     <div className="py-4 mt-4 ml-4 flex flex-col border-b">
                         <div className="text-red-600 text-lg font-semibold">
-                            NGÀY {data?.donationTime} LÚC {data?.startTime}
+                            NGÀY {moment(data?.donationTime).format('DD/MM/YYYY')} LÚC {data?.startTime}
                         </div>
                         <div className="text-2xl font-bold">
                             <h1>{data?.eventName}</h1>

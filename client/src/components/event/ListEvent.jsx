@@ -74,7 +74,7 @@ const ListEvent = ({
                         </div>
                         {/* Map */}
                         <h5 className="text-2xl text-[#386fd6] font-medium">
-                            {userRegis?.data?.count} <span className="text-sm font-normal"> Người </span>
+                            {userRegis?.data?.count || 0} <span className="text-sm font-normal"> Người </span>
                         </h5>
                     </div>
                     <div>

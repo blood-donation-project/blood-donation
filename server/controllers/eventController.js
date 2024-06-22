@@ -22,7 +22,7 @@ const eventController = {
             token = authHeader.split(' ')[1];
             const user = jwt.verify(token, process.env.JWT_ACCESS_KEY);
             const dataUser = await User.findById(user.id).select('-password');
-            const formattedDay = moment(donationTime, 'YYYY/MM/DD').format('DD/MM/YYYY');
+            const formattedDay = moment(donationTime, 'YYYY/MM/DD').format('YYYY/MM/DD');
 
             const newEvent = new Event({
                 eventName,
