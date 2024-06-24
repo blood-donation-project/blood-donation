@@ -184,7 +184,6 @@ const searchControllers = {
                 query.bloodGroup = decodeURIComponent(bloodGroup);
             }
 
-            //
             const totalUsers = await User.countDocuments(query);
             const pagination = createPagination(limit, page, totalUsers);
 
@@ -195,7 +194,6 @@ const searchControllers = {
                 friend.userId1.toString() === userId ? friend.userId2.toString() : friend.userId1.toString(),
             );
 
-            //
             const dbUsers = await User.find({
                 ...query,
                 _id: { $ne: userId, $nin: [...friendIds] },

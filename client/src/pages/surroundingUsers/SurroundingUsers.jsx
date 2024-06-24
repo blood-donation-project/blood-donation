@@ -16,6 +16,7 @@ import UserDonateBloodLoading from '../../components/LoadingSkeleton/User/UserDo
 import { useSearchSurroundingUsersMutation } from '../../Redux/features/search/searchAPI';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { resetSurroundingUsersData } from '../../Redux/features/search/searchSlice';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const SurroundingUsers = () => {
     const { user } = useSelector((state) => state.user);
@@ -29,6 +30,8 @@ const SurroundingUsers = () => {
         province: user?.address?.province || 'Thành phố Hà Nội',
         bloodGroup: user?.bloodGroup || '',
     });
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [options, setOptions] = useState({
         province: '',
@@ -88,8 +91,8 @@ const SurroundingUsers = () => {
     };
 
     useEffect(() => {
-        fetchSurroundingUsers();
-    }, []);
+        if (tokenRefreshed) fetchSurroundingUsers();
+    }, [tokenRefreshed]);
 
     useEffect(() => {
         const handleResize = () => {

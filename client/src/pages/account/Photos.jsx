@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Image from '../../components/Image/Image';
 import Skeleton from 'react-loading-skeleton';
 import { resetPhotos } from '../../Redux/features/user/userSlice';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const PhotosPage = () => {
     const { id } = useParams();
@@ -19,6 +20,8 @@ const PhotosPage = () => {
     const [pagination, setPagination] = useState();
     const [hasMore, setHasMore] = useState(false);
     const [isShowingViewImageModal, setIsShowingViewImageModal] = useState(false);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [image, setImage] = useState('');
     const { photos } = useSelector((state) => state.user);
@@ -38,8 +41,10 @@ const PhotosPage = () => {
 
     useEffect(() => {
         dispatch(resetPhotos());
-        fetchPhotos();
-    }, []);
+        if (tokenRefreshed) {
+            fetchPhotos();
+        }
+    }, [tokenRefreshed]);
 
     useEffect(() => {
         if (pagination?.links.next) {

@@ -29,6 +29,7 @@ import {
     useUnfriendMutation,
 } from '../../Redux/features/friend/friendAPI';
 import { updateOtherUser } from '../../Redux/features/user/userSlice';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const ProfileOverview = () => {
     const location = useLocation();
@@ -52,26 +53,30 @@ const ProfileOverview = () => {
     const [friends, setFriends] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingOtherUser, setIsLoadingOtherUser] = useState(true);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     useEffect(() => {
         dispatch(resetFriends());
         const accessToken = localStorage.getItem('accessToken');
-        axios
-            .get('http://localhost:3001/api/friends', {
-                params: {
-                    userId: params.id,
-                    limit: 9,
-                    page: 1,
-                },
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            })
-            .then((res) => {
-                setFriends(res.data);
-                setIsLoading(false);
-            });
-    }, []);
+        if (tokenRefreshed) {
+            axios
+                .get('http://localhost:3001/api/friends', {
+                    params: {
+                        userId: params.id,
+                        limit: 9,
+                        page: 1,
+                    },
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                })
+                .then((res) => {
+                    setFriends(res.data);
+                    setIsLoading(false);
+                });
+        }
+    }, [tokenRefreshed]);
 
     useEffect(() => {
         const userId = params.id;
@@ -85,8 +90,8 @@ const ProfileOverview = () => {
                 // console.log(error);
             }
         };
-        fetchUserData();
-    }, [getUserById, params.id]);
+        if (tokenRefreshed) fetchUserData();
+    }, [getUserById, params.id, tokenRefreshed]);
     const handleAcceptFriend = () => {
         acceptFriendRequest({ requestId: otherUser.friendRequest._id })
             .unwrap()

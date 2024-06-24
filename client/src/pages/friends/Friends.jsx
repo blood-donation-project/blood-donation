@@ -8,6 +8,7 @@ import UserFriendProfileLoading from '../../components/LoadingSkeleton/User/User
 import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI';
 import { resetFriends } from '../../Redux/features/friend/friendSlice';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const FriendsPage = () => {
     const dispatch = useDispatch();
@@ -16,6 +17,8 @@ const FriendsPage = () => {
 
     const [pagination, setPagination] = useState();
     const [hasMore, setHasMore] = useState(false);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [getAllFriends, { isLoading }] = useGetAllFriendsMutation();
 
@@ -35,10 +38,10 @@ const FriendsPage = () => {
         dispatch(resetFriends());
     }, []);
     useEffect(() => {
-        if (user?._id) {
+        if (user?._id && tokenRefreshed) {
             fetchFriends();
         }
-    }, [user?._id]);
+    }, [user?._id, tokenRefreshed]);
 
     useEffect(() => {
         if (pagination?.links.next) {

@@ -32,23 +32,22 @@ import { useGetUserMutation } from '../Redux/features/user/userAPI';
 
 const HomePage = () => {
     const dispatch = useDispatch();
-
     const [isShowingModal, setIsShowingModal] = useState(false);
     const [pagination, setPagination] = useState();
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
 
     const [getHomePagePosts] = useGetHomePagePostsMutation();
     const [getSuggestedUsers, { isLoading: isLoadingSuggestedUsers }] = useGetSuggestedUsersMutation();
     const [getAllFriends, { isLoading: isLoadingAllFriends }] = useGetAllFriendsMutation();
     const [getAllFollowedFacilities, { isLoading: isLoadingAllFollowers }] = useGetAllFollowedFacilitiesMutation();
-
     const [getUser, { data: getdataUser }] = useGetUserMutation();
-    const { homePagePosts } = useSelector((state) => state.posts);
 
+    const { homePagePosts } = useSelector((state) => state.posts);
     const { suggestedFriends, friends, followers } = useSelector((state) => state.friend);
 
-    useAutoRefreshToken('/home/');
+    useAutoRefreshToken('/home/', setTokenRefreshed); // Pass setTokenRefreshed to useAutoRefreshToken
 
     const sencondaryNav = [
         {
@@ -72,49 +71,58 @@ const HomePage = () => {
             path: '/events',
         },
     ];
+
     // Get User
     useEffect(() => {
-        const fetchData = async (req, res) => {
-            try {
-                await getUser().unwrap();
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getUser]);
+        if (tokenRefreshed) {
+            const fetchData = async () => {
+                try {
+                    await getUser().unwrap();
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getUser, tokenRefreshed]);
 
     // Get homepage posts
-
     useEffect(() => {
-        getHomePagePosts({ limit: 5, page: page })
-            .unwrap()
-            .then((res) => {
-                setPagination(res.pagination);
-            });
-    }, [page]);
-    // Get suggested adnd friends
-    useEffect(() => {
-        dispatch(resetFriends());
-        dispatch(resetSuggestedFriends());
-        dispatch(resetFollowers());
-        const fetchUsersAndFriends = async () => {
-            try {
-                await getSuggestedUsers({ limit: 10, page: 1 }).unwrap();
-                await getAllFriends({ userId: getdataUser?._id, limit: 10, page: 1 }).unwrap();
-                await getAllFollowedFacilities({ limit: 8, page: 1 }).unwrap();
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-            }
-        };
-        if (getdataUser?._id) {
-            fetchUsersAndFriends();
+        if (tokenRefreshed) {
+            getHomePagePosts({ limit: 5, page: page })
+                .unwrap()
+                .then((res) => {
+                    setPagination(res.pagination);
+                });
         }
-    }, [getSuggestedUsers, getAllFriends, getdataUser?._id]);
+    }, [page, tokenRefreshed]);
+
+    // Get suggested and friends
+    useEffect(() => {
+        if (tokenRefreshed) {
+            dispatch(resetFriends());
+            dispatch(resetSuggestedFriends());
+            dispatch(resetFollowers());
+            const fetchUsersAndFriends = async () => {
+                try {
+                    await getSuggestedUsers({ limit: 10, page: 1 }).unwrap();
+                    await getAllFriends({ userId: getdataUser?._id, limit: 10, page: 1 }).unwrap();
+                    await getAllFollowedFacilities({ limit: 8, page: 1 }).unwrap();
+                } catch (error) {
+                    console.error('Failed to fetch data:', error);
+                }
+            };
+            if (getdataUser?._id) {
+                fetchUsersAndFriends();
+            }
+        }
+    }, [getSuggestedUsers, getAllFriends, getdataUser?._id, tokenRefreshed]);
 
     useEffect(() => {
-        dispatch(resetHomePagePosts());
-    }, [dispatch]);
+        if (tokenRefreshed) {
+            dispatch(resetHomePagePosts());
+        }
+    }, [dispatch, tokenRefreshed]);
 
     useEffect(() => {
         if (pagination?.links.next) {

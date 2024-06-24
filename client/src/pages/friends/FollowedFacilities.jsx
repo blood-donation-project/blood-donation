@@ -9,6 +9,7 @@ import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI'
 import { useGetAllFollowedFacilitiesMutation } from '../../Redux/features/friend/friendAPI';
 import { resetFollowers, resetFriends } from '../../Redux/features/friend/friendSlice';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const FollowedFacilities = () => {
     const dispatch = useDispatch();
@@ -17,6 +18,8 @@ const FollowedFacilities = () => {
 
     const [pagination, setPagination] = useState();
     const [hasMore, setHasMore] = useState(false);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [getAllFollowedFacilities, { isLoading }] = useGetAllFollowedFacilitiesMutation();
     const fetchFriends = async (page) => {
@@ -32,8 +35,8 @@ const FollowedFacilities = () => {
 
     useEffect(() => {
         dispatch(resetFollowers());
-        fetchFriends();
-    }, []);
+        if (tokenRefreshed) fetchFriends();
+    }, [tokenRefreshed]);
 
     useEffect(() => {
         if (pagination?.links.next) {

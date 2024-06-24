@@ -19,6 +19,7 @@ import UserFriendLoading from '../../components/LoadingSkeleton/User/UserFriendL
 import InfiniteScroll from 'react-infinite-scroll-component';
 import NoResult from '../../components/NoResult';
 import UserSearchDetail from '../../components/User/UserSearchDetail';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const SearchUsersPage = () => {
     const navigate = useNavigate();
@@ -31,6 +32,8 @@ const SearchUsersPage = () => {
     const [paginationUser, setPaginationUser] = useState();
     const [hasMore, setHasMore] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const { usersData } = useSelector((state) => state.search);
     const [searchUsers] = useSearchUsersMutation();
@@ -55,8 +58,8 @@ const SearchUsersPage = () => {
                     setPaginationUser(res.pagination);
                 });
         };
-        fetch();
-    }, [queryValue, page]);
+        if (tokenRefreshed) fetch();
+    }, [queryValue, page, tokenRefreshed]);
 
     useEffect(() => {
         if (paginationUser?.links.next) {

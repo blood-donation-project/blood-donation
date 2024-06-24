@@ -11,29 +11,33 @@ import { toast } from 'react-toastify';
 import DetailPosts from './DetailPosts';
 import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 const ManagePost = () => {
-    useAutoRefreshToken('/home/');
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [getAllPost] = useGetAllPostsByAdminMutation();
     const [deletePostByAdmin] = useDeletePostByAdminMutation();
     const [postId, setPostId] = useState('');
     const [allPost, setAllPost] = useState([]);
-    // Open Popup Detail Post
+
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const togglePopup = () => {
         setIsPopupOpen(!isPopupOpen);
     };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const posts = await getAllPost().unwrap();
-                setAllPost(posts);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getAllPost]);
+        if (tokenRefreshed) {
+            const fetchData = async () => {
+                try {
+                    const posts = await getAllPost().unwrap();
+                    setAllPost(posts);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getAllPost, tokenRefreshed]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,7 +57,6 @@ const ManagePost = () => {
             console.log(error);
         }
     };
-
     return (
         <div className="flex h-screen">
             <Menu activeComponent={'post'} />

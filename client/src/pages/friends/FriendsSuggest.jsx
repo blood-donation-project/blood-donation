@@ -13,6 +13,7 @@ import UserFriendProfileLoading from '../../components/LoadingSkeleton/User/User
 import { useGetSuggestedUsersMutation } from '../../Redux/features/friend/friendAPI';
 import { resetSuggestedFriends } from '../../Redux/features/friend/friendSlice';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const FriendsSuggest = () => {
     const dispatch = useDispatch();
@@ -20,6 +21,8 @@ const FriendsSuggest = () => {
 
     const [pagination, setPagination] = useState();
     const [hasMore, setHasMore] = useState(false);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [getSuggestedUsers, { isLoading }] = useGetSuggestedUsersMutation();
 
@@ -39,8 +42,8 @@ const FriendsSuggest = () => {
     }, []);
 
     useEffect(() => {
-        fetchSuggests();
-    }, []);
+        if (tokenRefreshed) fetchSuggests();
+    }, [tokenRefreshed]);
 
     useEffect(() => {
         if (pagination?.links.next) {

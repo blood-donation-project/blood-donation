@@ -18,6 +18,7 @@ import UserSearchDetail from '../../components/User/UserSearchDetail';
 import UserFriendLoading from '../../components/LoadingSkeleton/User/UserFriendLoading';
 import PostLoading from '../../components/LoadingSkeleton/Post/PostLoading';
 import { resetSearchPostsData, resetSearchUsersData } from '../../Redux/features/search/searchSlice';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const SearchAllPage = () => {
     const navigate = useNavigate();
@@ -29,9 +30,9 @@ const SearchAllPage = () => {
     const [page, setPage] = useState(1);
     const [paginationPost, setPaginationPost] = useState();
     const [hasMore, setHasMore] = useState(false);
-
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
     const [isLoadingSearchPosts, setIsLoadingSearchPosts] = useState(true);
-
     const { usersData, postsData } = useSelector((state) => state.search);
 
     const [searchPosts] = useSearchPostsMutation();
@@ -55,16 +56,16 @@ const SearchAllPage = () => {
                 });
         };
 
-        fetch();
-    }, [queryValue, page]);
+        if (tokenRefreshed) fetch();
+    }, [queryValue, page, tokenRefreshed]);
 
     useEffect(() => {
         if (queryValue === '' || queryValue === undefined || queryValue === null) {
             navigate('/404');
         }
         dispatch(resetSearchUsersData());
-        searchUsers({ q: queryValue, limit: 5, page: page }).unwrap();
-    }, [queryValue]);
+        if (tokenRefreshed) searchUsers({ q: queryValue, limit: 5, page: page }).unwrap();
+    }, [queryValue, tokenRefreshed]);
 
     useEffect(() => {
         window.scrollTo(0, 0);

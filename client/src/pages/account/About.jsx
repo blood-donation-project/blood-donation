@@ -8,9 +8,12 @@ import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
 import { useGetUserByIdMutation } from '../../Redux/features/user/userAPI';
 import { useParams } from 'react-router-dom';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const AboutPage = () => {
     const [getUserById, { data: userData }] = useGetUserByIdMutation();
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const params = useParams();
     useEffect(() => {
@@ -21,8 +24,8 @@ const AboutPage = () => {
                 console.log(Error);
             }
         };
-        fetchData();
-    }, [getUserById, params.id]);
+        if (tokenRefreshed) fetchData();
+    }, [getUserById, params.id, tokenRefreshed]);
 
     return (
         <div>

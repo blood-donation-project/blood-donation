@@ -33,9 +33,8 @@ import moment from 'moment';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
 import axios from 'axios';
 const NavMenu = () => {
-    useAutoRefreshToken('/api/user/get-user');
     const [logOut] = useLogoutMutation();
-    const [getNotification, { isLoading: isLoadingNotifi, data: notifiData }] = useGetAllNotifiMutation();
+    const [getNotification, { data: notifiData }] = useGetAllNotifiMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
     const navigate = useNavigate();
@@ -53,44 +52,50 @@ const NavMenu = () => {
     const [searchUsers, { isLoading }] = useSearchUsersMutation();
     const [getUser, { data: getdataUser }] = useGetUserMutation();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getNotification(getdataUser?._id).unwrap();
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getNotification, getdataUser?._id]);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+
+    useAutoRefreshToken('/api/user/get-user', setTokenRefreshed);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getUser().unwrap();
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getUser]);
+        if (tokenRefreshed) {
+            const fetchData = async () => {
+                try {
+                    await getNotification(getdataUser?._id).unwrap();
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getNotification, getdataUser?._id, tokenRefreshed]);
 
-    // useEffect(() => {
-    //     setSearchResult(searchUsers);
-    // }, [searchUsers]);
+    useEffect(() => {
+        if (tokenRefreshed) {
+            const fetchData = async () => {
+                try {
+                    await getUser().unwrap();
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getUser, tokenRefreshed]);
 
     const [getReceiver, { data: receiverMessage }] = useGetReceiverMutation();
     const params = useParams();
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getReceiver().unwrap();
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getReceiver, params.id]);
+        if (tokenRefreshed) {
+            const fetchData = async () => {
+                try {
+                    await getReceiver().unwrap();
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getReceiver, params.id, tokenRefreshed]);
 
     const navLinks = [
         {

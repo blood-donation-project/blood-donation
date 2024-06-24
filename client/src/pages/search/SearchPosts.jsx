@@ -15,6 +15,7 @@ import { useSearchPostsMutation } from '../../Redux/features/search/searchAPI';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import NoResult from '../../components/NoResult';
 import { resetSearchPostsData } from '../../Redux/features/search/searchSlice';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const SearchPostsPage = () => {
     const navigate = useNavigate();
@@ -27,6 +28,8 @@ const SearchPostsPage = () => {
     const [paginationPost, setPaginationPost] = useState();
     const [hasMore, setHasMore] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const { postsData } = useSelector((state) => state.search);
     const [searchPosts] = useSearchPostsMutation();
@@ -51,8 +54,8 @@ const SearchPostsPage = () => {
                     setPaginationPost(res.pagination);
                 });
         };
-        fetch();
-    }, [queryValue, page]);
+        if (tokenRefreshed) fetch();
+    }, [queryValue, page, tokenRefreshed]);
 
     useEffect(() => {
         if (paginationPost?.links.next) {

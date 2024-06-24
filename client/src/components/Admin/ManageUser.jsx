@@ -4,15 +4,14 @@ import { IoSearchOutline, IoFilter } from 'react-icons/io5';
 import { Link, useNavigate } from 'react-router-dom';
 import { CiUnlock } from 'react-icons/ci';
 import { CiLock } from 'react-icons/ci';
-import {
-    useGetAllUserMutation,
-    useLockorUnlockUserMutation,
-} from '../../Redux/features/user/userAPI';
+import { useGetAllUserMutation, useLockorUnlockUserMutation } from '../../Redux/features/user/userAPI';
 import Menu from './Menu';
 import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 import { toast } from 'react-toastify';
 const ManageUser = () => {
-    useAutoRefreshToken('/api/user/get-user-by-months');
+    const [tokenRefreshed, setTokenRefreshed] = useState(false); // State để theo dõi việc làm mới token
+    useAutoRefreshToken('/api/user/get-user-by-months', setTokenRefreshed); // Truyền setTokenRefreshed vào useAutoRefreshToken
+
     const [getAllUsers, { data: userData }] = useGetAllUserMutation();
     const [handleLockUser] = useLockorUnlockUserMutation();
     const [input, setInput] = useState('');
@@ -23,24 +22,27 @@ const ManageUser = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const formData = {
-            searchTerm: input,
-            role: selectedRoles,
-            block: isBlocked,
-        };
-        const fetchData = async () => {
-            try {
-                await getAllUsers(formData).unwrap();
-            } catch (error) {
-                console.log(error);
-                if (error?.data?.message === 'You are not Admin') {
-                    toast.error('Bạn không có quyền truy cập trang này!');
-                    navigate('/');
+        if (tokenRefreshed) {
+            // Chỉ chạy khi token đã được làm mới
+            const formData = {
+                searchTerm: input,
+                role: selectedRoles,
+                block: isBlocked,
+            };
+            const fetchData = async () => {
+                try {
+                    await getAllUsers(formData).unwrap();
+                } catch (error) {
+                    console.log(error);
+                    if (error?.data?.message === 'You are not Admin') {
+                        toast.error('Bạn không có quyền truy cập trang này!');
+                        navigate('/');
+                    }
                 }
-            }
-        };
-        fetchData();
-    }, [getAllUsers]);
+            };
+            fetchData();
+        }
+    }, [getAllUsers, tokenRefreshed, input, selectedRoles, isBlocked]);
 
     // Tìm kiếm
     const handleSubmit = async (e) => {
@@ -60,9 +62,7 @@ const ManageUser = () => {
     const handleRoleChange = (e) => {
         const role = e.target.value;
         setSelectedRoles((prevRoles) =>
-            prevRoles.includes(role)
-                ? prevRoles.filter((r) => r !== role)
-                : [...prevRoles, role]
+            prevRoles.includes(role) ? prevRoles.filter((r) => r !== role) : [...prevRoles, role],
         );
     };
 
@@ -119,12 +119,9 @@ const ManageUser = () => {
                                         placeholder="Tìm kiếm người dùng"
                                         type="text"
                                         value={input}
-                                        onChange={(e) =>
-                                            setInput(e.target.value)
-                                        }
+                                        onChange={(e) => setInput(e.target.value)}
                                         onKeyDown={(e) => {
-                                            if (e.key === 'Enter')
-                                                handleSubmit(e);
+                                            if (e.key === 'Enter') handleSubmit(e);
                                         }}
                                         name=""
                                         id=""
@@ -140,11 +137,7 @@ const ManageUser = () => {
                                     <IoFilter />
                                     <p>Lọc người dùng</p>
                                 </div>
-                                <div
-                                    className={`${
-                                        isOpenFilter ? '' : 'hidden'
-                                    } mb-2`}
-                                >
+                                <div className={`${isOpenFilter ? '' : 'hidden'} mb-2`}>
                                     <ul className="flex gap-2">
                                         <li className="w-fit">
                                             <input
@@ -154,9 +147,7 @@ const ManageUser = () => {
                                                 value={'Người hiến máu'}
                                                 className="hidden peer"
                                                 onChange={handleCheckboxChange}
-                                                checked={selectedRoles.includes(
-                                                    'Người hiến máu'
-                                                )}
+                                                checked={selectedRoles.includes('Người hiến máu')}
                                             />
                                             <label
                                                 htmlFor="nguoihienmau"
@@ -173,9 +164,7 @@ const ManageUser = () => {
                                                 value={'Người cần máu'}
                                                 className="hidden peer"
                                                 onChange={handleCheckboxChange}
-                                                checked={selectedRoles.includes(
-                                                    'Người cần máu'
-                                                )}
+                                                checked={selectedRoles.includes('Người cần máu')}
                                             />
                                             <label
                                                 htmlFor="nguoicanmau"
@@ -192,9 +181,7 @@ const ManageUser = () => {
                                                 id="cosoyte"
                                                 className="hidden peer"
                                                 onChange={handleCheckboxChange}
-                                                checked={selectedRoles.includes(
-                                                    'Cơ sở y tế'
-                                                )}
+                                                checked={selectedRoles.includes('Cơ sở y tế')}
                                             />
                                             <label
                                                 htmlFor="cosoyte"
@@ -228,43 +215,24 @@ const ManageUser = () => {
                                 </div>
                             </div>
                         </div>
-                        <div
-                            style={{ overflowX: 'auto', overflowY: 'auto' }}
-                            className="w-full h-[500px]"
-                        >
+                        <div style={{ overflowX: 'auto', overflowY: 'auto' }} className="w-full h-[500px]">
                             <table className="border w-full ">
                                 <tr className="sticky -top-1 bg-white shadow-sm">
                                     <td className="w-[35%] text-start py-2 font-medium">
-                                        <span className="ml-5">
-                                            Tên Người Dùng ({userData?.length})
-                                        </span>
+                                        <span className="ml-5">Tên Người Dùng ({userData?.length})</span>
                                     </td>
                                     <td className="w-[25%] text-start ml-5 ">
                                         <span className="ml-5">Vai trò</span>
                                     </td>
-                                    <td className="w-[40%] ">
-                                        Tình trạng tài khoản
-                                    </td>
+                                    <td className="w-[40%] ">Tình trạng tài khoản</td>
                                 </tr>
                                 {/* Map here */}
                                 {userData?.map((item, index) => (
-                                    <tr
-                                        key={index}
-                                        className="border content-center"
-                                    >
+                                    <tr key={index} className="border content-center">
                                         <td className="py-3 ">
-                                            <Link
-                                                to={`/user/${item?._id}`}
-                                                className="gap-2 flex items-center ml-5 "
-                                            >
-                                                <img
-                                                    className="w-10 h-10 rounded-full"
-                                                    src={item?.avatar}
-                                                    alt=""
-                                                />
-                                                <p className="hover:underline">
-                                                    {item?.username}
-                                                </p>
+                                            <Link to={`/user/${item?._id}`} className="gap-2 flex items-center ml-5 ">
+                                                <img className="w-10 h-10 rounded-full" src={item?.avatar} alt="" />
+                                                <p className="hover:underline">{item?.username}</p>
                                             </Link>
                                         </td>
                                         <td className="text-start text-gray-600">
@@ -283,11 +251,7 @@ const ManageUser = () => {
                                                 )}
 
                                                 <Popconfirm
-                                                    title={`${
-                                                        item?.block
-                                                            ? 'Mở khóa tài khoản'
-                                                            : 'Khóa tài Khoản'
-                                                    }`}
+                                                    title={`${item?.block ? 'Mở khóa tài khoản' : 'Khóa tài Khoản'}`}
                                                     description={`${
                                                         item?.block
                                                             ? 'Bạn có chắc chắn muốn mở khóa tài khoản này không?'
@@ -298,13 +262,10 @@ const ManageUser = () => {
                                                     cancelText="Không"
                                                 >
                                                     <div
-                                                        onClick={() =>
-                                                            setUserId(item?._id)
-                                                        }
+                                                        onClick={() => setUserId(item?._id)}
                                                         className="p-2 mr-10 flex items-center justify-center cursor-pointer hover:bg-gray-200 rounded-full"
                                                     >
-                                                        {item?.block ===
-                                                        false ? (
+                                                        {item?.block === false ? (
                                                             <CiUnlock className="w-6 h-6" />
                                                         ) : (
                                                             <CiLock className="w-6 h-6" />

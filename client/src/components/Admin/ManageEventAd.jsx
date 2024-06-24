@@ -8,23 +8,27 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 const ManageEventAd = () => {
-    useAutoRefreshToken('/home/');
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [deleteEventByAdmin] = useDeleteEventByAdminMutation();
     const [getAllEvent, { data: eventData }] = useGetAllEventsMutation();
     const [eventId, setEvenId] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getAllEvent(searchTerm).unwrap();
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getAllEvent]);
+        if (tokenRefreshed) {
+            const fetchData = async () => {
+                try {
+                    await getAllEvent(searchTerm).unwrap();
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getAllEvent, tokenRefreshed, searchTerm]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

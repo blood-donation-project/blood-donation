@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useRefreshtokenMutation } from '../Redux/features/auth/authAPI';
 
-export const useAutoRefreshToken = (endpoint) => {
+export const useAutoRefreshToken = (endpoint, setTokenRefreshed) => {
     const [refreshToken] = useRefreshtokenMutation();
     const navigate = useNavigate();
     const accessToken = localStorage.getItem('accessToken');
@@ -31,14 +31,17 @@ export const useAutoRefreshToken = (endpoint) => {
                 } catch (error) {
                     console.error('Error:', error);
                     navigate('/login');
+                } finally {
+                    if (typeof setTokenRefreshed === 'function') {
+                        setTokenRefreshed(true);
+                    }
                 }
             };
 
             fetchData();
         }
-    }, [accessToken, navigate, endpoint, refreshToken]);
+    }, [accessToken, navigate, endpoint, refreshToken, setTokenRefreshed]);
 };
-
 export const useVerifyToken = (endpoint) => {
     const [refreshToken] = useRefreshtokenMutation();
     const navigate = useNavigate();

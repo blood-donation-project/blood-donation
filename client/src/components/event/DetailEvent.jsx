@@ -29,7 +29,9 @@ import { useGetAllFriendsMutation } from '../../Redux/features/friend/friendAPI'
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import moment from 'moment';
 const DetailEvent = () => {
-    useAutoRefreshToken('/home/');
+    const [tokenRefreshed, setTokenRefreshed] = useState(false); // State để theo dõi việc làm mới token
+    useAutoRefreshToken('/home/', setTokenRefreshed); // Truyền setTokenRefreshed vào useAutoRefreshToken
+
     const [inviteFriend] = useInviteFriendsMutation();
     const [getNotification] = useGetInviteEventNotifiMutation();
     const [localNotificationData, setLocalNotificationData] = useState([]);
@@ -53,32 +55,37 @@ const DetailEvent = () => {
     const [isOpenDetail, setOpenDetail] = useState(false);
     const [isOpenInvite, setOpenInvite] = useState(false);
     const [joinEvent] = useJoinEventMutation();
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                await getUser().unwrap();
-            } catch (error) {}
-        };
-        fetchUser();
-    }, [getUser]);
-
-    // Invite Friend
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getAllFriends({ userId: userData?._id, limit: 10 }).unwrap();
+        if (tokenRefreshed) {
+            // Chỉ chạy khi token đã được làm mới
+            const fetchUser = async () => {
+                try {
+                    await getUser().unwrap();
+                } catch (error) {}
+            };
+            fetchUser();
+        }
+    }, [getUser, tokenRefreshed]);
 
-                const notifications = await getNotification({
-                    type: `InviteEvent_${params.id}_${userData?._id}`,
-                }).unwrap();
-                setLocalNotificationData(notifications);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getAllFriends, getNotification, userData?._id, params.id]);
+    useEffect(() => {
+        if (tokenRefreshed) {
+            // Chỉ chạy khi token đã được làm mới
+            const fetchData = async () => {
+                try {
+                    await getAllFriends({ userId: userData?._id, limit: 10 }).unwrap();
+
+                    const notifications = await getNotification({
+                        type: `InviteEvent_${params.id}_${userData?._id}`,
+                    }).unwrap();
+                    setLocalNotificationData(notifications);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getAllFriends, getNotification, userData?._id, params.id, tokenRefreshed]);
 
     const handleInviteFriend = async (friendId) => {
         try {
@@ -109,29 +116,35 @@ const DetailEvent = () => {
     };
 
     useEffect(() => {
-        try {
+        if (tokenRefreshed) {
+            // Chỉ chạy khi token đã được làm mới
             const fetchData = async () => {
-                await getUserRegister(params.id).unwrap();
+                try {
+                    await getUserRegister(params.id).unwrap();
+                } catch (error) {
+                    console.error('Error fetching user registration data:', error);
+                }
             };
             fetchData();
-        } catch (error) {
-            console.error('Error fetching user registration data:', error);
         }
-    }, [getUserRegister, params.id]);
+    }, [getUserRegister, params.id, tokenRefreshed]);
 
     useEffect(() => {
-        const fetchEventByID = async () => {
-            try {
-                const result = await checkRegisterEvent(params.id).unwrap();
-                if (result) {
-                    setIsCheckJoin(true);
-                } else {
-                    setIsCheckJoin(false);
-                }
-            } catch (error) {}
-        };
-        fetchEventByID();
-    }, [checkRegisterEvent, isCheckJoin, params.id]);
+        if (tokenRefreshed) {
+            // Chỉ chạy khi token đã được làm mới
+            const fetchEventByID = async () => {
+                try {
+                    const result = await checkRegisterEvent(params.id).unwrap();
+                    if (result) {
+                        setIsCheckJoin(true);
+                    } else {
+                        setIsCheckJoin(false);
+                    }
+                } catch (error) {}
+            };
+            fetchEventByID();
+        }
+    }, [checkRegisterEvent, isCheckJoin, params.id, tokenRefreshed]);
 
     // Open Update
     const openPopupUpdate = () => {

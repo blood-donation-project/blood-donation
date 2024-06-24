@@ -30,6 +30,7 @@ import getLastName from '../../utils/getLastName';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { GoPlusCircle } from 'react-icons/go';
 import PostPendingApproval from '../../components/Post/PostPendingApproval';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const ProfilePage = () => {
     const divRef = useRef(null);
@@ -45,6 +46,8 @@ const ProfilePage = () => {
     const [pagination, setPagination] = useState();
     const [hasMore, setHasMore] = useState(false);
     const [image, setImage] = useState('');
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const { profilePosts, profilePostsPendingApproval } = useSelector((state) => state.posts);
     const { friends } = useSelector((state) => state.friend);
@@ -82,23 +85,27 @@ const ProfilePage = () => {
     };
 
     useEffect(() => {
-        if (activeId === '1') {
-            dispatch(resetProfilePosts());
-            fetchProfilePosts();
-        } else {
-            dispatch(resetProfilePostsPendingApproval());
-            fetchProfilePostsApproval();
+        if (tokenRefreshed) {
+            if (activeId === '1') {
+                dispatch(resetProfilePosts());
+                fetchProfilePosts();
+            } else {
+                dispatch(resetProfilePostsPendingApproval());
+                fetchProfilePostsApproval();
+            }
         }
-    }, [activeId, id]);
+    }, [activeId, id, tokenRefreshed]);
 
     // Friends and photos
     useEffect(() => {
         dispatch(resetPhotos());
         dispatch(resetFriends());
 
-        getAllFriends({ userId: id, limit: 9, page: 1 }).unwrap();
-        getPhotos({ userId: id, limit: 9, page: 1 }).unwrap();
-    }, [id]);
+        if (tokenRefreshed) {
+            getAllFriends({ userId: id, limit: 9, page: 1 }).unwrap();
+            getPhotos({ userId: id, limit: 9, page: 1 }).unwrap();
+        }
+    }, [id, tokenRefreshed]);
 
     useEffect(() => {
         if (divRef.current) {

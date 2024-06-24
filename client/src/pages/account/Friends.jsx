@@ -9,6 +9,7 @@ import { resetFriends, resetSearchMyFriends } from '../../Redux/features/friend/
 import InfiniteScroll from 'react-infinite-scroll-component';
 import UserFriendProfile from '../../components/User/UserFriendProfile';
 import useDebounce from '../../hooks/useDebounce';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const ProfileFriendsPage = () => {
     const { id } = useParams();
@@ -16,6 +17,8 @@ const ProfileFriendsPage = () => {
     const { friends, searchFriends } = useSelector((state) => state.friend);
     const { otherUser } = useSelector((state) => state.user);
     const [isLoadingSearchFriend, setIsLoadingSearchFriend] = useState(false);
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     const [getAllFriends, { isLoading }] = useGetAllFriendsMutation();
     const [searchMyFriends] = useSearchMyFriendsMutation();
@@ -51,8 +54,8 @@ const ProfileFriendsPage = () => {
 
     useEffect(() => {
         dispatch(resetFriends());
-        fetchFriends();
-    }, []);
+        if (tokenRefreshed) fetchFriends();
+    }, [tokenRefreshed]);
 
     useEffect(() => {
         if (pagination?.links.next) {

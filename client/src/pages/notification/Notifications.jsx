@@ -5,10 +5,13 @@ import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import Avatar from '../../components/Image/Avatar';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const Notification = () => {
     const [getNotification, { isLoading: isLoadingNotifi, data: notifiData }] = useGetAllNotifiMutation();
     const [getUser, { data: userData }] = useGetUserMutation();
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -30,8 +33,8 @@ const Notification = () => {
                 console.log(error);
             }
         };
-        fetchData();
-    }, [getNotification, userData?._id]);
+        if (tokenRefreshed) fetchData();
+    }, [getNotification, userData?._id, tokenRefreshed]);
 
     return (
         <>

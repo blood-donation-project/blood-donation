@@ -1,11 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
 import { Skeleton } from 'antd';
 import { useGetUserByIdMutation, useGetUserMutation } from '../../../Redux/features/user/userAPI';
 import { useParams } from 'react-router-dom';
 
 const ChatBody = ({ messages }) => {
-    useAutoRefreshToken('/home/');
+    const [tokenRefreshed, setTokenRefreshed] = useState(false);
+    useAutoRefreshToken('/home/', setTokenRefreshed);
+
     const [getUser, { data: userData }] = useGetUserMutation();
     const [getUserById, { data: userDataById }] = useGetUserByIdMutation();
     const params = useParams();
@@ -18,27 +20,32 @@ const ChatBody = ({ messages }) => {
     }, [messages]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await getUser().unwrap();
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getUser]);
+        if (tokenRefreshed) {
+            const fetchData = async () => {
+                try {
+                    await getUser().unwrap();
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getUser, tokenRefreshed]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const userId = params.id; // Get user by id url
-                await getUserById(userId).unwrap();
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, [getUserById, params.id]);
+        if (tokenRefreshed) {
+            // Chỉ chạy khi token đã được làm mới
+            const fetchData = async () => {
+                try {
+                    const userId = params.id; // Get user by id url
+                    await getUserById(userId).unwrap();
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetchData();
+        }
+    }, [getUserById, params.id, tokenRefreshed]);
 
     return (
         <div className="overflow-y-scroll flex-1">
