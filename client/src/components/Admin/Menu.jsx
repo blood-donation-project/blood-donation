@@ -16,7 +16,7 @@ const Menu = ({ activeComponent }) => {
     const [readNotifi] = useReadNotifiMutation();
 
     useEffect(() => {
-        const fetchData = async (req, res) => {
+        const fetchData = async () => {
             await getUser().unwrap();
         };
         fetchData();
