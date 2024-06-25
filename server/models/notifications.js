@@ -14,6 +14,10 @@ const notificationSchema = new mongoose.Schema({
     type: {
         type: String,
     },
+    status: {
+        type: String,
+        default: 'unread',
+    },
     createAt: {
         type: Date,
         default: Date.now,

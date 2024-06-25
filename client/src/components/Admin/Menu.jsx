@@ -1,12 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdManageAccounts, MdVerified } from 'react-icons/md';
 import { TbCalendarEvent } from 'react-icons/tb';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 import { BsFilePost } from 'react-icons/bs';
 import { IoNotifications, IoArrowBackSharp } from 'react-icons/io5';
+import { GoDotFill } from 'react-icons/go';
+import { useGetAllNotifiMutation, useReadNotifiMutation } from '../../Redux/features/notification/notifiAPI';
+import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 const Menu = ({ activeComponent }) => {
     const [isOpenPost, setIsOpenPost] = useState(false);
+    const [notifiUnRead, setNotifiUnRead] = useState([]);
+    const [getNotification] = useGetAllNotifiMutation();
+    const [getUser, { data: user }] = useGetUserMutation();
+    const [readNotifi] = useReadNotifiMutation();
+
+    useEffect(() => {
+        const fetchData = async (req, res) => {
+            await getUser().unwrap();
+        };
+        fetchData();
+    }, [getUser]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const result = await getNotification(user?._id).unwrap();
+                const unreadNotifications = result.filter((item) => item?.status === 'unread');
+                setNotifiUnRead(unreadNotifications);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [getNotification, user?._id]);
+
+    const handleReadNotifi = async () => {
+        await readNotifi();
+        setNotifiUnRead([]);
+    };
 
     return (
         <div class="flex flex-col items-center lg:justify-between z-30 shadow-md border-r lg:w-48 w-16 h-full overflow-hidden text-gray-700 bg-gray-100 rounded transition-all duration-300">
@@ -93,15 +125,25 @@ const Menu = ({ activeComponent }) => {
                             <span class="ml-2 hidden lg:block text-sm font-medium">Sự Kiện</span>
                         </Link>
                     </div>
-                    <div class="flex flex-col items-center w-full mt-2 border-t border-gray-300">
+                    <div
+                        onClick={handleReadNotifi}
+                        class="flex flex-col items-center w-full mt-2 border-t border-gray-300"
+                    >
                         <Link
                             class={`${
                                 activeComponent === 'notification' ? 'bg-gray-300 text-gray-800' : ''
-                            } flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-300`}
+                            } lg:flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-300`}
                             to={'/v1/admin/notification'}
                         >
                             <IoNotifications className="w-6 h-6" />
-                            <span class="ml-2 hidden lg:block text-sm font-medium">Thông báo</span>
+                            <div className="flex justify-between items-center w-full">
+                                <span class="ml-2 hidden lg:block text-sm font-medium">Thông báo</span>
+                                {notifiUnRead?.length > 0 && (
+                                    <span>
+                                        <GoDotFill className="text-blue-400 w-6 h-6" />
+                                    </span>
+                                )}
+                            </div>
                         </Link>
                     </div>
                 </div>

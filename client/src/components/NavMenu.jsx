@@ -28,13 +28,14 @@ import { useAutoRefreshToken } from '../hooks/useAutoRefreshToken';
 import { useGetReceiverMutation } from '../Redux/features/message/messageAPI';
 import { MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
-import { useGetAllNotifiMutation } from '../Redux/features/notification/notifiAPI';
+import { useGetAllNotifiMutation, useReadNotifiMutation } from '../Redux/features/notification/notifiAPI';
 import moment from 'moment';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
 import axios from 'axios';
 const NavMenu = () => {
     const [logOut] = useLogoutMutation();
     const [getNotification, { data: notifiData }] = useGetAllNotifiMutation();
+    const [readNotifi] = useReadNotifiMutation();
     const location = useLocation();
     const pathname = location.pathname.split('/')[1] || '';
     const navigate = useNavigate();
@@ -51,6 +52,7 @@ const NavMenu = () => {
 
     const [searchUsers, { isLoading }] = useSearchUsersMutation();
     const [getUser, { data: getdataUser }] = useGetUserMutation();
+    const [notifiUnRead, setNotifiUnRead] = useState([]);
 
     const [tokenRefreshed, setTokenRefreshed] = useState(false);
 
@@ -60,7 +62,9 @@ const NavMenu = () => {
         if (tokenRefreshed) {
             const fetchData = async () => {
                 try {
-                    await getNotification(getdataUser?._id).unwrap();
+                    const result = await getNotification(getdataUser?._id).unwrap();
+                    const unreadNotifications = result.filter((item) => item?.status === 'unread');
+                    setNotifiUnRead(unreadNotifications);
                 } catch (error) {
                     console.log(error);
                 }
@@ -138,6 +142,8 @@ const NavMenu = () => {
         fetchSearch();
     }, [debounce]);
 
+    console.log(notifiUnRead);
+
     const searchInputChange = (e) => {
         const value = e.target.value;
         if (value.length === 0) setSearchResult([]);
@@ -168,8 +174,12 @@ const NavMenu = () => {
         setIsShowingMobileMenu(false);
     };
 
-    const toggleVisibilityNotify = () => {
+    const toggleVisibilityNotify = async () => {
         setIsShowingNotify(!isShowingNotify);
+        if (isShowingNotify === true) { 
+            await readNotifi().unwrap();
+            setNotifiUnRead([]);
+        }
     };
 
     const toggleVisibilityAccountControl = () => {
@@ -367,12 +377,23 @@ const NavMenu = () => {
                         )}
                     >
                         <div
-                            className={`w-10 h-10  cursor-pointer rounded-[50%] bg-[#e4e6eb] flex-center mr-2 transition ${
+                            className={`w-10 h-10 relative cursor-pointer rounded-[50%] bg-[#e4e6eb] flex-center mr-2 transition ${
                                 isShowingNotify && 'text-[#386fd6]'
                             }`}
                             onClick={toggleVisibilityNotify}
                         >
                             <IoMdNotifications className="text-[20px]" />
+                            {notifiUnRead?.length > 0 ? (
+                                <div className="absolute z-10 -top-1 -right-1 bg-red-500 text-white text-xs rounded-full">
+                                    <span className="min-w-5 h-5 inline-flex">
+                                        <span className="inline-flex justify-center items-center p-1 w-full h-full">
+                                            {notifiUnRead?.length}
+                                        </span>
+                                    </span>
+                                </div>
+                            ) : (
+                                ''
+                            )}
                         </div>
                     </Tippy>
                     {/* getdataUser controls*/}

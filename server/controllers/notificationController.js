@@ -70,6 +70,22 @@ const notificationController = {
             console.log(error);
         }
     },
+    readNotifi: async (req, res) => {
+        try {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) {
+                res.status(401).json({
+                    message: 'Authorization header missing',
+                });
+            }
+            const token = authHeader.split(' ')[1];
+            const userId = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+            await Notification.updateMany({ userId: userId.id }, { status: 'read' });
+            res.status(200).json({ message: 'Successfully' });
+        } catch (error) {
+            console.log(error);
+        }
+    },
 };
 
 module.exports = notificationController;

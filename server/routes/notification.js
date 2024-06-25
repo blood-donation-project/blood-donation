@@ -10,6 +10,8 @@ router.post(
     notificationController.getNotificationByType,
 );
 
+router.post('/read-notifications', middlewareController.verifyToken, notificationController.readNotifi);
+
 router.post('/request-help', middlewareController.verifyToken, notificationController.notifiHelp);
 
 module.exports = router;
