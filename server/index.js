@@ -31,7 +31,7 @@ dotenv.config();
 connectDB();
 
 const corsOptions = {
-    origin: 'http://localhost:3000', // Thay thế bằng domain của client
+    origin: 'http://localhost:4200', // Thay thế bằng domain của client
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

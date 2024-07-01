@@ -439,14 +439,7 @@ const ProfileOverview = () => {
                 >
                     <ViewPhoto hideModal={hideViewImageModal} srcImage={image} />
                 </ModalWrapper>
-
-                <ModalWrapper
-                    hideModal={hideUpdateProfileModal}
-                    isShowing={isShowingUpdateProfileModal}
-                    bgrColor="bg-[rgba(255,255,255,0.9)]"
-                >
-                    <UpdateProfile hideModal={hideUpdateProfileModal} />
-                </ModalWrapper>
+                <UpdateProfile isOpenUpdate={isShowingUpdateProfileModal} onCloseUpdate={hideUpdateProfileModal} />
             </div>
         )
     );
