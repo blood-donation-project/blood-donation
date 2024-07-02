@@ -41,7 +41,7 @@ const ChatBody = ({ messages }) => {
     }, [getUserById, params.id]);
 
     return (
-        <div className="overflow-y-scroll flex-1">
+        <div className="overflow-y-scroll flex-1 z-[9999999] bg-white">
             {messages?.length > 0 ? (
                 <div ref={chatContainerRef} className="chat-body  w-full p-4  bg-white ">
                     {messages.map((message, index) => (

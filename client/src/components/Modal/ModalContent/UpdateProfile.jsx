@@ -44,8 +44,6 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
     });
     useAutoRefreshToken('/home/');
 
-    console.log(user);
-
     const [profileData, setProfileData] = useState({
         fullName: '',
         identification: '',
@@ -72,7 +70,7 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
             address: {
                 province: user?.address?.province, // Store the selected province object
                 district: user?.address?.district, // Store the selected district object
-                ward: user?.ward, // Store the selected ward object
+                ward: user?.address?.ward, // Store the selected ward object
             },
             street: user?.address?.street,
             phone: user?.phoneNumber,
@@ -113,7 +111,6 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
                 console.log(err);
             });
     }, []);
-
     useEffect(() => {
         if (selectedValue.province) {
             getDistrictsByProvinceId(selectedValue.province.id)
@@ -242,7 +239,6 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
     const clearForm = () => {
         reset();
     };
-    console.log(status);
     const handleSubmitForm = async (e) => {
         setLoading(true);
         const formData = new FormData();
@@ -263,9 +259,9 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
             avatar: avatarUrl,
             backgroundImage: backgroundUrl,
             street: profileData.street,
-            province: profileData.address?.province?.full_name,
-            district: profileData.address?.district?.full_name,
-            ward: profileData.address?.ward?.full_name,
+            province: profileData.address?.province,
+            district: profileData.address?.district,
+            ward: profileData.address?.ward,
             phoneNumber: profileData.phone,
             bloodGroup: profileData.bloodType,
             role: profileData.role,
@@ -280,28 +276,27 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
     };
 
     return (
-        <div className="fixed inset-0  flex  items-center justify-center bg-gray-800 bg-opacity-75 z-[99999999] transition-opacity duration-700">
+        <div className="fixed inset-0  flex  items-center justify-center bg-gray-800 bg-opacity-75 z-[999999] transition-opacity duration-700">
+            <ToastContainer
+                className={'z-[9999999]'}
+                position="top-right"
+                autoClose={2000}
+                transition={Slide}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             {isOpenEKYC ? (
                 <div className="xs:h-screen  flex  items-center justify-center md:h-[calc(100vh_-_60px)] lg:max-w-6xl ">
                     <EKYC isOpen={isOpenEKYC} onClose={handleClosePopup} />
                 </div>
             ) : (
                 <div className=" xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">
-                    <ToastContainer
-                        className={'z-[999999]'}
-                        position="top-right"
-                        autoClose={2000}
-                        transition={Slide}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="light"
-                    />
-
                     <div className={`box-zoom-in   h-[100%]  `}>
                         <div className="  md:flex-center xs:flex   h-[50px] border-b border-b-[#ccc]">
                             <span className="w-[50px] h-[50px] md:hidden flex-center text-[18px]     hover:bg-[#f1f5f9] cursor-pointer">
@@ -555,6 +550,11 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
                                     <p>Sẵn sàng hiến máu</p>
                                     <Switch onChange={handleChangeStatus} defaultChecked={status} />
                                 </div>
+                                {!user?.identification && (
+                                    <p className="text-center text-sm text-red-400 mt-2">
+                                        Để tài khoản bảo mật hơn vui lòng thêm căn cước công dân của bạn!
+                                    </p>
+                                )}
                                 <div className="w-full ">
                                     <div className="w-full flex justify-end px-4 py-5">
                                         <button

@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { HiOutlineXMark } from 'react-icons/hi2';
+import { toast } from 'react-toastify';
+import { useUpdateUserByEKYCMutation } from '../../Redux/features/user/userAPI';
 const EKYC = ({ isOpen, onClose }) => {
+    const [updateByEKYC] = useUpdateUserByEKYCMutation();
     const [data, setData] = useState(null);
-    const [result, setResult] = useState('');
     const containerRef = useRef(null);
     useEffect(() => {
         if (!isOpen) return;
@@ -28,10 +30,10 @@ const EKYC = ({ isOpen, onClose }) => {
                 BASE_CDN: VNPT_CDN,
                 BACKEND_URL: 'https://api.idg.vnpt.vn/',
                 TOKEN_KEY:
-                    'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJW6ETlhlgwsES8IBKdRanQO8KyIHYNJ73CjRtzplw33JGwMyfluTBoiH4F7cVZ1QJ47YKXBoM0X/YdKbhKaOxcCAwEAAQ==',
-                TOKEN_ID: '1c02db9d-7ef6-13c8-e063-62199f0a0c64',
+                    'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALy4iS2+gCYMU0IatknKygcXyVAMIg+fkGzkd1s4D4uBtwEoktworCkAfm5nUcRW5yslaRsVZeEiu3ABCrHdfXECAwEAAQ==',
+                TOKEN_ID: '1c40a792-a15a-3ce0-e063-62199f0accb2',
                 AUTHORIZION:
-                    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNzc1YjczZS0zNWU0LTExZWYtYmExYy1hMzc5YjJhNmIyMDkiLCJhdWQiOlsicmVzdHNlcnZpY2UiXSwidXNlcl9uYW1lIjoidmFucXVhbmcyMDAxMUBnbWFpbC5jb20iLCJzY29wZSI6WyJyZWFkIl0sImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0IiwibmFtZSI6InZhbnF1YW5nMjAwMTFAZ21haWwuY29tIiwiZXhwIjoxNzIyMjM3MTA5LCJ1dWlkX2FjY291bnQiOiJhNzc1YjczZS0zNWU0LTExZWYtYmExYy1hMzc5YjJhNmIyMDkiLCJhdXRob3JpdGllcyI6WyJVU0VSIl0sImp0aSI6IjNhMWE3NjRhLTI1OGMtNGI1YS04NTYyLWIxZjk0OGFkM2Q4NyIsImNsaWVudF9pZCI6ImNsaWVudGFwcCJ9.T0kVjoNa5H03kiazTL2ry0BH1fahcDqS3N8DerJmxgP4gSJseHv3Ns1byDYWuaDT4yod8f5ws0Xr4Z7OA0LB6vv5eqR6RU2O3Qe6GbgBXbcyDxHV8WFpuIVhzSfMN_1-DN7ay3ii-z8bOpMl6JLzcJNEbKGp3Muh0XLJ36QrwV3Sc9D1YbXZ3s_LGx1NEme4QL9fVR1NZvEfTBsavyPCtyWjLlL-R-I87n2ipoLMO775qYmViOt5zjPS3cLSlFg5o0dfMu6dWq9oTCHvFj2od9eEjFTO2dBldlQWFT_yBpf_wgCLYviWZMwkV83xjjYGUuEFx39P0SvqwrxuIuI2mQ',
+                    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ZjE1MWMwYS0zODRlLTExZWYtYmExYy0wN2U2NDUyNWI0NjQiLCJhdWQiOlsicmVzdHNlcnZpY2UiXSwidXNlcl9uYW1lIjoicXVhbmd2YW4xNC4xMC4yMDAzQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3QiLCJuYW1lIjoicXVhbmd2YW4xNC4xMC4yMDAzQGdtYWlsLmNvbSIsImV4cCI6MTcyMjUwMTYwNCwidXVpZF9hY2NvdW50IjoiOWYxNTFjMGEtMzg0ZS0xMWVmLWJhMWMtMDdlNjQ1MjViNDY0IiwiYXV0aG9yaXRpZXMiOlsiVVNFUiJdLCJqdGkiOiI5ZjJiZGE3MC05OTViLTQyMTMtOTJkOS01MGFmYjRlZTQxOWUiLCJjbGllbnRfaWQiOiJjbGllbnRhcHAifQ.p9J5Q3qiQjiRvl5mABEi68MAsHnJa2qRGT_LB-vPydLhZTzeBVOALAnJ-IurqNXVfFmSL0EsG6PuNRDCDX5wzJMSRRWaGz-PK5vnYLg5LrYIg0K5H8YTCHE18gRlnI4aGp8mFc-M4AEsUKPk9o-2Bw7HTrUN1ntnnfV3hAGAeu8ji5XLiH9wBSu96NM4Pn4VnGJR6kFN3zFF-uKcqfWPXzNN3WCniwoFfne8C3ybk_hZAAG05ugseeys69QnNKRwq27O963Q8tASkqLf5QfBgSPu_fAXS19lZF2JkpdSRkc0tlyOVfXaomUT3cF4elO0WFovFUONXCcx7dqTenWw8w',
                 PARRENT_ID: 'ekyc_sdk_intergrated',
                 FLOW_TYPE: 'DOCUMENT', // DOCUMENT, FACE
                 SHOW_HELP: true,
@@ -155,21 +157,40 @@ const EKYC = ({ isOpen, onClose }) => {
         };
     }, [isOpen]);
     useEffect(() => {
-        if (
-            data?.compare?.statusCode === 200 &&
-            data?.liveness_card_back?.statusCode === 200 &&
-            data?.liveness_card_front?.statusCode === 200
-        ) {
-            setResult(data?.ocr?.object?.id);
-        }
-    }, [data]);
+        const fetchData = async () => {
+            try {
+                if (data?.ocr?.statusCode !== 200) {
+                    const checkValid = data?.ocr?.errors;
+                    for (let i = 0; i < checkValid?.length; i++) {
+                        toast.error('Thất bại! ' + checkValid?.[i]);
+                    }
+                }
+                if (
+                    data?.compare?.statusCode === 200 &&
+                    data?.liveness_card_back?.statusCode === 200 &&
+                    data?.liveness_card_front?.statusCode === 200 &&
+                    data?.ocr?.statusCode === 200
+                ) {
+                    const identification = data?.ocr?.object?.id;
+                    await updateByEKYC(identification).unwrap();
+                    toast.success('Cập nhật dữ liệu thành công!');
+                }
+            } catch (error) {
+                console.log(error);
+                if (error?.data?.message === 'Identification exist') {
+                    toast.error('Căn cước công dẫn đã tồn tại');
+                }
+                toast.error('Thất bại! Vui lòng kiểm tra lại!');
+            }
+        };
+        fetchData();
+    }, [data, updateByEKYC]);
 
     const handleClosePopup = () => {
         onClose();
     };
 
     console.log('rs component: ', data);
-    console.log('rs component rs: ', result);
     if (!isOpen) return null;
     return (
         <div className=" h-full ">

@@ -61,6 +61,13 @@ export const userAPI = createApi({
                 body: { userId },
             }),
         }),
+        updateUserByEKYC: builder.mutation({
+            query: (identification) => ({
+                url: 'update-user-by-ekyc',
+                method: 'POST',
+                body: { identification },
+            }),
+        }),
     }),
 });
 
@@ -72,6 +79,7 @@ export const {
     useGetAllUserMutation,
     useLockorUnlockUserMutation,
     useGetPhotosMutation,
+    useUpdateUserByEKYCMutation,
 } = userAPI;
 
 export default userAPI;

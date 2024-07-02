@@ -15,4 +15,7 @@ router.post('/get-all-users', middlewareController.verifyTokenAndAdmin, userCont
 router.put('/lock-or-unlock-user', middlewareController.verifyTokenAndAdmin, userController.lockorUnLockUser);
 
 router.post('/update-user', middlewareController.verifyToken, userController.updateUser);
+
+router.post('/update-user-by-ekyc', middlewareController.verifyToken, userController.handleEKYC);
+
 module.exports = router;

@@ -180,7 +180,6 @@ const userController = {
         try {
             const {
                 username,
-                identification,
                 avatar,
                 backgroundImage,
                 street,
@@ -209,37 +208,26 @@ const userController = {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            if (identification && identification.trim() !== '') {
-                const checkIdentification = await User.findOne({
-                    identification: identification,
-                    _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
-                });
-                if (checkIdentification) {
-                    return res.status(409).json({ message: 'Identification exist' });
-                }
-            }
             if (phoneNumber && phoneNumber.trim() !== '') {
                 const checkPhoneNumber = await User.findOne({
                     phoneNumber: phoneNumber,
-                    _id: { $ne: user.id }, // Loại trừ chính người dùng đang cập nhật
+                    _id: { $ne: user._id }, // Loại trừ chính người dùng đang cập nhật
                 });
                 if (checkPhoneNumber) {
                     return res.status(409).json({ message: 'PhoneNumber exist' });
                 }
             }
-
             const result = await User.updateOne(
-                { _id: user.id },
+                { _id: user._id },
                 {
                     username,
-                    identification,
                     avatar,
                     backgroundImage,
                     phoneNumber,
                     address,
                     bloodGroup,
                     role,
-                    status
+                    status,
                 },
             );
             res.status(200).json(result);
@@ -247,7 +235,38 @@ const userController = {
             return res.status(500).json({ message: 'Lỗi cập nhật người dùng' });
         }
     },
+    handleEKYC: async (req, res) => {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader && authHeader.split(' ')[1];
+            if (!token) {
+                return res.status(401).json({ message: 'No token provided' });
+            }
+            const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+            const user = await User.findById(decodedToken.id).select('-password');
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            const { identification } = req.body;
+            console.log(req.body);
+            console.log(identification);
+            if (identification && identification.trim() !== '') {
+                const checkIdentification = await User.findOne({
+                    identification: identification,
+                    _id: { $ne: user._id }, // Loại trừ chính người dùng đang cập nhật
+                });
+                if (checkIdentification) {
+                    return res.status(409).json({ message: 'Identification exist' });
+                }
+            }
+            const result = await User.updateOne({ _id: user._id }, { identification });
 
+            console.log(result);
+            return res.status(200).json({ message: 'Update Successfully' });
+        } catch (error) {
+            console.log(error);
+        }
+    },
     // Get UserByMonth
     getUserByMonths: async (req, res) => {
         try {

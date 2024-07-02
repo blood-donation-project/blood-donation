@@ -2705,10 +2705,11 @@ var ekycsdk = (function (e) {
                     (!n(e) && !n(e.base64_face_img) && e.base64_face_img.img_face_far) +
                     '"/><img class="image-result" src="' +
                     (!n(e) && !n(e.base64_face_img) && e.base64_face_img.img_face_near) +
-                    '"/></div></div><div class="btn-redemo" id="btn-redemo"><img src="https://ekyc-web.vnpt.vn/images/refresh_icon.png" style="width: 20px; height: 20px; margin-right: 5px"/><span>THỰC HIỆN LẠI</span></div></div>'),
+                    '"/></div></div><div class="btn-redemo" id="btn-redemo"><img src="https://ekyc-web.vnpt.vn/images/refresh_icon.png" style="width: 20px; height: 20px; margin-right: 5px"/><span>ĐÓNG</span></div></div>'),
                 i.insertAdjacentHTML('beforeend', a),
-                document.getElementById('btn-redemo').addEventListener('click', function () {
-                    window.location.href = 'google.com';
+                document.getElementById('btn-redemo').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    window.location.href = window.location.href;
                 }),
                 document.getElementById('info-tab').addEventListener('click', function () {
                     let e = document.getElementById('validation'),
@@ -2960,10 +2961,11 @@ var ekycsdk = (function (e) {
                     (!n(e) && !n(e.base64_face_img) && e.base64_face_img.img_face_far) +
                     '"/><img class="image-result" src="' +
                     (!n(e) && !n(e.base64_face_img) && e.base64_face_img.img_face_near) +
-                    '"/></div></div><div class="btn-redemo" id="btn-redemo"><img src="https://ekyc-web.vnpt.vn/images/refresh_icon.png" style="width: 20px; height: 20px; margin-right: 5px"/><span>THỰC HIỆN LẠI</span></div></div>'),
+                    '"/></div></div><div class="btn-redemo" id="btn-redemo"><img src="https://ekyc-web.vnpt.vn/images/refresh_icon.png" style="width: 20px; height: 20px; margin-right: 5px"/><span>ĐÓNG</span></div></div>'),
                 i.insertAdjacentHTML('beforeend', a),
-                document.getElementById('btn-redemo').addEventListener('click', function () {
-                    window.location.href = 'google.com';
+                document.getElementById('btn-redemo').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    window.location.href = window.location.href;
                 }),
                 document.getElementById('info-tab').addEventListener('click', function () {
                     let e = document.getElementById('validation'),
@@ -3312,10 +3314,11 @@ var ekycsdk = (function (e) {
                     (!n(e) && !n(e.base64_face_img) && e.base64_face_img.img_face_far) +
                     '"/><img class="image-result" src="' +
                     (!n(e) && !n(e.base64_face_img) && e.base64_face_img.img_face_near) +
-                    '"/></div></div><div class="btn-redemo" id="btn-redemo"><img src="https://ekyc-web.vnpt.vn/images/refresh_icon.png" style="width: 20px; height: 20px; margin-right: 5px"/><span>THỰC HIỆN LẠI</span></div></div>'),
+                    '"/></div></div><div class="btn-redemo" id="btn-redemo"><img src="https://ekyc-web.vnpt.vn/images/refresh_icon.png" style="width: 20px; height: 20px; margin-right: 5px"/><span>ĐÓNG</span></div></div>'),
                 t.insertAdjacentHTML('beforeend', i),
-                document.getElementById('btn-redemo').addEventListener('click', function () {
-                    window.location.href = 'google.com';
+                document.getElementById('btn-redemo').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    window.location.href = window.location.href;
                 }),
                 (function () {
                     let e = document.getElementById('validation'),
