@@ -18,10 +18,16 @@ router.post('/logout', middlewareController.verifyToken, authController.logout);
 // Forgot Password
 router.post('/forgotpassword', authController.forgotPass);
 
+router.post('/verifyOTP', authController.verifyOTP);
+
+router.post('/sendEmailForgotPassByIdCard', authController.sendEmailFPByIDCard);
+
 // Change Password using token
 router.patch('/:id/forgotpass/:token', authController.changePass);
 // Check invalid change password token
 router.get('/:id/checkChangePassToken/:token', authController.checkChangePassToken);
+
+router.get('/:idcard/checkEmailByIdCard/:token', authController.checkEmailByIDCard);
 // Verify Account
 router.get('/:id/verify/:token', authController.verify);
 

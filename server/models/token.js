@@ -4,7 +4,7 @@ const TokenSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User', // Tên model User
+        ref: 'User',
     },
     token: {
         type: String,
@@ -12,7 +12,6 @@ const TokenSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['activation', 'forgotPassword'], // Chỉ cho phép hai giá trị này
         required: true,
     },
     createdAt: {

@@ -2,7 +2,9 @@ const User = require('../models/user');
 const Friends = require('../models/friends');
 const FriendRequest = require('../models/friendRequests');
 const Posts = require('../models/posts');
+const Token = require('../models/token');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 
 const createPagination = require('../utils/pagination/createPagination');
@@ -264,6 +266,26 @@ const userController = {
             console.log(result);
             return res.status(200).json({ message: 'Update Successfully' });
         } catch (error) {
+            console.log(error);
+        }
+    },
+    checkUserByIdCard: async (req, res) => {
+        try {
+            const { identification } = req.body;
+            const checkUser = await User.findOne({ identification: identification });
+            if (!checkUser) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            const token = new Token({
+                userId: checkUser._id,
+                token: crypto.randomBytes(32).toString('hex'),
+                type: 'forgotpassByIdCard',
+            });
+            await token.save();
+            console.log(token.token);
+            return res.status(200).json({ message: 'Found user', token: token.token });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
             console.log(error);
         }
     },

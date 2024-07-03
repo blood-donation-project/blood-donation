@@ -143,9 +143,9 @@ const Register = () => {
             </div>
 
             {/* Right Pane */}
-            <div className="w-full h-screen bg-gray-100 lg:w-1/2 flex items-center justify-center overflow-y-scroll">
+            <div className="w-full h-screen bg-gray-100 z-[9999999]  lg:w-1/2 flex items-center justify-center overflow-y-scroll">
                 {/* Register */}
-                <div className={`max-w-lg w-full p-6 h-screen `}>
+                <div className={`max-w-lg w-full p-6 h-screen  `}>
                     <h1 className="text-4xl font-semibold mb-6 text-black text-center">Đăng Ký</h1>
                     <h2 className="text-lg font-thin mb-6 text-gray-500 text-center">
                         "Đăng ký tài khoản để cùng nhau kết nối với những người đang cần máu"

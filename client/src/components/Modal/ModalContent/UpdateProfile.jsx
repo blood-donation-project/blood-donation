@@ -293,7 +293,7 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
             />
             {isOpenEKYC ? (
                 <div className="xs:h-screen  flex  items-center justify-center md:h-[calc(100vh_-_60px)] lg:max-w-6xl ">
-                    <EKYC isOpen={isOpenEKYC} onClose={handleClosePopup} />
+                    <EKYC isOpen={isOpenEKYC} onClose={handleClosePopup} type={'update'} />
                 </div>
             ) : (
                 <div className=" xs:w-full md:w-[700px] xs:h-screen md:h-[calc(100vh_-_60px)] bg-white md:rounded-[10px] md:shadow-lg md:shadow-[rgba(0,0,0,0.4)]   relative">

@@ -68,6 +68,13 @@ export const userAPI = createApi({
                 body: { identification },
             }),
         }),
+        checkUserByIdCard: builder.mutation({
+            query: (identification) => ({
+                url: 'check-user-by-idcard',
+                method: 'POST',
+                body: { identification },
+            }),
+        }),
     }),
 });
 
@@ -80,6 +87,7 @@ export const {
     useLockorUnlockUserMutation,
     useGetPhotosMutation,
     useUpdateUserByEKYCMutation,
+    useCheckUserByIdCardMutation,
 } = userAPI;
 
 export default userAPI;

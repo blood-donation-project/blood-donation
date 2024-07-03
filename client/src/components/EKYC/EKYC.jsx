@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { HiOutlineXMark } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
-import { useUpdateUserByEKYCMutation } from '../../Redux/features/user/userAPI';
-const EKYC = ({ isOpen, onClose }) => {
+import { useCheckUserByIdCardMutation, useUpdateUserByEKYCMutation } from '../../Redux/features/user/userAPI';
+import { useNavigate } from 'react-router-dom';
+const EKYC = ({ isOpen, onClose, type }) => {
     const [updateByEKYC] = useUpdateUserByEKYCMutation();
+    const [checkUser] = useCheckUserByIdCardMutation();
     const [data, setData] = useState(null);
+    const navigation = useNavigate();
     const containerRef = useRef(null);
     useEffect(() => {
         if (!isOpen) return;
@@ -171,20 +174,34 @@ const EKYC = ({ isOpen, onClose }) => {
                     data?.liveness_card_front?.statusCode === 200 &&
                     data?.ocr?.statusCode === 200
                 ) {
-                    const identification = data?.ocr?.object?.id;
-                    await updateByEKYC(identification).unwrap();
-                    toast.success('Cập nhật dữ liệu thành công!');
+                    if (type === 'forgotPass') {
+                        const identification = data?.ocr?.object?.id;
+                        const result = await checkUser(identification).unwrap();
+                        if (result.message === 'Found user') {
+                            toast.success('Xác thực thành công!');
+                            navigation(`/users/${identification}/forgotpassbyidcard/${result?.token}`);
+                        } else {
+                            toast.error('Xác thực không thành công!');
+                        }
+                    } else {
+                        const identification = data?.ocr?.object?.id;
+                        await updateByEKYC(identification).unwrap();
+                        toast.success('Cập nhật dữ liệu thành công!');
+                    }
                 }
             } catch (error) {
                 console.log(error);
                 if (error?.data?.message === 'Identification exist') {
                     toast.error('Căn cước công dẫn đã tồn tại');
                 }
+                if (error?.data?.message === 'User not found') {
+                    toast.error('Không tìm thấy tài khoản');
+                }
                 toast.error('Thất bại! Vui lòng kiểm tra lại!');
             }
         };
         fetchData();
-    }, [data, updateByEKYC]);
+    }, [data, updateByEKYC, checkUser, type, navigation]);
 
     const handleClosePopup = () => {
         onClose();

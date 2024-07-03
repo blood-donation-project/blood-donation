@@ -47,6 +47,20 @@ export const authAPI = createApi({
                 method: 'POST',
             }),
         }),
+        sendEmailByIdCard: builder.mutation({
+            query: ({ email, identification }) => ({
+                url: 'sendEmailForgotPassByIdCard',
+                method: 'POST',
+                body: { email, identification },
+            }),
+        }),
+        verifyOTP: builder.mutation({
+            query: ({ otp, identification, email }) => ({
+                url: 'verifyOTP',
+                method: 'POST',
+                body: { otp, identification, email },
+            }),
+        }),
     }),
 });
 
@@ -56,6 +70,8 @@ export const {
     useForgotPasswordMutation,
     useLogoutMutation,
     useRefreshtokenMutation,
+    useSendEmailByIdCardMutation,
+    useVerifyOTPMutation,
 } = authAPI;
 
 export default authAPI;

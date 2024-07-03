@@ -6,6 +6,8 @@ router.get('/get-user', middlewareController.verifyToken, userController.getUser
 router.get('/:id/photos', userController.getPhotos);
 router.get('/get-user-by-id/:id', middlewareController.verifyToken, userController.getUserById);
 
+router.post('/check-user-by-idcard', userController.checkUserByIdCard);
+
 router.get('/get-user-by-id/:id', middlewareController.verifyToken, userController.getUserById);
 
 router.get('/get-user-by-months', middlewareController.verifyTokenAndAdmin, userController.getUserByMonths);

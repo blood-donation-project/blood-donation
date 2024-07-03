@@ -42,6 +42,8 @@ import ManagePost from './components/Admin/ManagePost';
 import AcceptPost from './components/Admin/AcceptPost';
 import ProfileLayout from './layouts/ProfileLayout';
 import PostPage from './pages/Post/PostPage';
+import ForgotPassByIDCard from './pages/auth/ForgotPassByIDCard';
+import VerifyEmailPassByIDCard from './pages/auth/VerifyEmailPassByIDCard';
 
 function App() {
     return (
@@ -58,7 +60,7 @@ function App() {
                 draggable
                 pauseOnHover
                 theme="light"
-                style={{ zIndex: '999999' }}
+                style={{ zIndex: '9999999999' }}
             />
             <Routes>
                 <Route path="/postnews" element={<CreateNews />} />
@@ -70,6 +72,8 @@ function App() {
                 <Route path="/register" exact element={<Register />} />
                 <Route path="users/:id/verify/:token" element={<EmailVerify />} />
                 <Route path="/forgotpassword" element={<ForgotPass />} />
+                <Route path="/forgotpasswordbyidcard" element={<ForgotPassByIDCard />} />
+                <Route path="/users/:idcard/forgotpassbyidcard/:token" element={<VerifyEmailPassByIDCard />} />
                 <Route path="users/:id/forgotpass/:token" element={<PasswordReset />} />
                 <Route path="/events/manage-events" element={<ManageEvent />} />
                 <Route path="*" element={<NotFoundPage />} />

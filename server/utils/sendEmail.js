@@ -208,8 +208,106 @@ async function sendEmailRequestHelp(email, emailNeeder, phoneNeeder, name, helpe
     }
 }
 
+async function sendEmailForgotPassByIdCard(email, token) {
+    try {
+        await transporter.sendMail({
+            from: process.env.USER,
+            to: email,
+            subject: 'Xác thực Email của bạn',
+            html: `
+            <!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            max-width: 150px; /* Điều chỉnh kích thước logo */
+            margin-bottom: 20px;
+        }
+
+        .otp-code {
+    font-size: 48px; /* Tăng kích thước chữ số */
+    font-weight: bold;
+    letter-spacing: 20px; /* Khoảng cách giữa các chữ số */
+    margin-bottom: 20px;
+    display: flex; /* Sử dụng flexbox để căn giữa */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+}
+
+.otp-digit {
+    width: 50px; /* Độ rộng mỗi chữ số */
+    height: 60px; /* Chiều cao mỗi chữ số */
+    background-color: #fff; /* Màu nền chữ số */
+    border-radius: 8px; /* Bo tròn góc chữ số */
+    margin: 0 5px; /* Khoảng cách giữa các chữ số */
+    display: flex; /* Sử dụng flexbox để căn giữa chữ số */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+    transition: transform 0.2s ease; /* Hiệu ứng chuyển động mượt */
+}
+
+.otp-digit:hover {
+    transform: translateY(-3px); /* Nâng chữ số lên khi di chuột vào */
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3); /* Tăng hiệu ứng đổ bóng */
+}
+
+        .message {
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #777;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://res.cloudinary.com/dkjwdmndq/image/upload/v1718878055/news_images/Untitled_design_3_tfe68y.png" alt="Logo" class="logo">
+        <div class="otp-code">
+    <div class="otp-digit">${token.charAt(0)}</div>
+    <div class="otp-digit">${token.charAt(1)}</div>
+    <div class="otp-digit">${token.charAt(2)}</div>
+    <div class="otp-digit">${token.charAt(3)}</div>
+    </div>
+        <p class="message">Đây là mã OTP của bạn. Mã có hiệu lực trong 5 phút.</p>
+        <p class="footer">Nếu bạn không yêu cầu mã OTP này, vui lòng bỏ qua email.</p>
+    </div>
+</body>
+</html>
+
+            `,
+        });
+
+        console.log('Email sent successfully');
+    } catch (error) {
+        console.log('Email not sent');
+        console.log(error);
+    }
+}
+
 module.exports = {
     sendEmailActivationEmail,
     sendEmailForgotPassword,
     sendEmailRequestHelp,
+    sendEmailForgotPassByIdCard,
 };

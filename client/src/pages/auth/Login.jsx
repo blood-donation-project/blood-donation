@@ -24,14 +24,14 @@ const Login = () => {
     return (
         <div className="flex h-screen">
             {/* Left Pane */}
-            <div className="hidden lg:flex items-center justify-center flex-1 bg-white text-black">
+            <div className="hidden lg:flex items-center justify-center flex-1  bg-white text-black">
                 <div className="w-full h-full text-center">
                     <img className="w-full h-full bg-cover object-cover" src={imgBloodDonation} alt="" />
                 </div>
             </div>
 
             {/* Right Pane */}
-            <div className="w-full bg-gray-100 lg:w-1/2 flex items-center justify-center">
+            <div className="w-full bg-gray-100 lg:w-1/2 flex items-center z-[9999999]  justify-center">
                 <div className=" max-w-md w-full p-6">
                     <h1 className="text-4xl font-semibold mb-6 text-black text-center">Đăng Nhập</h1>
                     <h2 className="text-[16px] font-thin mb-6 text-gray-500 text-center">

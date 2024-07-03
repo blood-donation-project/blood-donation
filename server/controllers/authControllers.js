@@ -4,7 +4,11 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const User = require('../models/user');
 const Token = require('../models/token');
-const { sendEmailActivationEmail, sendEmailForgotPassword } = require('../utils/sendEmail');
+const {
+    sendEmailActivationEmail,
+    sendEmailForgotPassword,
+    sendEmailForgotPassByIdCard,
+} = require('../utils/sendEmail');
 const crypto = require('crypto');
 
 dotenv.config();
@@ -133,7 +137,7 @@ const authController = {
             const user = await User.findOne({ email });
 
             if (!user) {
-                return res.status(409).json({ error: 'EMAIL_IS_NOT_EXIST' });
+                return res.status(409).json({ message: 'EMAIL_IS_NOT_EXIST' });
             }
 
             let token = await Token.findOne({
@@ -273,6 +277,75 @@ const authController = {
             return res.status(200).json('Token hợp lệ');
         } catch (error) {
             res.status(500).json({ message: 'Lỗi server' });
+        }
+    },
+    // Check email forgot pass by Id card
+    checkEmailByIDCard: async (req, res) => {
+        try {
+            const { idcard, token } = req.params;
+            console.log(req.params);
+            const user = await User.findOne({ identification: idcard }).select('-password');
+            const checkUser = await Token.findOne({
+                userId: user._id,
+                type: 'forgotpassByIdCard',
+            });
+            if (!checkUser) {
+                return res.status(400).json({
+                    message: 'Đường dẫn không hợp lệ hoặc đã hết hạn',
+                });
+            }
+            console.log(checkUser);
+            const checkToken = (await token) === checkUser.token;
+            if (!checkToken) {
+                return res.status(400).json({
+                    message: ' đã hết hạn',
+                });
+            }
+            console.log(checkToken);
+            return res.status(200).json({ user: user });
+        } catch (error) {
+            res.status(500).json({ message: 'Lỗi server' });
+        }
+    },
+    sendEmailFPByIDCard: async (req, res) => {
+        try {
+            const { email, identification } = req.body;
+            console.log(req.body);
+            const user = await User.findOne({ identification: identification });
+            const checkToken = await Token.findOne({ userId: user._id, type: 'sendEmailforgotpassByIdCard' });
+            console.log('Check: ', checkToken);
+            if (!checkToken) {
+                const token = new Token({
+                    userId: user._id,
+                    token: Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000,
+                    type: 'sendEmailforgotpassByIdCard',
+                });
+                await token.save();
+                sendEmailForgotPassByIdCard(email, token.token);
+                return res.status(200).json({ message: 'Send email successfully' });
+            }
+            return res.status(200).json({ message: 'Send email successfully' });
+        } catch (error) {
+            console.log(error);
+        }
+    },
+    verifyOTP: async (req, res) => {
+        try {
+            const { otp, identification, email } = req.body;
+            const user = await User.findOne({ identification: identification });
+            const checkOTP = await Token.findOne({
+                userId: user._id,
+                token: otp,
+                type: 'sendEmailforgotpassByIdCard',
+            });
+            if (!checkOTP) {
+                return res.status(400).json({ message: 'OTP is not exist' });
+            }
+            await checkOTP.deleteOne();
+            await User.findOneAndUpdate({ identification: identification }, { email: email });
+            return res.status(200).json({ message: 'Please check your email' });
+        } catch (error) {
+            console.log(error);
         }
     },
 };
