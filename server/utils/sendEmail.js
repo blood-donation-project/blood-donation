@@ -248,6 +248,7 @@ async function sendEmailForgotPassByIdCard(email, token) {
     margin-bottom: 20px;
     display: flex; /* Sử dụng flexbox để căn giữa */
     justify-content: center; /* Căn giữa theo chiều ngang */
+    perspective: 800px;
 }
 
 .otp-digit {
@@ -261,12 +262,26 @@ async function sendEmailForgotPassByIdCard(email, token) {
     justify-content: center; /* Căn giữa theo chiều ngang */
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
     transition: transform 0.2s ease; /* Hiệu ứng chuyển động mượt */
+    transform-style: preserve-3d;
+}
+
+.otp-digit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1); /* Màu nền mờ cho mặt trước */
+  border-radius: 8px;
+  transform: translateZ(5px); /* Tạo độ sâu cho mặt trước */
 }
 
 .otp-digit:hover {
-    transform: translateY(-3px); /* Nâng chữ số lên khi di chuột vào */
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3); /* Tăng hiệu ứng đổ bóng */
+  transform: translateY(-3px) rotateX(15deg); /* Xoay và nâng lên khi hover */
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3); /* Đổ bóng mạnh hơn */
 }
+
 
         .message {
             margin-bottom: 30px;
