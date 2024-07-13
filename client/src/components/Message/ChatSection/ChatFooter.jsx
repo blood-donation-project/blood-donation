@@ -34,13 +34,14 @@ const ChatFooter = ({ input, setInput, handleSendMessage }) => {
     };
 
     return (
-        <div className=" z-10 bg-white">
+        <div className=" z-[99999999999] bg-white">
             <div className="chat-footer px-4 py-3 border">
                 <form onSubmit={handleSendMessage} className="flex items-center">
                     <div className="relative flex flex-1 items-center rounded-s-3xl">
                         {isPickerVisible && (
                             <div ref={emojiRef} className="absolute z-10 bottom-full right-2 mb-2">
-                                <Picker emojiStyle="native" onEmojiClick={onEmojiClick} />
+                                <Picker
+                                className='z-[99999999999]' emojiStyle="native" onEmojiClick={onEmojiClick} />
                             </div>
                         )}
                         <button

@@ -708,47 +708,50 @@ const postControllers = {
         }
     },
     publishPosts: async (req, res) => {
-        const { postId } = req.body;
+        try {
+            const { postId } = req.body;
 
-        const post = await Posts.findOne({ _id: postId }).populate({
-            path: 'userId',
-            select: 'username avatar introduce',
-        });
-        if (!post) {
-            return res.status(400).json('Post not found');
-        }
-        const content = {
-            text: `<p>Xin chào!👋 <strong>${post.userId.username}</strong>. Bài viết của bạn đã được duyệt thành công! Hãy cùng nhau xây dựng một cộng đồng hiến máu văn minh nhé ❤️</p>`,
-        };
-        const publishPosts = await Posts.findByIdAndUpdate(postId, { verified: true });
-        const notification = new Notification({
-            userId: publishPosts.userId,
-            content,
-            type: 'AcceptPost',
-        });
-        const author = await User.findById(publishPosts.userId);
-        if (publishPosts && author.role === 'Cơ sở y tế') {
-            const friends = await Friends.find({
-                $or: [{ userId1: author._id }, { userId2: author._id }],
+            const post = await Posts.findOne({ _id: postId }).populate({
+                path: 'userId',
+                select: 'username avatar introduce',
             });
-            const friendIds = friends.map((friend) =>
-                friend.userId1.toString() === author._id.toString() ? friend.userId2 : friend.userId1,
-            );
+            if (!post) {
+                return res.status(400).json('Post not found');
+            }
+            const content = {
+                text: `<p>Xin chào!👋 <strong>${post.userId.username}</strong>. Bài viết của bạn đã được duyệt thành công! Hãy cùng nhau xây dựng một cộng đồng hiến máu văn minh nhé ❤️</p>`,
+            };
+            const publishPosts = await Posts.findByIdAndUpdate(postId, { verified: true });
+            const notification = new Notification({
+                userId: publishPosts.userId,
+                content,
+                type: 'AcceptPost',
+            });
+            const author = await User.findById(publishPosts.userId);
+            if (publishPosts && author.role === 'Cơ sở y tế') {
+                const friends = await Friends.find({
+                    $or: [{ userId1: author._id }, { userId2: author._id }],
+                });
+                const friendIds = friends.map((friend) =>
+                    friend.userId1.toString() === author._id.toString() ? friend.userId2 : friend.userId1,
+                );
 
-            const notifications = friendIds.map((friendId) => ({
-                userId: friendId,
-                content: {
-                    text: `<p><strong>${author.username}</strong> đã đăng tải một bài viết mới</p>`,
-                    link: `/posts/${publishPosts._id}`,
-                    image: author.avatar,
-                },
-                type: `CreatePost_${publishPosts._id}_${author._id}`,
-            }));
+                const notifications = friendIds.map((friendId) => ({
+                    userId: friendId,
+                    content: {
+                        text: `<p><strong>${author.username}</strong> đã đăng tải một bài viết mới</p>`,
+                        image: author.avatar,
+                    },
+                    type: `CreatePost_${publishPosts._id}_${author._id}`,
+                }));
 
-            await Promise.all([Notification.insertMany(notifications), notification.save()]);
+                await Promise.all([Notification.insertMany(notifications), notification.save()]);
+            }
+
+            res.status(200).json(publishPosts);
+        } catch (error) {
+            console.log(error);
         }
-
-        res.status(200).json(publishPosts);
     },
     getPostByMonths: async (req, res) => {
         try {

@@ -17,6 +17,7 @@ const messageSlice = createSlice({
         },
         setMessages: (state, { payload }) => {
             const { receiverId, messages } = payload;
+            
             state.conversations[receiverId] = messages;
         },
     },
