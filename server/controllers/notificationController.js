@@ -55,7 +55,7 @@ const notificationController = {
             });
             await newNotification.save();
 
-            const url = `http://localhost:3000/user/${inforHelper._id}`;
+            const url = `${process.env.BASE_URL}user/${inforHelper._id}`;
             await sendEmailRequestHelp(
                 inforHelper.email,
                 inforUser.email,
