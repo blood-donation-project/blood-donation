@@ -50,16 +50,16 @@ const eventController = {
 
         if (startDate && endDate) {
             query.donationTime = {
-                $gte: moment(startDate).format('DD/MM/YYYY'),
-                $lte: moment(endDate).format('DD/MM/YYYY'),
+                $gte: moment(startDate).format('YYYY/MM/DD'),
+                $lte: moment(endDate).format('YYYY/MM/DD'),
             };
         } else if (startDate) {
             query.donationTime = {
-                $gte: moment(startDate).format('DD/MM/YYYY'),
+                $gte: moment(startDate).format('YYYY/MM/DD'),
             };
         } else if (endDate) {
             query.donationTime = {
-                $lte: moment(endDate).format('DD/MM/YYYY'),
+                $lte: moment(endDate).format('YYYY/MM/DD'),
             };
         }
 
@@ -77,6 +77,7 @@ const eventController = {
 
         try {
             const events = await Event.find(query)
+                .sort({donationTime: -1})
                 .populate({
                     path: 'userId',
                     select: 'username avatar introduce',
@@ -131,16 +132,16 @@ const eventController = {
 
             if (startDate && endDate) {
                 query.donationTime = {
-                    $gte: moment(startDate).format('DD/MM/YYYY'),
-                    $lte: moment(endDate).format('DD/MM/YYYY'),
+                    $gte: moment(startDate).format('YYYY/MM/DD'),
+                    $lte: moment(endDate).format('YYYY/MM/DD'),
                 };
             } else if (startDate) {
                 query.donationTime = {
-                    $gte: moment(startDate).format('DD/MM/YYYY'),
+                    $gte: moment(startDate).format('YYYY/MM/DD'),
                 };
             } else if (endDate) {
                 query.donationTime = {
-                    $lte: moment(endDate).format('DD/MM/YYYY'),
+                    $lte: moment(endDate).format('YYYY/MM/DD'),
                 };
             }
             const events = await Event.find(query); // Lấy danh sách events trước
