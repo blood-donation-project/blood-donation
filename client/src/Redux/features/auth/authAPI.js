@@ -35,6 +35,13 @@ export const authAPI = createApi({
                 body: { email },
             }),
         }),
+        changePass: builder.mutation({
+            query: ({ oldPass, newPass }) => ({
+                url: 'changePassword',
+                method: 'POST',
+                body: { oldPass, newPass },
+            }),
+        }),
         logout: builder.mutation({
             query: () => ({
                 url: 'logout',
@@ -72,6 +79,7 @@ export const {
     useRefreshtokenMutation,
     useSendEmailByIdCardMutation,
     useVerifyOTPMutation,
+    useChangePassMutation,
 } = authAPI;
 
 export default authAPI;

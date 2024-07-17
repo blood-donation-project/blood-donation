@@ -226,7 +226,7 @@ const authController = {
             next(error);
         }
     },
-
+    // Change Pass forgot
     changePass: async (req, res, next) => {
         try {
             const user = await User.findOne({ _id: req.params.id });
@@ -246,8 +246,7 @@ const authController = {
                 return res.status(400).send({ message: 'Invalid link token' });
             }
 
-            user.password = hashedPassword;
-            await user.save();
+            await User.findByIdAndUpdate(user._id, { password: hashedPassword });
 
             await token.deleteOne();
 
@@ -256,6 +255,40 @@ const authController = {
             next(error);
         }
     },
+    // Change Pass
+    changePassword: async (req, res) => {
+        try {
+            const { oldPass, newPass } = req.body;
+            if (!oldPass || !newPass) {
+                return res.status(400).json({ message: 'Old password and new password are required' });
+            }
+
+            const authHeader = req.headers.authorization;
+            const token = authHeader && authHeader.split(' ')[1];
+            if (!token) {
+                return res.status(401).json({ message: 'No token provided' });
+            }
+
+            const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+            const user = await User.findById(decodedToken.id);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            const validPassword = await bcrypt.compare(oldPass, user.password);
+            if (!validPassword) {
+                return res.status(401).json({ message: 'Invalid old password' });
+            }
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPass, salt);
+            await User.updateOne({ _id: user._id }, { password: hashedPassword });
+            return res.status(200).json({ message: 'Password updated successfully' });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
     checkChangePassToken: async (req, res, next) => {
         const { id, token } = req.params;
         try {
@@ -341,6 +374,10 @@ const authController = {
             if (!checkOTP) {
                 return res.status(400).json({ message: 'OTP is not exist' });
             }
+            await Token.findOneAndDelete({
+                userId: user._id,
+                type: 'forgotPassword',
+            });
             await checkOTP.deleteOne();
             await User.findOneAndUpdate({ identification: identification }, { email: email });
             return res.status(200).json({ message: 'Please check your email' });

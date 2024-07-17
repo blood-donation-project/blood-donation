@@ -44,6 +44,7 @@ import ProfileLayout from './layouts/ProfileLayout';
 import PostPage from './pages/Post/PostPage';
 import ForgotPassByIDCard from './pages/auth/ForgotPassByIDCard';
 import VerifyEmailPassByIDCard from './pages/auth/VerifyEmailPassByIDCard';
+import ChangePassword from './pages/auth/ChangePassword';
 
 function App() {
     return (
@@ -70,6 +71,7 @@ function App() {
                 <Route path="/message/:id" exact element={<Message />} />
                 <Route path="/login" exact element={<Login />} />
                 <Route path="/register" exact element={<Register />} />
+                <Route path='/changePassword' element={<ChangePassword />} />
                 <Route path="users/:id/verify/:token" element={<EmailVerify />} />
                 <Route path="/forgotpassword" element={<ForgotPass />} />
                 <Route path="/forgotpasswordbyidcard" element={<ForgotPassByIDCard />} />
