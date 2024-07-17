@@ -74,7 +74,7 @@ const HomePage = () => {
     ];
     // Get User
     useEffect(() => {
-        const fetchData = async (req, res) => {
+        const fetchData = async () => {
             try {
                 await getUser().unwrap();
             } catch (error) {
@@ -87,12 +87,15 @@ const HomePage = () => {
     // Get homepage posts
 
     useEffect(() => {
-        getHomePagePosts({ limit: 5, page: page })
-            .unwrap()
-            .then((res) => {
-                setPagination(res.pagination);
-            });
-    }, [page]);
+        const fetchData = async () => {
+            try {
+                await getHomePagePosts({ limit: 5, page: page }).unwrap();
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+    }, [page, getHomePagePosts]);
     // Get suggested adnd friends
     useEffect(() => {
         dispatch(resetFriends());
@@ -110,7 +113,7 @@ const HomePage = () => {
         if (getdataUser?._id) {
             fetchUsersAndFriends();
         }
-    }, [getSuggestedUsers, getAllFriends, getdataUser?._id]);
+    }, [getSuggestedUsers, getAllFriends, getdataUser?._id, dispatch, getAllFollowedFacilities]);
 
     useEffect(() => {
         dispatch(resetHomePagePosts());
