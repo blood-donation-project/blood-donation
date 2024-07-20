@@ -112,17 +112,19 @@ const AboutPage = () => {
                                     <span className=" word-wrap">{userData?.bloodGroup || 'Không xác định'}</span>
                                 </div>
                             </div>
-                            <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                <div className="flex md:flex-col xs:flex-row">
-                                    <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                        <FaUserNurse />
+                            {userData?._id === userCurrentData?._id && (
+                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                    <div className="flex md:flex-col xs:flex-row">
+                                        <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
+                                            <FaUserNurse />
+                                        </div>
+                                        <div className="text-[#65676B] text-[16px]">Vai trò</div>
                                     </div>
-                                    <div className="text-[#65676B] text-[16px]">Vai trò</div>
+                                    <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
+                                        <span className=" word-wrap">{userData?.role}</span>
+                                    </div>
                                 </div>
-                                <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0  ">
-                                    <span className=" word-wrap">{userData?.role}</span>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>

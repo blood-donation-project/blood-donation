@@ -475,6 +475,7 @@ const postControllers = {
     createComment: async (req, res) => {
         try {
             const { id } = req.user;
+            console.log(req.user);
             const postId = req.params.id;
             const clientCommentData = req.body;
 
@@ -495,7 +496,7 @@ const postControllers = {
                 const existingNotifi = await Notification.findOne({
                     userId: post.userId,
                     'content.link': `/post/${postId}`,
-                    type: `Like_${postId}_${user._id}`,
+                    type: `Comment_${postId}_${user._id}`,
                 });
                 if (!existingNotifi) {
                     await Notification.create({
@@ -505,7 +506,7 @@ const postControllers = {
                             link: `/post/${postId}`,
                             image: user.avatar,
                         },
-                        type: `Like_${postId}_${user._id}`,
+                        type: `Comment_${postId}_${user._id}`,
                     });
                 }
             }
