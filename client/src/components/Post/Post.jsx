@@ -74,7 +74,6 @@ const Post = ({ postData }) => {
             });
     };
 
-    console.log(postData);
 
     return (
         <div className=" bg-white md:rounded-[8px] shadow mb-3  ">
