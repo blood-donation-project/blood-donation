@@ -21,7 +21,7 @@ import { updateOneSearchPostData } from '../../Redux/features/search/searchSlice
 const Post = ({ postData }) => {
     const { user } = useSelector((state) => state.user);
     const dispatch = useDispatch();
-
+    const [showMore, setShowMore] = useState(false);
     const [isShowingModal, setIsShowingModal] = useState(false);
     const [isShowingPostOptions, setIsShowingPostOptions] = useState(false);
     const [postId, setPostId] = useState('');
@@ -29,6 +29,11 @@ const Post = ({ postData }) => {
     const [likePost] = useLikePostMutation();
     const [unlikePost] = useUnlikePostMutation();
     const [deletePost] = useDeletePostMutation();
+
+    const truncatedText = postData?.content.substring(0, 390) + '....';
+    const handleClickShowText = () => {
+        setShowMore(!showMore);
+    };
 
     const handleLikePost = () => {
         likePost(postData._id)
@@ -73,7 +78,6 @@ const Post = ({ postData }) => {
                 hidePostOptions();
             });
     };
-
 
     return (
         <div className=" bg-white md:rounded-[8px] shadow mb-3  ">
@@ -151,11 +155,25 @@ const Post = ({ postData }) => {
                 </div>
                 {/*Post description */}
                 <div className="">
-                    <span className="text-[16px]">
-                        {postData.content?.split('\n')?.map((line, index) => (
-                            <p className='linkify' key={index}><Linkify  as={'p'}>{line}</Linkify></p>
-                        ))}
-                    </span>
+                    {showMore ? (
+                        <span className="text-[16px]">
+                            {postData.content?.split('\n')?.map((line, index) => (
+                                <p className="linkify" key={index}>
+                                    <Linkify as={'p'}>{line}</Linkify>
+                                </p>
+                            ))}
+                            <button className='font-semibold hover:underline' onClick={handleClickShowText}>Thu gọn</button>
+                        </span>
+                    ) : (
+                        <span className="text-[16px]">
+                            {truncatedText?.split('\n')?.map((line, index) => (
+                                <p className="linkify" key={index}>
+                                    <Linkify as={'p'}>{line}</Linkify>
+                                </p>
+                            ))}
+                            <button className='font-semibold hover:underline' onClick={handleClickShowText}>Xem thêm</button>
+                        </span>
+                    )}
                 </div>
             </div>
 

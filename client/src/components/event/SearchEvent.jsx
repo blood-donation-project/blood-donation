@@ -7,7 +7,7 @@ const SearchEvent = ({ eventData, userData }) => {
     console.log(eventData);
     return (
         <div>
-            <div className="max-w-7xl h-full m-auto py-4">
+            <div className="max-w-6xl h-full m-auto py-4">
                 {/* Count Event */}
 
                 <div className="flex flex-none justify-end items-center">
@@ -21,7 +21,7 @@ const SearchEvent = ({ eventData, userData }) => {
                     <div>
                         <h1 className="text-2xl text-black">
                             Khám phá sự kiện <br />
-                            <span className="text-[16px]">{eventData?.count} Kết Quả</span>
+                            <span className="text-[16px] font-semibold">{eventData?.count} Kết Quả</span>
                         </h1>
 
                         <div className="mt-10">

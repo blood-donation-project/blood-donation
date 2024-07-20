@@ -164,7 +164,7 @@ const Event = () => {
                     >
                         <div className="fixed h-[calc(h-screen_-_56px)] bg-white z-40  left-0 top-[96px] ssm:top-[56px]  shadow-lg shadow-[rgba(0,0,0,0.3)] bottom-0 py-2 px-3 w-[360px]">
                             <div className="py-2 border-b border-[#ccc]">
-                                <h2 className="text-2xl font-semibold">
+                                <h2 className="text-xl font-semibold">
                                     Sự kiện
                                 </h2>
                             </div>
@@ -188,12 +188,12 @@ const Event = () => {
                                 </div>
                                 {/* Filter Event */}
                                 <div>
-                                    <h3 className="font-semibold text-xl">
+                                    <h3 className="font-semibold text-lg">
                                         Bộ Lọc:
                                     </h3>
                                     <div className="mt-1 mb-1">
                                         <label
-                                            className="text-lg"
+                                            className="text-[16px]"
                                             htmlFor=""
                                         >
                                             Tên sự kiện
@@ -211,7 +211,7 @@ const Event = () => {
                                             id=""
                                         />
                                     </div>
-                                    <div className="my-2 text-lg ">
+                                    <div className="my-2 text-[16px] ">
                                         <label
                                             className="mr-2"
                                             htmlFor="provinces"
@@ -240,7 +240,7 @@ const Event = () => {
                                             )}
                                         </select>
                                     </div>
-                                    <div className="my-2 text-lg">
+                                    <div className="my-2 text-[16px]">
                                         <label
                                             htmlFor="district"
                                             className="mr-9"
@@ -269,7 +269,7 @@ const Event = () => {
                                             )}
                                         </select>
                                     </div>
-                                    <div className="my-2 text-lg">
+                                    <div className="my-2 text-[16px]">
                                         <label
                                             htmlFor="wards"
                                             className="mr-12"
@@ -300,7 +300,7 @@ const Event = () => {
                                 <div className="flex items-center justify-center">
                                     <button
                                         onClick={handleSearch}
-                                        className="my-5 outline-none hover:bg-[#1c5291] bg-[#386fd6] text-white py-4 px-10 text-lg rounded-lg"
+                                        className="my-4 outline-none hover:bg-[#1c5291] bg-[#386fd6] text-white py-3 px-7 text-[16px] rounded-lg"
                                         type="submit"
                                     >
                                         Tìm Kiếm
