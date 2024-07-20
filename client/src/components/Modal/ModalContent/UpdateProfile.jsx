@@ -165,9 +165,9 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
             setProfileData((prev) => ({
                 ...prev,
                 address: {
-                    province: selectedValue.province,
-                    district: selectedValue.district,
-                    ward: selectedValue.wards,
+                    province: selectedValue.province?.full_name,
+                    district: selectedValue.district?.full_name,
+                    ward: selectedValue.wards?.full_name,
                 },
             }));
         }
@@ -274,7 +274,7 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
             console.log(error);
         }
     };
-
+    console.log(profileData.address);
     return (
         <div className="fixed inset-0  flex  items-center justify-center bg-gray-800 bg-opacity-75 z-[999999] transition-opacity duration-700">
             <ToastContainer

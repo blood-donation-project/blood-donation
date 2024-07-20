@@ -199,6 +199,7 @@ const userController = {
                 ward,
                 street,
             };
+            console.log(req.body);
             const authHeader = req.headers.authorization;
             const token = authHeader && authHeader.split(' ')[1];
             if (!token) {
