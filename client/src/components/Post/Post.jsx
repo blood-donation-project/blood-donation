@@ -83,7 +83,7 @@ const Post = ({ postData }) => {
         <div className=" bg-white md:rounded-[8px] shadow mb-3  ">
             <div className="px-2 py-3 ">
                 {/* Author information*/}
-                <div className="flex relative ">
+                <div className="flex relative items-center">
                     <div>
                         <Tippy
                             interactive={true}
@@ -109,14 +109,14 @@ const Post = ({ postData }) => {
                             </Link>
                         </Tippy>
                     </div>
-                    <div className="ml-2 flex flex-col">
+                    <div className="ml-2 flex flex-col justify-center">
                         <Link
                             className="text-[16px] font-semibold leading-[14px] hover:underline"
                             to={`/user/${postData.author._id}`}
                         >
                             {postData.author.username}
                         </Link>
-                        <span className="text-[12px] text-[#65676B]">{calculatePostTime(postData.updatedAt)}</span>
+                        <span className="text-[12px] text-[#65676B] mt-[2px]">{calculatePostTime(postData.updatedAt)}</span>
                     </div>
                     {user._id === postData.author._id && (
                         <div className="absolute right-3 top-0">
