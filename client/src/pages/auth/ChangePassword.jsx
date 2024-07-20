@@ -3,8 +3,10 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useChangePassMutation } from '../../Redux/features/auth/authAPI';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 
 const ChangePassword = () => {
+    useAutoRefreshToken('/home/');
     const navigate = useNavigate();
     const [passwords, setPasswords] = useState({
         oldPassword: '',

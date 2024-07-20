@@ -53,16 +53,22 @@ export default function VerifyEmailPassByIDCard() {
     };
 
     const handleSubmitEmail = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        if (!validateEmail(email)) {
-            alert('Please enter a valid email address.');
-        } else {
-            const identification = params.idcard;
-            await sendEmail({ email, identification }).unwrap();
+        try {
+            e.preventDefault();
+            setIsLoading(true);
+            if (!validateEmail(email)) {
+                alert('Please enter a valid email address.');
+            } else {
+                const identification = params.idcard;
+                await sendEmail({ email, identification }).unwrap();
+                setIsLoading(false);
+                toast.success('Vui lòng kiểm tra email của bạn');
+                setShowOtpPopup(true);
+            }
+        } catch (error) {
+            console.log(error);
             setIsLoading(false);
-            toast.success('Vui lòng kiểm tra email của bạn');
-            setShowOtpPopup(true);
+            toast.error(error?.data?.message);
         }
     };
 
@@ -84,6 +90,7 @@ export default function VerifyEmailPassByIDCard() {
             navigate('/forgotpassword');
         } catch (error) {
             console.log(error);
+            toast.error(error?.data?.message);
             setOtpError(true);
         }
     };
@@ -98,6 +105,7 @@ export default function VerifyEmailPassByIDCard() {
                 setValidUrl(true);
             } catch (error) {
                 console.log(error);
+                toast.error(error?.data?.message);
                 setValidUrl(false);
             }
         };

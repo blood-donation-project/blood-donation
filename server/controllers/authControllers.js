@@ -343,10 +343,16 @@ const authController = {
     sendEmailFPByIDCard: async (req, res) => {
         try {
             const { email, identification } = req.body;
-            console.log(req.body);
             const user = await User.findOne({ identification: identification });
             const checkToken = await Token.findOne({ userId: user._id, type: 'sendEmailforgotpassByIdCard' });
             console.log('Check: ', checkToken);
+            const checkEmailUser = await User.find({ email: email });
+            if (checkEmailUser.length > 0 && user._id === checkEmailUser._id) {
+                return res.status(400).json({ message: 'Email đổi lại phải khác email hiện tại' });
+            }
+            if (checkEmailUser.length > 0) {
+                return res.status(400).json({ message: 'Tài khoản Email đã tồn tại! Vui lòng chọn email khác' });
+            }
             if (!checkToken) {
                 const token = new Token({
                     userId: user._id,
@@ -366,6 +372,7 @@ const authController = {
         try {
             const { otp, identification, email } = req.body;
             const user = await User.findOne({ identification: identification });
+
             const checkOTP = await Token.findOne({
                 userId: user._id,
                 token: otp,
@@ -379,6 +386,7 @@ const authController = {
                 type: 'forgotPassword',
             });
             await checkOTP.deleteOne();
+
             await User.findOneAndUpdate({ identification: identification }, { email: email });
             return res.status(200).json({ message: 'Please check your email' });
         } catch (error) {

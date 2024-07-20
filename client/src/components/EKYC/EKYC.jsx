@@ -48,7 +48,7 @@ const EKYC = ({ isOpen, onClose, type }) => {
                 LANGUAGE: 'vi',
                 LIST_ITEM: [-1, 9],
                 TYPE_DOCUMENT: 99,
-                USE_WEBCAM: true,
+                USE_WEBCAM: false,
                 USE_UPLOAD: true,
                 ADVANCE_LIVENESS_FACE: true,
                 ASYNC_LOAD_AI: true,
@@ -162,31 +162,36 @@ const EKYC = ({ isOpen, onClose, type }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (data?.ocr?.statusCode !== 200) {
-                    const checkValid = data?.ocr?.errors;
-                    for (let i = 0; i < checkValid?.length; i++) {
-                        toast.error('Thất bại! ' + checkValid?.[i]);
-                    }
-                }
-                if (
-                    data?.compare?.statusCode === 200 &&
-                    data?.liveness_card_back?.statusCode === 200 &&
-                    data?.liveness_card_front?.statusCode === 200 &&
-                    data?.ocr?.statusCode === 200
-                ) {
-                    if (type === 'forgotPass') {
-                        const identification = data?.ocr?.object?.id;
-                        const result = await checkUser(identification).unwrap();
-                        if (result.message === 'Found user') {
-                            toast.success('Xác thực thành công!');
-                            navigation(`/users/${identification}/forgotpassbyidcard/${result?.token}`);
-                        } else {
-                            toast.error('Xác thực không thành công!');
+                if (data) {
+                    if (data?.ocr?.statusCode !== 200 || data?.liveness_face?.object?.liveness !== 'success') {
+                        const checkValid = data?.ocr?.errors;
+                        const msgLivenessFace = data?.liveness_face?.object?.liveness_msg;
+                        for (let i = 0; i < checkValid?.length; i++) {
+                            toast.error('Thất bại! ' + checkValid?.[i]);
                         }
-                    } else {
-                        const identification = data?.ocr?.object?.id;
-                        await updateByEKYC(identification).unwrap();
-                        toast.success('Cập nhật dữ liệu thành công!');
+                        toast.error('Thất Bại!!' + msgLivenessFace);
+                    }
+                    if (
+                        data?.compare?.statusCode === 200 &&
+                        data?.liveness_card_back?.statusCode === 200 &&
+                        data?.liveness_card_front?.statusCode === 200 &&
+                        data?.liveness_face?.object?.liveness === 'success' &&
+                        data?.ocr?.statusCode === 200
+                    ) {
+                        if (type === 'forgotPass') {
+                            const identification = data?.ocr?.object?.id;
+                            const result = await checkUser(identification).unwrap();
+                            if (result.message === 'Found user') {
+                                toast.success('Xác thực thành công!');
+                                navigation(`/users/${identification}/forgotpassbyidcard/${result?.token}`);
+                            } else {
+                                toast.error('Xác thực không thành công!');
+                            }
+                        } else {
+                            const identification = data?.ocr?.object?.id;
+                            await updateByEKYC(identification).unwrap();
+                            toast.success('Cập nhật dữ liệu thành công!');
+                        }
                     }
                 }
             } catch (error) {
