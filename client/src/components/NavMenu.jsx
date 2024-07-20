@@ -30,7 +30,7 @@ import { MdOutlineAdminPanelSettings } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { useGetAllNotifiMutation, useReadNotifiMutation } from '../Redux/features/notification/notifiAPI';
 import moment from 'moment';
-import { HiOutlineLockClosed } from "react-icons/hi2";
+import { HiOutlineLockClosed } from 'react-icons/hi2';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
 import axios from 'axios';
 const NavMenu = () => {
@@ -169,7 +169,7 @@ const NavMenu = () => {
 
     const toggleVisibilityNotify = async () => {
         setIsShowingNotify(!isShowingNotify);
-        if (isShowingNotify === true) { 
+        if (isShowingNotify === true) {
             await readNotifi().unwrap();
             setNotifiUnRead([]);
         }
@@ -184,9 +184,7 @@ const NavMenu = () => {
         navigate('/login');
     };
 
-    const handleChangePass = async () =>{
-        
-    }
+    const handleChangePass = async () => {};
 
     return (
         <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-[999]">
@@ -359,7 +357,7 @@ const NavMenu = () => {
                                                     <div className="  p-2 rounded-md  ">
                                                         <p
                                                             className="text-[16px] leading-[14px] "
-                                                            dangerouslySetInnerHTML={{ __html: item.content.text }}
+                                                            dangerouslySetInnerHTML={{ __html: item?.content?.text }}
                                                         />
                                                         <span className="text-[12px]">
                                                             {moment(item?.createAt).fromNow()}
@@ -394,7 +392,6 @@ const NavMenu = () => {
                         </div>
                     </Tippy>
                     {/* Change Password */}
-
 
                     {/* getdataUser controls*/}
                     <Tippy
@@ -434,10 +431,7 @@ const NavMenu = () => {
                                         </div>
                                     )}
                                     <div className="px-2  hover:bg-[#ebedf0] rounded-[6px] ">
-                                        <Link
-                                            className="flex py-1.5 items-center "
-                                            to={'/changePassword'}
-                                        >
+                                        <Link className="flex py-1.5 items-center " to={'/changePassword'}>
                                             <div className="p-1.5 bg-[#e4e6eb] rounded-[50%]">
                                                 <HiOutlineLockClosed className="text-[20px]" />
                                             </div>

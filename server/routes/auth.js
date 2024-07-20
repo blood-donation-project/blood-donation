@@ -22,7 +22,7 @@ router.post('/verifyOTP', authController.verifyOTP);
 
 router.post('/sendEmailForgotPassByIdCard', authController.sendEmailFPByIDCard);
 
-router.post('/changePassword', middlewareController.verifyToken, authController.changePassword)
+router.post('/changePassword', middlewareController.verifyToken, authController.changePassword);
 
 // Change Password using token
 router.patch('/:id/forgotpass/:token', authController.changePass);

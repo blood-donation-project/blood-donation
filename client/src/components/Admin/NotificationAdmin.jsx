@@ -41,12 +41,14 @@ const NotificationAdmin = () => {
                     <div className="bg-white rounded-xl w-full p-4 shadow-sm h-[500px] overflow-y-scroll">
                         {notifiData?.length > 0
                             ? notifiData?.map((item, index) => (
-                                  <div className="flex items-center hover:bg-gray-300 p-2 px-3 rounded-md">
+                                  <div
+                                  key={index}
+                                  className="flex items-center hover:bg-gray-300 p-2 px-3 rounded-md">
                                       <div>
                                           <img src="" alt="" />
                                       </div>
                                       <div className="flex flex-col">
-                                          <p dangerouslySetInnerHTML={{ __html: item.content.text }} />
+                                          <p dangerouslySetInnerHTML={{ __html: item?.content?.text }} />
                                           <p className="text-sm text-gray-500">{moment(item?.createAt).fromNow()}</p>
                                       </div>
                                   </div>

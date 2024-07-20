@@ -77,7 +77,7 @@ const eventController = {
 
         try {
             const events = await Event.find(query)
-                .sort({donationTime: -1})
+                .sort({ donationTime: -1 })
                 .populate({
                     path: 'userId',
                     select: 'username avatar introduce',
@@ -332,7 +332,9 @@ const eventController = {
                 await Event.findByIdAndDelete(event._id);
                 const newNotification = new Notification({
                     userId: event.userId,
-                    content: `Admin đã xóa sự kiện: ${event.eventName} của bạn`,
+                    content: {
+                        text: `Admin đã xóa sự kiện: ${event.eventName} của bạn`,
+                    },
                     type: 'Hủy sự kiện',
                 });
                 newNotification.save();
@@ -342,9 +344,11 @@ const eventController = {
             for (const userId of userIds) {
                 const newNotification = new Notification({
                     userId,
-                    content: `Admin đã xóa sự kiện "${event.eventName}" (diễn ra vào ngày ${moment(
-                        event.startDate,
-                    ).format('DD/MM/YYYY')}) mà bạn đã đăng ký.`,
+                    content: {
+                        text: `Admin đã xóa sự kiện "${event.eventName}" (diễn ra vào ngày ${moment(
+                            event.startDate,
+                        ).format('DD/MM/YYYY')}) mà bạn đã đăng ký.`,
+                    },
                     type: 'Hủy sự kiện',
                 });
                 await newNotification.save();

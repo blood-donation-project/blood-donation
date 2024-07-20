@@ -62,7 +62,7 @@ const Notification = () => {
                                         <div className="ml-2">
                                             <div
                                                 className="text-[14px] leading-[14px] hover:bg-slate-200 p-1"
-                                                dangerouslySetInnerHTML={{ __html: item.content.text }}
+                                                dangerouslySetInnerHTML={{ __html: item?.content?.text }}
                                             />
 
                                             <span className="text-[12px]">{moment(item.createAt).fromNow()}</span>
