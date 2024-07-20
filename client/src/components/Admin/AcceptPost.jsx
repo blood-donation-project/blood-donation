@@ -156,7 +156,9 @@ const AcceptPost = () => {
                                         </div>
                                     </div>
                                     <div className="mb-2">
-                                        <p>{item?.content}</p>
+                                        <p>{item?.content?.split('\n')?.map((item, index) => (
+                                            <p key={index}>{item}</p>
+                                        ))}</p>
                                     </div>
                                     <div className="flex items-center justify-center mb-4">
                                         <Image className="max-h-96" src={item?.image} />

@@ -232,3 +232,10 @@ html *::-webkit-scrollbar-track {
         transform: rotate(360deg);
     }
 }
+
+.linkify a{
+    color: #3a86ff;
+}
+.linkify a:hover{
+    text-decoration: underline;
+}

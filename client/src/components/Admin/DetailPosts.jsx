@@ -32,7 +32,9 @@ const DetailPosts = ({ isOpen, onClose, postId }) => {
                         <p className="text-sm text-gray-500 w-fit">{moment(dataPosts?.[0]?.createdAt).fromNow()}</p>
                     </div>
                 </div>
-                <p className="mt-4 text-start">{dataPosts?.[0]?.content}</p>
+                <p className="mt-4 text-start">{dataPosts?.[0]?.content?.split('\n').map((item, index) =>(
+                    <p key={index}>{item}</p>
+                ))}</p>
                 <img className="mt-4 w-full h-auto" src={dataPosts?.[0]?.image} alt="" />
             </div>
         </div>

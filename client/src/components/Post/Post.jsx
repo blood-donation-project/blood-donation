@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
 import { AiOutlineLike } from 'react-icons/ai';
+import Linkify from 'linkify-react';
 import ModalWrapper from '../Modal/ModalWrapper';
 import PostDetails from '../Modal/ModalContent/PostDetails';
 import { FaRegComment, FaTrashAlt } from 'react-icons/fa';
@@ -72,6 +73,8 @@ const Post = ({ postData }) => {
                 hidePostOptions();
             });
     };
+
+    console.log(postData);
 
     return (
         <div className=" bg-white md:rounded-[8px] shadow mb-3  ">
@@ -149,7 +152,11 @@ const Post = ({ postData }) => {
                 </div>
                 {/*Post description */}
                 <div className="">
-                    <span className="text-[16px]">{postData.content}</span>
+                    <span className="text-[16px]">
+                        {postData.content?.split('\n')?.map((line, index) => (
+                            <p className='linkify' key={index}><Linkify  as={'p'}>{line}</Linkify></p>
+                        ))}
+                    </span>
                 </div>
             </div>
 
