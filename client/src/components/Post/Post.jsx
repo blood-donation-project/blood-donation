@@ -154,7 +154,7 @@ const Post = ({ postData }) => {
                     )}
                 </div>
                 {/*Post description */}
-                <div className="">
+                <div className="mt-2">
                     {showMore ? (
                         <span className="text-[16px]">
                             {postData.content?.split('\n')?.map((line, index) => (
