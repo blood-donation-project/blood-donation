@@ -17,7 +17,7 @@ import { useAutoRefreshToken } from '../../../hooks/useAutoRefreshToken';
 import { useNavigate } from 'react-router-dom';
 import { Slide, ToastContainer } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import { Switch } from 'antd';
+import { Spin, Switch } from 'antd';
 import EKYC from '../../EKYC/EKYC';
 
 const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
@@ -35,6 +35,7 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
     const [updateUser] = useUpdateUserMutation();
     const [status, setStatus] = useState(user?.status);
     const [loading, setLoading] = useState(false);
+    const [isLoadingButton, setIsLoadingButton] = useState(false);
     const [avatarURL, setAvatarURL] = useState('');
     const [backgroundImageURL, setBackgroundImageURL] = useState('');
     const [selectedValue, setSelectedValue] = useState({
@@ -252,7 +253,9 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
             backgroundUrl = response.data.images.backgroundImage;
             console.log(avatarURL);
             console.log(backgroundUrl);
-        } catch (error) {}
+        } catch (error) {
+            console.log(error);
+        }
         const updateUserr = {
             username: profileData.fullName,
             identification: profileData.identification,
@@ -269,12 +272,13 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
         };
         try {
             await updateUser(updateUserr).unwrap();
+            setLoading(false);
             navigate(0);
         } catch (error) {
+            setLoading(false);
             console.log(error);
         }
     };
-    console.log(profileData.address);
     return (
         <div className="fixed inset-0  flex  items-center justify-center bg-gray-800 bg-opacity-75 z-[999999] transition-opacity duration-700">
             <ToastContainer
@@ -434,7 +438,7 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
                                             }  w-full py-[2px] mt-[2px]`}
                                             type="text"
                                             {...register('phone', {
-                                                pattern: /^(0|\+84)[3|5|7|8|9][0-9]{8}$/,
+                                                pattern: /^(0|\+84)([0-9]{1,3})([0-9]{7,10})$/,
                                             })}
                                             onChange={handleInputChange}
                                             defaultValue={user?.phoneNumber}
@@ -557,12 +561,14 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
                                 )}
                                 <div className="w-full ">
                                     <div className="w-full flex justify-end px-4 py-5">
-                                        <button
-                                            className="ml-4 w-[117px] py-1 bg-red-500 rounded text-white"
-                                            type="submit"
-                                        >
-                                            Chỉnh sửa
-                                        </button>
+                                        <Spin spinning={loading}>
+                                            <button
+                                                className="ml-4 w-[117px] py-1 bg-red-500 rounded text-white"
+                                                type="submit"
+                                            >
+                                                Chỉnh sửa
+                                            </button>
+                                        </Spin>
                                     </div>
                                 </div>
                             </form>
