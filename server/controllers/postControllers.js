@@ -738,8 +738,8 @@ const postControllers = {
                 );
                 const filteredFriendId = friendIds.filter((friendId) => friendId !== post.userId);
 
-                const notifications = friendIds.map((friendId) => ({
-                    userId: filteredFriendId,
+                const notifications = filteredFriendId.map((friendId) => ({
+                    userId: friendId,
                     content: {
                         text: `<p><strong>${author.username}</strong> đã đăng tải một bài viết mới</p>`,
                         image: author.avatar,
