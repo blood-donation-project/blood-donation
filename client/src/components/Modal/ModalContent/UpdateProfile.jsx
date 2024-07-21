@@ -550,10 +550,14 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
                                         </select>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <p>Sẵn sàng hiến máu</p>
-                                    <Switch onChange={handleChangeStatus} defaultChecked={status} />
-                                </div>
+                                {user?.role === 'Cơ sở y tế' || 'admin' ? (
+                                    ''
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <p>Sẵn sàng hiến máu</p>
+                                        <Switch onChange={handleChangeStatus} defaultChecked={status} />
+                                    </div>
+                                )}
                                 {!user?.identification && (
                                     <p className="text-center text-sm text-red-400 mt-2">
                                         Để tài khoản bảo mật hơn vui lòng thêm căn cước công dân của bạn!

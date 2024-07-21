@@ -47,28 +47,36 @@ const AboutPage = () => {
                                 </div>
                             )}
 
-                            <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
-                                <div className="flex md:flex-col xs:flex-row">
-                                    <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                        <FaBirthdayCake />
+                            {userData?.role === 'Cơ sở y tế' ? (
+                                ''
+                            ) : (
+                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
+                                    <div className="flex md:flex-col xs:flex-row">
+                                        <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
+                                            <FaBirthdayCake />
+                                        </div>
+                                        <div className="text-[#65676B] text-[16px]">Ngày sinh</div>
                                     </div>
-                                    <div className="text-[#65676B] text-[16px]">Ngày sinh</div>
-                                </div>
-                                <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                    {userData?.dateOfBirth}
-                                </div>
-                            </div>
-                            <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
-                                <div className="flex md:flex-col xs:flex-row">
-                                    <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                        <PiGenderIntersexFill />
+                                    <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
+                                        {userData?.dateOfBirth ?? 'Chưa xác định'}
                                     </div>
-                                    <div className="text-[#65676B] text-[16px]">Giới tính</div>
                                 </div>
-                                <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
-                                    {userData?.gender}
+                            )}
+                            {userData?.role === 'Cơ sở y tế' ? (
+                                ''
+                            ) : (
+                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
+                                    <div className="flex md:flex-col xs:flex-row">
+                                        <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
+                                            <PiGenderIntersexFill />
+                                        </div>
+                                        <div className="text-[#65676B] text-[16px]">Giới tính</div>
+                                    </div>
+                                    <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
+                                        {userData?.gender}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                 <div className="flex md:flex-col xs:flex-row">
                                     <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
@@ -77,7 +85,7 @@ const AboutPage = () => {
                                     <div className="text-[#65676B] text-[16px]">Địa chỉ</div>
                                 </div>
                                 <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0 line-clamp-3">
-                                    {(userData?._id === userCurrentData?._id
+                                    {(userData?._id === userCurrentData?._id || userData?.role === 'Cơ sở y tế'
                                         ? userData?.address.street +
                                           ', ' +
                                           userData?.address.ward +
