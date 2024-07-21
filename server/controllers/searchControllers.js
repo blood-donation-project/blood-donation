@@ -178,6 +178,7 @@ const searchControllers = {
             const query = {
                 'address.province': province,
                 status: true,
+                role: 'Người hiến máu'
             };
 
             if (bloodGroup) {

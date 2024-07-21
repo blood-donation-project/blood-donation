@@ -86,7 +86,7 @@ async function sendEmailForgotPassword(email, name, url) {
         await transporter.sendMail({
             from: process.env.USER,
             to: email,
-            subject: 'Kích hoạt email',
+            subject: 'Đặt lại mật khẩu Blood Donation',
             html: `
             <!DOCTYPE html>
             <html lang="en">

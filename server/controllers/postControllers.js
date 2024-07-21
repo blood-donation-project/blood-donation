@@ -671,10 +671,10 @@ const postControllers = {
                 path: 'userId',
                 select: 'username avatar introduce',
             });
-            res.status(200).json(posts);
+            return res.status(200).json(posts);
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({ message: 'Internal server error' });
         }
     },
     getUnpublishedPost: async (req, res) => {

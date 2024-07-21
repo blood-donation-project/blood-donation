@@ -106,7 +106,7 @@ export const postAPI = createApi({
         }),
         getAllPostsByAdmin: builder.mutation({
             query: (searchTerm) => ({
-                url: 'get-all-posts',
+                url: '/get-all-posts',
                 method: 'POST',
                 body: { searchTerm },
             }),
