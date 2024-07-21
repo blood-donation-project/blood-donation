@@ -116,7 +116,9 @@ const Post = ({ postData }) => {
                         >
                             {postData.author.username}
                         </Link>
-                        <span className="text-[12px] text-[#65676B] mt-[2px]">{calculatePostTime(postData.updatedAt)}</span>
+                        <span className="text-[12px] text-[#65676B] mt-[2px]">
+                            {calculatePostTime(postData.updatedAt)}
+                        </span>
                     </div>
                     {user._id === postData.author._id && (
                         <div className="absolute right-3 top-0">
@@ -155,23 +157,37 @@ const Post = ({ postData }) => {
                 </div>
                 {/*Post description */}
                 <div className="mt-2">
-                    {showMore ? (
+                    {postData?.content?.length > 390 ? (
+                        showMore ? (
+                            <span className="text-[16px]">
+                                {postData.content?.split('\n')?.map((line, index) => (
+                                    <p className="linkify" key={index}>
+                                        <Linkify as={'p'}>{line}</Linkify>
+                                    </p>
+                                ))}
+                                <button className="font-semibold hover:underline" onClick={handleClickShowText}>
+                                    Thu gọn
+                                </button>
+                            </span>
+                        ) : (
+                            <span className="text-[16px]">
+                                {truncatedText?.split('\n')?.map((line, index) => (
+                                    <p className="linkify" key={index}>
+                                        <Linkify as={'p'}>{line}</Linkify>
+                                    </p>
+                                ))}
+                                <button className="font-semibold hover:underline" onClick={handleClickShowText}>
+                                    Xem thêm
+                                </button>
+                            </span>
+                        )
+                    ) : (
                         <span className="text-[16px]">
                             {postData.content?.split('\n')?.map((line, index) => (
                                 <p className="linkify" key={index}>
                                     <Linkify as={'p'}>{line}</Linkify>
                                 </p>
                             ))}
-                            <button className='font-semibold hover:underline' onClick={handleClickShowText}>Thu gọn</button>
-                        </span>
-                    ) : (
-                        <span className="text-[16px]">
-                            {truncatedText?.split('\n')?.map((line, index) => (
-                                <p className="linkify" key={index}>
-                                    <Linkify as={'p'}>{line}</Linkify>
-                                </p>
-                            ))}
-                            <button className='font-semibold hover:underline' onClick={handleClickShowText}>Xem thêm</button>
                         </span>
                     )}
                 </div>

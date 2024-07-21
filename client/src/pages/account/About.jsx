@@ -3,7 +3,7 @@ import { FaBirthdayCake, FaCity, FaPhone } from 'react-icons/fa';
 import { PiGenderIntersexFill } from 'react-icons/pi';
 import { MdBloodtype, MdEmail } from 'react-icons/md';
 import { FaUserNurse } from 'react-icons/fa6';
-
+import { FaCheckCircle } from "react-icons/fa";
 import NavMenu from '../../components/NavMenu';
 import ProfileOverview from '../../components/Profile/ProfileOverview';
 import { useGetUserByIdMutation, useGetUserMutation } from '../../Redux/features/user/userAPI';
@@ -38,7 +38,7 @@ const AboutPage = () => {
                                     <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                         <div className="flex md:flex-col xs:flex-row">
                                             <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                                <MdEmail />
+                                                <MdEmail className='text-[#007bff]'/>
                                             </div>
                                             <div className="text-[#65676B] text-[16px]">Email</div>
                                         </div>
@@ -54,12 +54,27 @@ const AboutPage = () => {
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
                                     <div className="flex md:flex-col xs:flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                            <FaBirthdayCake />
+                                            <FaBirthdayCake className='text-[#FFD700]'/>
                                         </div>
                                         <div className="text-[#65676B] text-[16px]">Ngày sinh</div>
                                     </div>
                                     <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
                                         {userData?.dateOfBirth ?? 'Chưa xác định'}
+                                    </div>
+                                </div>
+                            )}
+                            {userData?.role === 'Cơ sở y tế' || userData?.status === false ? (
+                                ''
+                            ) : (
+                                <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc]">
+                                    <div className="flex md:flex-col xs:flex-row">
+                                        <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
+                                            <FaCheckCircle className='text-[#4CAF50]'/>
+                                        </div>
+                                        <div className="text-[#65676B] text-[16px]">Tình trạng</div>
+                                    </div>
+                                    <div className="text-[16px] font-bold text-[#3e3e3e] xs:ml-[30px] md:ml-0">
+                                        {userData?.status && 'Sẵn sàng hiến máu'}
                                     </div>
                                 </div>
                             )}
@@ -69,7 +84,7 @@ const AboutPage = () => {
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                     <div className="flex md:flex-col xs:flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                            <PiGenderIntersexFill />
+                                            <PiGenderIntersexFill className={`${userData?.gender === 'Nữ' ? 'text-[#ff80cc]' : 'text-[#007bff]'}`}/>
                                         </div>
                                         <div className="text-[#65676B] text-[16px]">Giới tính</div>
                                     </div>
@@ -81,7 +96,7 @@ const AboutPage = () => {
                             <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                 <div className="flex md:flex-col xs:flex-row">
                                     <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                        <FaCity />
+                                        <FaCity className='text-[#FFA500]'/>
                                     </div>
                                     <div className="text-[#65676B] text-[16px]">Địa chỉ</div>
                                 </div>
@@ -101,7 +116,7 @@ const AboutPage = () => {
                                     <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                         <div className="flex md:flex-col xs:flex-row">
                                             <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                                <FaPhone />
+                                                <FaPhone  className='text-[#00CED1]'/>
                                             </div>
                                             <div className="text-[#65676B] text-[16px]">Liên hệ</div>
                                         </div>
@@ -117,7 +132,7 @@ const AboutPage = () => {
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                     <div className="flex md:flex-col xs:flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                            <MdBloodtype />
+                                            <MdBloodtype className='text-[#dc3545]'/>
                                         </div>
                                         <div className="text-[#65676B] text-[16px]">Nhóm máu</div>
                                     </div>
@@ -130,7 +145,7 @@ const AboutPage = () => {
                                 <div className=" flex  flex-col px-2 xs:py-1.5 md:py-0 xs:border-b xs:border-b-[#ccc] ">
                                     <div className="flex md:flex-col xs:flex-row">
                                         <div className="xs:w-[30px] md:w-0 text-[22px] text-[#65676B]">
-                                            <FaUserNurse />
+                                            <FaUserNurse className='text-[#9C27B0]'/>
                                         </div>
                                         <div className="text-[#65676B] text-[16px]">Vai trò</div>
                                     </div>

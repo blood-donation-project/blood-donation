@@ -550,7 +550,7 @@ const UpdateProfile = ({ isOpenUpdate, onCloseUpdate }) => {
                                         </select>
                                     </div>
                                 </div>
-                                {user?.role === 'Cơ sở y tế' || 'admin' ? (
+                                {user?.role === 'Cơ sở y tế' || user?.role === 'admin' ? (
                                     ''
                                 ) : (
                                     <div className="flex items-center gap-2">
