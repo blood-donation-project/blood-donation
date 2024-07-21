@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-
+import { useSelector } from 'react-redux';
 import Tippy from '@tippyjs/react/headless';
+import axios from 'axios';
+
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { IoMdSearch, IoMdNotifications } from 'react-icons/io';
@@ -32,7 +34,7 @@ import { useGetAllNotifiMutation, useReadNotifiMutation } from '../Redux/feature
 import moment from 'moment';
 import { HiOutlineLockClosed } from 'react-icons/hi2';
 import { useGetUserMutation } from '../Redux/features/user/userAPI';
-import axios from 'axios';
+
 const NavMenu = () => {
     useAutoRefreshToken('/api/user/get-user');
     const [logOut] = useLogoutMutation();
@@ -54,6 +56,7 @@ const NavMenu = () => {
     const [notifiUnRead, setNotifiUnRead] = useState([]);
     const [searchUsers, { isLoading }] = useSearchUsersMutation();
     const [getUser, { data: getdataUser }] = useGetUserMutation();
+    const { user } = useSelector((state) => state.user);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -76,6 +79,7 @@ const NavMenu = () => {
                 console.log(error);
             }
         };
+
         fetchData();
     }, [getUser]);
 
@@ -183,8 +187,6 @@ const NavMenu = () => {
         await logOut().unwrap();
         navigate('/login');
     };
-
-    const handleChangePass = async () => {};
 
     return (
         <div className="md:h-[56px] xs:h-[96px] px-3 fixed top-0 left-0 right-0  bg-white shadow z-[999]">

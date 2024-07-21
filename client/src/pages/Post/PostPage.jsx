@@ -26,6 +26,7 @@ import Image from '../../components/Image/Image';
 import { FaRegComment, FaSpinner } from 'react-icons/fa6';
 import PostComment from '../../components/Comment/PostComment';
 import { BsEmojiSmileFill, BsFillSendFill } from 'react-icons/bs';
+import { updateCommentPost } from '../../Redux/features/post/postSlice';
 
 const PostPage = () => {
     const { postId } = useParams();
@@ -135,7 +136,9 @@ const PostPage = () => {
             postId,
             content: commentContent,
         };
-        await createComment(commentData).unwrap();
+        await createComment(commentData).then((res) => {
+            // dispatch(updateCommentPost(res.data));
+        });
 
         setCommentContent('');
         setCommentLength(0);

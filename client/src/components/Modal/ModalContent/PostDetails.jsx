@@ -25,7 +25,7 @@ import PostComment from '../../Comment/PostComment';
 import calculatePostTime from '../../../utils/formartTime/calculatePostTime';
 import Avatar from '../../Image/Avatar';
 import PostCommentLoading from '../../LoadingSkeleton/Comment/PostCommentLoading';
-import { updateOneSearchPostData } from '../../../Redux/features/search/searchSlice';
+import { updateOneSearchPostData, increaseCommentCountPostData } from '../../../Redux/features/search/searchSlice';
 import { IoSend } from 'react-icons/io5';
 
 import { BsEmojiSmileFill } from 'react-icons/bs';
@@ -45,7 +45,11 @@ const PostDetails = ({ postId, hideModal }) => {
     const [unlikePost] = useUnlikePostMutation();
 
     const { homePagePosts, profilePosts, comments } = useSelector((state) => state.posts);
-    const postDetail = homePagePosts.concat(profilePosts).find((post) => post._id === postId);
+    const { postsData } = useSelector((state) => state.search);
+    const postDetail = homePagePosts
+        .concat(profilePosts)
+        .concat(postsData)
+        .find((post) => post._id === postId);
 
     const emojiRef = useRef(null);
     const emojiButtonRef = useRef(null);
@@ -126,7 +130,7 @@ const PostDetails = ({ postId, hideModal }) => {
         await createComment(commentData)
             .unwrap()
             .then((res) => {
-                dispatch(updateOneSearchPostData(res.post));
+                if (postsData) dispatch(increaseCommentCountPostData(res));
             });
         setCommentContent('');
         setCommentLength(0);
@@ -229,7 +233,7 @@ const PostDetails = ({ postId, hideModal }) => {
                                         {' '}
                                         {postDetail.likeCount > 0 && `${postDetail.likeCount} lượt thích`}
                                     </span>
-                                    <span className="text-[16px] text-[#65676B] cursor-pointer hover:underline" >
+                                    <span className="text-[16px] text-[#65676B] cursor-pointer hover:underline">
                                         {postDetail.commentCount > 0 && `${postDetail.commentCount} bình luận`}{' '}
                                     </span>
                                 </div>

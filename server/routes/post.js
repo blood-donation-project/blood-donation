@@ -34,6 +34,7 @@ router.delete('/:id/delete', middlewareController.verifyToken, postControllers.d
 // Get Comment by post id
 router.get('/:id/comments', middlewareController.verifyToken, postControllers.getCommentByPostId);
 router.post('/:id/comments/create', middlewareController.verifyToken, postControllers.createComment);
+router.delete('/comments/delete/:id', middlewareController.verifyToken, postControllers.deleteComment);
 
 router.post('/:id/like', middlewareController.verifyToken, postControllers.likePost);
 router.post('/:id/unlike', middlewareController.verifyToken, postControllers.unLikePost);

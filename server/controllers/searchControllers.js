@@ -171,10 +171,6 @@ const searchControllers = {
             const page = req.query.page ? Number(req.query.page) : 1;
             const province = req.query.province ? req.query.province : dbUser.address.province;
             const bloodGroup = req.query.bloodGroup ? req.query.bloodGroup : null;
-            console.log({
-                province,
-                bloodGroup,
-            });
             const query = {
                 'address.province': province,
                 status: true,

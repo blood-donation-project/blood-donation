@@ -92,6 +92,12 @@ export const postAPI = createApi({
                 },
             }),
         }),
+        deleteComment: builder.mutation({
+            query: ({ commentId }) => ({
+                url: `/comments/delete/${commentId}`,
+                method: 'DELETE',
+            }),
+        }),
         likePost: builder.mutation({
             query: (postId) => ({
                 url: `/${postId}/like`,
@@ -166,6 +172,7 @@ export const {
     useGetPostsByIdMutation,
     useRefusePostMutation,
     useDeletePostByAdminMutation,
+    useDeleteCommentMutation,
 } = postAPI;
 
 export default postAPI;

@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import { TiWorld } from 'react-icons/ti';
 import { IoMdImages } from 'react-icons/io';
-import { MdInsertEmoticon } from 'react-icons/md';
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import TextareaAutosize from 'react-textarea-autosize';
 

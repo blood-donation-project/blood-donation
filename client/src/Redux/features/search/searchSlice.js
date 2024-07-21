@@ -21,6 +21,18 @@ const searchSlice = createSlice({
             const findIndex = state.postsData.findIndex((post) => post._id === postData._id);
             state.postsData[findIndex] = postData;
         },
+        increaseCommentCountPostData: (state, action) => {
+            const postData = action.payload;
+            const findIndex = state.postsData.findIndex((post) => post._id === postData.postId);
+
+            if (findIndex !== -1) state.postsData[findIndex].commentCount = state.postsData[findIndex].commentCount + 1;
+        },
+        reduceCommentCountPostSearchData: (state, action) => {
+            const postData = action.payload;
+            const findIndex = state.postsData.findIndex((post) => post._id === postData.postId);
+
+            if (findIndex !== -1) state.postsData[findIndex].commentCount = state.postsData[findIndex].commentCount - 1;
+        },
         updateOneSearchUserData: (state, action) => {
             const postData = action.payload;
             const findIndex = state.postsData.findIndex((post) => post._id === postData._id);
@@ -67,5 +79,7 @@ export const {
     resetSearchPostsData,
     resetSearchUsersData,
     resetSurroundingUsersData,
+    increaseCommentCountPostData,
+    reduceCommentCountPostSearchData,
 } = searchSlice.actions;
 export default searchSlice.reducer;

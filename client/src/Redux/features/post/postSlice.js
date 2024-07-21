@@ -28,7 +28,21 @@ const postSlice = createSlice({
             };
         },
         updateCommentPost: (state, action) => {
-            //
+            const commentData = action.payload;
+            state.comments = [...state.comments, commentData];
+        },
+        reduceCommentCountPostData: (state, action) => {
+            const postData = action.payload;
+            const findIndex = state.homePagePosts.findIndex((post) => post._id === postData.postId);
+            const findIndexProfilePost = state.profilePosts.findIndex((post) => post._id === postData.postId);
+
+            if (findIndex !== -1) {
+                state.homePagePosts[findIndex].commentCount = state.homePagePosts[findIndex].commentCount - 1;
+            }
+            if (findIndexProfilePost !== -1) {
+                state.profilePosts[findIndexProfilePost].commentCount =
+                    state.profilePosts[findIndexProfilePost].commentCount - 1;
+            }
         },
         resetHomePagePosts: (state, _) => {
             return {
@@ -101,7 +115,7 @@ const postSlice = createSlice({
             const indexProfilePost = state.profilePosts.findIndex((post) => post._id === commentData.post._id);
             const newPostData = {
                 ...commentData.post,
-                author: state.homePagePosts[indexHomePagePost]?.author,
+                author: state.homePagePosts[indexHomePagePost]?.author || state.profilePosts[indexProfilePost]?.author,
             };
 
             state.homePagePosts[indexHomePagePost] = newPostData;
@@ -110,8 +124,18 @@ const postSlice = createSlice({
                 ...commentData.post,
                 author: state.post.author,
             };
+
             delete commentData.post;
             state.comments = [{ ...commentData }, ...state.comments];
+        });
+        builder.addMatcher(postAPI.endpoints.deleteComment.matchFulfilled, (state, action) => {
+            const currentComments = state.comments;
+
+            const indexComment = state.comments.findIndex((comment) => comment._id === action.payload.commentId);
+            currentComments.splice(indexComment, 1);
+            state.comments = currentComments;
+
+            toast.success('Đã xóa bình luận');
         });
         // Like
         builder.addMatcher(postAPI.endpoints.likePost.matchFulfilled, (state, action) => {
@@ -134,6 +158,12 @@ const postSlice = createSlice({
     },
 });
 
-export const { resetHomePagePosts, updateAuthorPosts, resetProfilePosts, resetProfilePostsPendingApproval } =
-    postSlice.actions;
+export const {
+    resetHomePagePosts,
+    updateAuthorPosts,
+    resetProfilePosts,
+    resetProfilePostsPendingApproval,
+    reduceCommentCountPostData,
+    updateCommentPost,
+} = postSlice.actions;
 export default postSlice.reducer;

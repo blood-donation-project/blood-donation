@@ -475,7 +475,7 @@ const postControllers = {
     createComment: async (req, res) => {
         try {
             const { id } = req.user;
-            console.log(req.user);
+
             const postId = req.params.id;
             const clientCommentData = req.body;
 
@@ -515,8 +515,6 @@ const postControllers = {
             const likeCount = await Reactions.countDocuments({ postId: post._id });
             const liked = await Reactions.exists({ postId: post._id, userId: id });
 
-            //
-
             return res.status(201).json({
                 ...dbCommentData._doc,
                 post: {
@@ -532,6 +530,23 @@ const postControllers = {
             return res.status(500).json({
                 errors: error.errors,
             });
+        }
+    },
+    deleteComment: async (req, res) => {
+        const { id } = req.user;
+        const commentId = req.params.id;
+
+        try {
+            const deletedComment = await Comments.findOneAndDelete({ _id: commentId, userId: id });
+
+            if (!deletedComment) {
+                return res.status(404).json({ message: 'Comment not found' });
+            }
+
+            res.status(200).json({ commentId: deletedComment._id, postId: deletedComment.postId });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
         }
     },
 

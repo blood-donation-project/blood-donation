@@ -22,6 +22,7 @@ import { useGetUserMutation } from '../../Redux/features/user/userAPI';
 
 const UserPreview = ({ userData }) => {
     const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.user);
 
     const [getUser, { data: getdataUser }] = useGetUserMutation();
 
@@ -33,7 +34,9 @@ const UserPreview = ({ userData }) => {
                 console.log(error);
             }
         };
-        fetchData();
+        if (!user) {
+            fetchData();
+        }
     }, [getUser]);
 
     const [cancelFriendRequest] = useCancelFriendRequestMutation();
