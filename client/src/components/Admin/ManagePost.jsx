@@ -12,7 +12,6 @@ import DetailPosts from './DetailPosts';
 import { useAutoRefreshToken } from '../../hooks/useAutoRefreshToken';
 const ManagePost = () => {
     useAutoRefreshToken('/home/');
-
     const [searchTerm, setSearchTerm] = useState('');
     const [getAllPost] = useGetAllPostsByAdminMutation();
     const [deletePostByAdmin] = useDeletePostByAdminMutation();
@@ -23,22 +22,24 @@ const ManagePost = () => {
     const togglePopup = () => {
         setIsPopupOpen(!isPopupOpen);
     };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const posts = await getAllPost().unwrap();
-                setAllPost(posts);
+                const post = await getAllPost().unwrap();
+                setAllPost(post);
             } catch (error) {
                 console.log(error);
             }
         };
         fetchData();
-    }, [getAllPost]);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await getAllPost(searchTerm).unwrap();
+            const post = await getAllPost().unwrap();
+            setAllPost(post);
         } catch (error) {
             console.log(error);
         }
